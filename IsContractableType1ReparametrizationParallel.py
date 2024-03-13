@@ -79,4 +79,4 @@ P = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/P.txt")
 P1 = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/P1.txt")
 maxlen = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/maxlen.txt")
 
-print(is_contractable_type1_reparametrization_parallel(M, M0, M1, i, P, P1, maxlen))
+print(IsContractableType1ReparametrizationParallel(M, M0, M1, i, P, P1, maxlen))
