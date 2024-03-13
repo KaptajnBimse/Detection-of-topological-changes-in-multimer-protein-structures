@@ -1,11 +1,10 @@
 import numpy as np
 from scipy import sparse
-from scipy.interpolate import spmak
-from scipy.interpolate import fnval
 from scipy.optimize import linear_sum_assignment
 from IsContractableType1ReparametrizationParallel import IsContractableType1ReparametrizationParallel
 from IsContractableType2ReparametrizationParallel import IsContractableType2ReparametrizationParallel
 from PriceEstEndContraction import PriceEstEndContraction
+from scipy.interpolate import splrep, PPoly
 from distPP import distPP
 
 
@@ -42,29 +41,54 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     #         aligned-gap if 1.5 > IsAlignedSpline(a)+IsAlignedSpline(b) >  0.5
     #         gap-gap     if       IsAlignedSpline(a)+IsAlignedSpline(b) <  0.5
 
-    C = sparse.find(sparse.tril(selfintc, 0))[2]
-    d = sparse.find(sparse.tril(selfintcu, 0))[2]
-    e = sparse.find(sparse.tril(selfintcv, 0))[2]
-    f = sparse.find(sparse.tril(selfintcs, 0))[2]
+    #C = sparse.find(sparse.tril(selfintc, 0))[2]
+    
 
-    M = np.column_stack((C-d, C+e, C, C+d, C+e, C))
+    row, col, data = sparse.find(sparse.tril(selfintc, 0))
+    sorted_indices = np.lexsort((row, col))
+    C = data[sorted_indices]
+    
+    row, col, data = sparse.find(sparse.tril(selfintcu, 0))
+    sorted_indices = np.lexsort((row, col))
+    d = data[sorted_indices]
+    
+    row, col, data = sparse.find(sparse.tril(selfintcv, 0))
+    sorted_indices = np.lexsort((row, col))
+    e = data[sorted_indices]
+    
+    row, col, data = sparse.find(sparse.tril(selfintcs, 0))
+    sorted_indices = np.lexsort((row, col))
+    A = row[sorted_indices]+1
+    B = col[sorted_indices]+1
+    f = data[sorted_indices]
+    
+    M = np.column_stack((A-B, A, B, A+d, B+e, C))
     M = np.column_stack((M, 0.001*(3.8**2*np.min([(M[:,4]-1)**2, (M[:,3]-M[:,4])**2/(4*np.pi), (len-M[:,3])**2], axis=0)), f))
     ud_M = M
-
-    n1 = RePar1.shape[1]
-    sp1 = spmak(np.arange(n1+2), RePar1[0])
-
-    n2 = RePar2.shape[1]
-    sp2 = spmak(np.arange(n2+2), RePar2[0])
-
     M0 = M.copy()
     M1 = M.copy()
-    M0[:,1:4] = fnval(sp1, M[:,1:4])
-    M1[:,1:4] = fnval(sp2, M[:,1:4])
 
-    n3 = IsAligned.shape[1]
-    IsAlignedSpline = spmak(np.arange(n3+2), IsAligned[0])
+    n1 = np.atleast_2d(RePar1).shape[1]
+    # sp1 = spmak(np.arange(n1+2), RePar1[0])
+    tck = splrep(np.arange(n1), RePar1, k = 3)
+    pp = PPoly.from_spline(tck)
+    
+    n2 = np.atleast_2d(RePar2).shape[1]
+    # sp1 = spmak(np.arange(n1+2), RePar1[0])
+    tck = splrep(np.arange(n2), RePar2, k = 3)
+    pp2 = PPoly.from_spline(tck)
+    
+    M0[:,1:5] = pp(M[:,1:5])
+    M1[:,1:5] = pp2(M[:,1:5])
+    
+    n3 = np.atleast_2d(IsAligned).shape[1]
+    tck = splrep(np.arange(n3), IsAligned, k = 3)
+    IsAlignedSpline = PPoly.from_spline(tck)
+    
+    #IsAlignedSpline = spmak(np.arange(n3+2), IsAligned[0])
 
+
+#############################################
     Nbr = M.shape[0]
     NbrOmega1 = 0
     NbrOmega2 = 0
@@ -218,20 +242,20 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     return ud, ud_essensials, ud_M
 
 
-IsAligned = np.loadtxt("/Test txt/SSIWMRPTMP/IsAligned.txt")
-len = np.loadtxt("/Test txt/SSIWMRPTMP/len.txt")
-maxendcontraction = np.loadtxt("/Test txt/SSIWMRPTMP/maxendcontraction.txt")
-maxlen = np.loadtxt("/Test txt/SSIWMRPTMP/maxlen.txt")
-P = np.loadtxt("/Test txt/SSIWMRPTMP/P.txt")
-P1 = np.loadtxt("/Test txt/SSIWMRPTMP/P1.txt")
-RePar1 = np.loadtxt("/Test txt/SSIWMRPTMP/RePar1.txt")
-RePar2 = np.loadtxt("/Test txt/SSIWMRPTMP/RePar2.txt")
-selfintc = np.loadtxt("/Test txt/SSIWMRPTMP/selfintc.txt")
-selfintcs = np.loadtxt("/Test txt/SSIWMRPTMP/selfintcs.txt")
-selfintcu = np.loadtxt("/Test txt/SSIWMRPTMP/selfintcu.txt")
-selfintcv = np.loadtxt("/Test txt/SSIWMRPTMP/selfintcv.txt")
-P1org = np.loadtxt("/Test txt/SSIWMRPTMP/P1org.txt")
-P2org = np.loadtxt("/Test txt/SSIWMRPTMP/P2org.txt")
+IsAligned = np.loadtxt("Test txt/SSIWMRPTMP/IsAligned.txt")
+len = np.loadtxt("Test txt/SSIWMRPTMP/len.txt")
+maxendcontraction = np.loadtxt("Test txt/SSIWMRPTMP/maxendcontraction.txt")
+maxlen = np.loadtxt("Test txt/SSIWMRPTMP/maxlen.txt")
+P = np.loadtxt("Test txt/SSIWMRPTMP/P.txt")
+P1 = np.loadtxt("Test txt/SSIWMRPTMP/P1.txt")
+RePar1 = np.loadtxt("Test txt/SSIWMRPTMP/RePar1.txt")
+RePar2 = np.loadtxt("Test txt/SSIWMRPTMP/RePar2.txt")
+selfintc = np.loadtxt("Test txt/SSIWMRPTMP/selfintc.txt")
+selfintcs = np.loadtxt("Test txt/SSIWMRPTMP/selfintcs.txt")
+selfintcu = np.loadtxt("Test txt/SSIWMRPTMP/selfintcu.txt")
+selfintcv = np.loadtxt("Test txt/SSIWMRPTMP/selfintcv.txt")
+P1org = np.loadtxt("Test txt/SSIWMRPTMP/P1org.txt")
+P2org = np.loadtxt("Test txt/SSIWMRPTMP/P2org.txt")
 
 ud = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, len, P, P1, RePar1, RePar2, IsAligned, P1org, P2org, maxendcontraction, maxlen)
 
