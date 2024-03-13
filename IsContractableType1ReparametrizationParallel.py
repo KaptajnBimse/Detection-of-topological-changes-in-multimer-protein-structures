@@ -2,7 +2,7 @@ import numpy as np
 import intersection_origo_triangle_line_segment as iotls
 import d_points2line as dpl
 
-def is_contractable_type1_reparametrization_parallel(M, M0, M1, i, P, P1, maxlen):
+def IsContractableType1ReparametrizationParallel(M, M0, M1, i, P, P1, maxlen):
     FindNumberOfOmega1_2Obstructions = 0
     i = int(i)-1 # i is 1-indexed in the original code 
     sav = M0[i, 7]
