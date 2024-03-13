@@ -6,8 +6,6 @@ import plotly.graph_objects as go
 
 def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2, myoptions):
 
-    MakeLocalPlotsOfEssensials = myoptions['MakeLocalPlotsOfEssensials']
-
     RPxtixlables, RPxticks= MRPT.MakeReParTicks(RePar1,8)
     RPytixlables, RPyticks= MRPT.MakeReParTicks(RePar2,8)
 
