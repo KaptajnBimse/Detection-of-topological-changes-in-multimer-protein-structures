@@ -62,21 +62,18 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
         y = (i+1)/(5+1)*P[:,1] + (1-(i+1)/(5+1))*P1[:, 1],
         z = (i+1)/(5+1)*P[:,2] + (1-(i+1)/(5+1))*P1[:, 2],
         mode='lines',
-        name = 'Interpolated line',
+        showlegend = False,
         line=dict(color='black', width=2),
         legendgroup = 'Interpolated line',
-        legendgrouptitle = dict(text = 'Interpolated line')
         ))
-
         traceInterPol_copy.append(go.Scatter3d(
         x = (i+1)/(5+1)*P[:,0] + (1-(i+1)/(5+1))*P1[:, 0],
         y = (i+1)/(5+1)*P[:,1] + (1-(i+1)/(5+1))*P1[:, 1],
         z = (i+1)/(5+1)*P[:,2] + (1-(i+1)/(5+1))*P1[:, 2],
         mode='lines',
-        name = 'Interpolated line',
         line=dict(color='black', width=2),
         legendgroup = 'Interpolated line',
-        legendgrouptitle = dict(text = 'Interpolated line')
+        showlegend = False,
         ))
     
     Essential_residues = []
@@ -185,45 +182,45 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
     fig.show()
 
 
-# RePar1 = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeSelfIntcFigureV3/RePar1.txt")
-# RePar2 = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeSelfIntcFigureV3/RePar2.txt")
-# P = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeSelfIntcFigureV3/P.txt")
-# P1 = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeSelfIntcFigureV3/P1.txt")
-# selfintc = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeSelfIntcFigureV3/selfintc.txt")
-# overlap = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeSelfIntcFigureV3/overlap.txt")
-# ud_essensials = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeSelfIntcFigureV3/ud_essentials.txt")
-# ud_essensials = ud_essensials.reshape(1,2)
+RePar1 = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeSelfIntcFigureV3/RePar1.txt")
+RePar2 = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeSelfIntcFigureV3/RePar2.txt")
+P = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeSelfIntcFigureV3/P.txt")
+P1 = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeSelfIntcFigureV3/P1.txt")
+selfintc = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeSelfIntcFigureV3/selfintc.txt")
+overlap = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeSelfIntcFigureV3/overlap.txt")
+ud_essensials = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeSelfIntcFigureV3/ud_essentials.txt")
+ud_essensials = ud_essensials.reshape(1,2)
 
-# options_fig = {
-#     'MaxLength': 15,
-#     'dmax': 10,
-#     'Smoothning': 0,
-#     'AllowEndContractions': 0,
-#     'MakeFigures': 1,
-#     'MakeAlignmentSeedFigure': 0,
-#     'MakeFiguresInLastItteration': 1,
-#     'MakeLocalPlotsOfEssensials': 1,
-#     'SelfIntcFigCutSize': 10,
-#     'PrintOut': 0,
-#     'additionalRMSD': 0,
-#     'alignmentsmoothing': 0,
-#     'alignmentsmoothingwidth': 3,
-#     'AdaptiveSubset': 1,
-#     'MaxNbrAlignmentSeeds': 7,
-#     'MaxSeedOverlap': 0.5000,
-#     'MinSeedLength': 40,
-#     'OverlapWeight': 4,
-#     'MaxIter': 20,
-#     'MaxWindowMisalignment': 1,
-#     'MaxMisAlignment': 0.0150,
-#     'MinimalAlignmentLength': 30,
-#     'FileName1': 'file1.pdb',
-#     'FileName2': 'file2.pdb',
-#     'StructureSequenceWeight': 1.5608,
-#     'SeqenceMisAlignmentPenalty': [7.2200  ,  2.1660], 
-#     'TrimSeqenceAlignment': 0,
-#     'SequenceAlignmentExtension': 1,
-#     'InitialAlignmentExactPairs': 1
-# }
+options_fig = {
+    'MaxLength': 15,
+    'dmax': 10,
+    'Smoothning': 0,
+    'AllowEndContractions': 0,
+    'MakeFigures': 1,
+    'MakeAlignmentSeedFigure': 0,
+    'MakeFiguresInLastItteration': 1,
+    'MakeLocalPlotsOfEssensials': 1,
+    'SelfIntcFigCutSize': 10,
+    'PrintOut': 0,
+    'additionalRMSD': 0,
+    'alignmentsmoothing': 0,
+    'alignmentsmoothingwidth': 3,
+    'AdaptiveSubset': 1,
+    'MaxNbrAlignmentSeeds': 7,
+    'MaxSeedOverlap': 0.5000,
+    'MinSeedLength': 40,
+    'OverlapWeight': 4,
+    'MaxIter': 20,
+    'MaxWindowMisalignment': 1,
+    'MaxMisAlignment': 0.0150,
+    'MinimalAlignmentLength': 30,
+    'FileName1': 'file1.pdb',
+    'FileName2': 'file2.pdb',
+    'StructureSequenceWeight': 1.5608,
+    'SeqenceMisAlignmentPenalty': [7.2200  ,  2.1660], 
+    'TrimSeqenceAlignment': 0,
+    'SequenceAlignmentExtension': 1,
+    'InitialAlignmentExactPairs': 1
+}
 
-# MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2, options_fig)
+MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2, options_fig)

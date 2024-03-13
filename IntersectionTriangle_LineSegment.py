@@ -10,11 +10,11 @@ def intersection_triangle_line_segment(p0, p1, p2, Lstart, Lslut):
     ud = int(ud)
     return ud, uvt
 
-p0 = np.array([10.5149, 0.9082, -4.0328])
-p1 = np.array([12.3474, -0.9595, -4.5598])
-p2 = np.array([10.9492, 1.1307, -3.7315])
-Lstart = np.array([12.0179,-0.8118,-5.2360])
-Lslut = np.array([11.9545,-1.2143,-5.0977])
+# p0 = np.array([10.5149, 0.9082, -4.0328])
+# p1 = np.array([12.3474, -0.9595, -4.5598])
+# p2 = np.array([10.9492, 1.1307, -3.7315])
+# Lstart = np.array([12.0179,-0.8118,-5.2360])
+# Lslut = np.array([11.9545,-1.2143,-5.0977])
 
-[ud, uvt] = intersection_triangle_line_segment(p0, p1, p2, Lstart, Lslut)
+# [ud, uvt] = intersection_triangle_line_segment(p0, p1, p2, Lstart, Lslut)
 
