@@ -6,6 +6,7 @@ from IsContractableType2ReparametrizationParallel import IsContractableType2Repa
 from PriceEstEndContraction import PriceEstEndContraction
 from scipy.interpolate import splrep, PPoly
 from distPP import distPP
+from maxWeightMatching import maxWeightMatching
 
 
 def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, len, P, P1, RePar1, RePar2, IsAligned, P1org, P2org, maxendcontraction, maxlen):
@@ -58,13 +59,15 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     
     row, col, data = sparse.find(sparse.tril(selfintcs, 0))
     sorted_indices = np.lexsort((row, col))
-    A = row[sorted_indices]+1
-    B = col[sorted_indices]+1
+    A = row[sorted_indices]
+    B = col[sorted_indices]
     f = data[sorted_indices]
     
     M = np.column_stack((A-B, A, B, A+d, B+e, C))
     M = np.column_stack((M, 0.001*(3.8**2*np.min([(M[:,4]-1)**2, (M[:,3]-M[:,4])**2/(4*np.pi), (len-M[:,3])**2], axis=0)), f))
     ud_M = M
+    ud_M[:,3] += 1
+    ud_M[:,4] += 1
     M0 = M.copy()
     M1 = M.copy()
 
@@ -79,7 +82,12 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     pp2 = PPoly.from_spline(tck)
     
     M0[:,1:5] = pp(M[:,1:5])
+    M0[:,3] -= 1
+    M0[:,4] -= 1
+    
     M1[:,1:5] = pp2(M[:,1:5])
+    M1[:,3] -= 1
+    M1[:,4] -= 1
     
     n3 = np.atleast_2d(IsAligned).shape[1]
     tck = splrep(np.arange(n3), IsAligned, k = 3)
@@ -99,36 +107,36 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     sumsignraw = np.sum(M[:,5]) # sum of crossing changes
     NbrSelfIntc = M.shape[0]
     O1 = np.zeros((NbrSelfIntc, 2))
-    for j in range(NbrSelfIntc):
+    for j in range(NbrSelfIntc+1):
         tmp = IsContractableType1ReparametrizationParallel(M, M0, M1, j, P, P1, maxlen)
         if tmp[0]:
-            tmp[0] = np.min([tmp[0], PriceEstEndContraction(M[j,4]-1), PriceEstEndContraction(len-M[j,3])])
+            tmp[0] = np.min([tmp[0], PriceEstEndContraction(M[j-1,4]-1), PriceEstEndContraction(len-M[j-1,3])])
         else:
-            enddist = np.min([M[j,4]-1, len-M[j,3]])
+            enddist = np.min([M[j-1,4]-1, len-M[j-1,3]])
             if enddist < maxendcontraction:
                 tmp = [PriceEstEndContraction(enddist), enddist*2]
-        O1[j,:] = tmp
+        O1[j-1,:] = tmp
 
     paircount = 0
     O2 = np.zeros((Nbr*(Nbr-1)//2, 4))
-    for i in range(Nbr-1):
-        for j in range(i+1, Nbr):
-            if M[i,5]+M[j,5] == 0: # have opposite signs
-                if not (M[j,3] < M[i,4] or M[j,4] > M[i,3]):
-                    tmp = IsContractableType2ReparametrizationParallel(M, M0, M1, i, j, P, P1, maxlen)
+    for i in range(Nbr+1):
+        for j in range(i+1, Nbr+1):
+            if M[i-1,5]+M[j-1,5] == 0: # have opposite signs
+                if not (M[j-1,3] < M[i-1,4] or M[j-1,4] > M[i-1,3]):
+                    tmp = IsContractableType2ReparametrizationParallel(M, M0, M1, i-1, j-1, P, P1, maxlen)
                     if tmp[0]:
                         paircount += 1
-                        O2[paircount-1,:] = [i, j] + tmp
+                        O2[paircount-1,:] = [i-1, j-1] + tmp # Indices of self-intersections saved in python format (0-indexing)
 
     O2 = O2[:paircount,:]
 
     epsilon = 0.5*(np.sum(O1[:,0]) + np.sum(O2[:,2]))**(-1)
     WVertex = epsilon*O1[:,0] + (O1[:,0] == 0)
 
-    Wedge = -epsilon*O2[:,2] + WVertex[O2[:,0]] + WVertex[O2[:,1]]
+    Wedge = -epsilon*O2[:,2] + WVertex[int(O2[:,0])] + WVertex[int(O2[:,1])]
 
     edgeData = np.column_stack((O2[:,0:2], Wedge))
-    result = linear_sum_assignment(-edgeData)
+    result = maxWeightMatching(edgeData)
     NbrEssensial = 0
     Essensials = []
     Nbr2 = len(result[0])
