@@ -218,4 +218,21 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     return ud, ud_essensials, ud_M
 
 
+IsAligned = np.loadtxt("/Test txt/SSIWMRPTMP/IsAligned.txt")
+len = np.loadtxt("/Test txt/SSIWMRPTMP/len.txt")
+maxendcontraction = np.loadtxt("/Test txt/SSIWMRPTMP/maxendcontraction.txt")
+maxlen = np.loadtxt("/Test txt/SSIWMRPTMP/maxlen.txt")
+P = np.loadtxt("/Test txt/SSIWMRPTMP/P.txt")
+P1 = np.loadtxt("/Test txt/SSIWMRPTMP/P1.txt")
+RePar1 = np.loadtxt("/Test txt/SSIWMRPTMP/RePar1.txt")
+RePar2 = np.loadtxt("/Test txt/SSIWMRPTMP/RePar2.txt")
+selfintc = np.loadtxt("/Test txt/SSIWMRPTMP/selfintc.txt")
+selfintcs = np.loadtxt("/Test txt/SSIWMRPTMP/selfintcs.txt")
+selfintcu = np.loadtxt("/Test txt/SSIWMRPTMP/selfintcu.txt")
+selfintcv = np.loadtxt("/Test txt/SSIWMRPTMP/selfintcv.txt")
+P1org = np.loadtxt("/Test txt/SSIWMRPTMP/P1org.txt")
+P2org = np.loadtxt("/Test txt/SSIWMRPTMP/P2org.txt")
+
+ud = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, len, P, P1, RePar1, RePar2, IsAligned, P1org, P2org, maxendcontraction, maxlen)
+
 
