@@ -43,7 +43,8 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
         z=P[:, 2],
         mode='lines',
         line=dict(color='blue', width=9),
-        name='Chain 1'
+        name='Chain 1',
+        legendgroup= 'Chain 1'
     )
 
     trace2 = go.Scatter3d(
@@ -52,7 +53,8 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
         z=P1[:, 2],
         mode='lines',
         line=dict(color='red', width=9),
-        name='Chain 2'
+        name='Chain 2',
+        legendgroup= 'Chain 2'
     )
     traceInterPol = []
     traceInterPol_copy = []
@@ -62,9 +64,10 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
         y = (i+1)/(5+1)*P[:,1] + (1-(i+1)/(5+1))*P1[:, 1],
         z = (i+1)/(5+1)*P[:,2] + (1-(i+1)/(5+1))*P1[:, 2],
         mode='lines',
-        showlegend = False,
+        showlegend = bool(np.floor(i/4)),
         line=dict(color='black', width=2),
         legendgroup = 'Interpolated line',
+        name = 'Interpolated lines'
         ))
         traceInterPol_copy.append(go.Scatter3d(
         x = (i+1)/(5+1)*P[:,0] + (1-(i+1)/(5+1))*P1[:, 0],
@@ -74,6 +77,7 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
         line=dict(color='black', width=2),
         legendgroup = 'Interpolated line',
         showlegend = False,
+        name = 'Interpolated lines'
         ))
     
     Essential_residues = []
@@ -90,7 +94,7 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
             name = 'Essential residues',
             line=dict(color='yellow', width=9),
             legendgroup = 'Essential residues',
-            legendgrouptitle = dict(text = 'Essential residues')
+            showlegend = bool(np.floor(i/4))
             ))
 
     
@@ -120,7 +124,9 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
         z=P[:, 2],
         mode='lines',
         line=dict(color='blue', width=9),
-        name='Chain 1'
+        name='Chain 1',
+        legendgroup= 'Chain 1',
+        showlegend= False
     )
 
     trace2_copy = go.Scatter3d(
@@ -129,7 +135,9 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
         z=P1[:, 2],
         mode='lines',
         line=dict(color='red', width=9),
-        name='Chain 2'
+        name='Chain 2',
+        legendgroup= 'Chain 2',
+        showlegend= False
     )
 
 
