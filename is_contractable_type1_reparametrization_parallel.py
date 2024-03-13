@@ -1,5 +1,5 @@
 import numpy as np
-import intersection_origo_triangle_line_segment as iotls
+from intersection_origo_triangle_line_segment import intersection_origo_triangle_line_segment
 import d_points2line as dpl
 
 def is_contractable_type1_reparametrization_parallel(M, M0, M1, i, P, P1, maxlen):
@@ -57,13 +57,13 @@ def is_contractable_type1_reparametrization_parallel(M, M0, M1, i, P, P1, maxlen
         if FindNumberOfOmega1_2Obstructions:
             for j in range(NbrL):
                 for k in range(NbrTriangles):
-                    NbrIntc += iotls.intersection_origo_triangle_line_segment(pts[:, [k, k + 1]], Lstart[:, j], Lend[:, j])
+                    NbrIntc += intersection_origo_triangle_line_segment(pts[:, [k, k + 1]], Lstart[:, j], Lend[:, j])
         else:
             slet = np.column_stack((ex, Lmidt[ex]))
             index = np.argsort(slet[:, 1])
             for j in index:
                 for k in range(NbrTriangles):
-                    if iotls.intersection_origo_triangle_line_segment(pts[:, [k, k + 1]], Lstart[:, j], Lend[:, j]):
+                    if intersection_origo_triangle_line_segment(pts[:, [k, k + 1]], Lstart[:, j], Lend[:, j]):
                         return [0, 0]
 
     if NbrIntc > 0:
@@ -71,12 +71,12 @@ def is_contractable_type1_reparametrization_parallel(M, M0, M1, i, P, P1, maxlen
 
     return [np.sum(dpl.d_points2line(pts[:, 1:-1], pts[:, 0], pmidt)) * 2, looplength]
 
-# i = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/IsContractableType1ReparametrizationParallel/i.txt")
-# M = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/IsContractableType1ReparametrizationParallel/M.txt")
-# M0 = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/IsContractableType1ReparametrizationParallel/M0.txt")
-# M1 = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/IsContractableType1ReparametrizationParallel/M1.txt")
-# P = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/IsContractableType1ReparametrizationParallel/P.txt")
-# P1 = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/IsContractableType1ReparametrizationParallel/P1.txt")
-# maxlen = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/IsContractableType1ReparametrizationParallel/maxlen.txt")
+i = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/i.txt")
+M = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/M.txt")
+M0 = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/M0.txt")
+M1 = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/M1.txt")
+P = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/P.txt")
+P1 = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/P1.txt")
+maxlen = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/maxlen.txt")
 
-# print(is_contractable_type1_reparametrization_parallel(M, M0, M1, i, P, P1, maxlen))
+print(is_contractable_type1_reparametrization_parallel(M, M0, M1, i, P, P1, maxlen))
