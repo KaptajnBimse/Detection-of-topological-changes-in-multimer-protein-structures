@@ -50,11 +50,11 @@ def PlanarityTransversal(a0, a1, b0, b1):
         ud[1] = np.dot(np.column_stack((ud[0] ** 2, ud[0], np.ones(len(ud[0])))), dp)
     return ud
 
-a0 = np.loadtxt("/Users/agb/Desktop/Bachelor projekt/Python kode oversat/a0.txt")
-a1 = np.loadtxt("/Users/agb/Desktop/Bachelor projekt/Python kode oversat/a1.txt")
-b0 = np.loadtxt("/Users/agb/Desktop/Bachelor projekt/Python kode oversat/b0.txt")
-b1 = np.loadtxt("/Users/agb/Desktop/Bachelor projekt/Python kode oversat/b1.txt")
+# a0 = np.loadtxt("/Users/agb/Desktop/Bachelor projekt/Python kode oversat/a0.txt")
+# a1 = np.loadtxt("/Users/agb/Desktop/Bachelor projekt/Python kode oversat/a1.txt")
+# b0 = np.loadtxt("/Users/agb/Desktop/Bachelor projekt/Python kode oversat/b0.txt")
+# b1 = np.loadtxt("/Users/agb/Desktop/Bachelor projekt/Python kode oversat/b1.txt")
 
-udplan = PlanarityTransversal(a0,a1,b0,b1)
+# udplan = PlanarityTransversal(a0,a1,b0,b1)
 
 

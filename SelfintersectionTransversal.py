@@ -24,20 +24,20 @@ def SelfintersectionTransversal(a0, a1, b0, b1):
                 tb = np.dot(v, b)
                 intersectionlength = abs(ta[0] - tb[1]) + abs(ta[1] - tb[0]) - abs(ta[0] - tb[0]) - abs(ta[1] - tb[1])
                 if intersectionlength > 4 * 10**-14:
-                    ud = [np.sign(transversal[i, 0]), [0.5, 0.5], s]
+                    ud = [np.sign(transversal[i, 0]), [0.5, 0.5], s] # Fjern muligvis [] inde i []
                     return
                 else:
                     return
         uv, _, _, _ = np.linalg.lstsq(M, k, rcond=None)
         if np.sum((0 <= uv) & (uv <= 1)) == 2:
             if np.sum((M @ uv - k)**2) < cut:
-                ud = [np.sign(transversal[i]), uv, s] # ændret fra transversal[i,0] fordi andet index var ulovligt, men skal måske bruges
+                ud = [np.sign(transversal[i]), uv[0],uv[1], s] # ændret fra transversal[i,0] fordi andet index var ulovligt, men skal måske bruges
             return ud
         i += 1
+    return ud
+# a0 = np.loadtxt("/Users/agb/Desktop/Bachelor projekt/Python kode oversat/a0.txt")
+# a1 = np.loadtxt("/Users/agb/Desktop/Bachelor projekt/Python kode oversat/a1.txt")
+# b0 = np.loadtxt("/Users/agb/Desktop/Bachelor projekt/Python kode oversat/b0.txt")
+# b1 = np.loadtxt("/Users/agb/Desktop/Bachelor projekt/Python kode oversat/b1.txt")
 
-a0 = np.loadtxt("/Users/agb/Desktop/Bachelor projekt/Python kode oversat/a0.txt")
-a1 = np.loadtxt("/Users/agb/Desktop/Bachelor projekt/Python kode oversat/a1.txt")
-b0 = np.loadtxt("/Users/agb/Desktop/Bachelor projekt/Python kode oversat/b0.txt")
-b1 = np.loadtxt("/Users/agb/Desktop/Bachelor projekt/Python kode oversat/b1.txt")
-
-ud=SelfintersectionTransversal(a0,a1,b0,b1)
+# ud=SelfintersectionTransversal(a0,a1,b0,b1)
