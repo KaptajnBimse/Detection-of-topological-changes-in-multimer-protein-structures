@@ -1,5 +1,5 @@
 import numpy as np
-import MakeDminProteinReparmetrizedParallel as mdprp
+import MakeDminProteinReparametrizedParallel as mdprp
 import MakeDP as mdp
 
 
