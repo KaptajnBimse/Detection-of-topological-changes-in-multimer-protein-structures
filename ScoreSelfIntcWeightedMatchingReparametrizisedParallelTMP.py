@@ -30,11 +30,11 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     # 16 Sum of signs of the self-intersections
     # 17 Sum of signs of the self-intersections after local reidemeister moves
 
-    # 18 Number of Essensial Aligned-Aligned self-intersections
+    # 18 Number of Essential Aligned-Aligned self-intersections
     # 19 Number of Aligned-Aligned self-intersections
-    # 20 Number of Essensial Aligned-Gap self-intersections
+    # 20 Number of Essential Aligned-Gap self-intersections
     # 21 Number of Aligned-Gap self-intersections
-    # 22 Number of Essensial Gap-Gap self-intersections
+    # 22 Number of Essential Gap-Gap self-intersections
     # 23 Number of Gap-Gap self-intersections
 
     # Re 18 to 23: A self-intersection between parameters (a,b) is defined as
@@ -102,7 +102,7 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     NbrOmega2 = 0
     cost1 = np.zeros(2)
     maxCost1 = np.zeros(2)
-    cost2 = np.zeros(2)
+    cost2 = np.atleast_2d(np.zeros(2))
     maxCost2 = np.zeros(2)
     sumsignraw = np.sum(M[:,5]) # sum of crossing changes
     NbrSelfIntc = M.shape[0]
@@ -136,28 +136,38 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     Wedge = -epsilon*O2[:,2] + WVertex[int(O2[:,0])] + WVertex[int(O2[:,1])]
 
     edgeData = np.column_stack((O2[:,0:2], Wedge))
-    result = maxWeightMatching(edgeData)
-    NbrEssensial = 0
-    Essensials = []
-    Nbr2 = len(result[0])
+    result = np.array(maxWeightMatching(edgeData)[0:])
+    NbrEssential = 0
+    Essentials = []
+    Nbr2 = result.shape[0]
 
     for i in range(Nbr2):
-        if result[0][i] > 0:
-            if result[0][i] < i:
-                edge = np.where((O2[:,0] == result[0][i]) & (O2[:,1] == i))[0][0]
+        if result[i] > 0:
+            if result[i] < i:
+                edge = np.where((O2[:,0] == result[i]) & (O2[:,1] == i))[0]
                 cost2var = O2[edge,2:4]
-                cost2 += cost2var
+                rows = cost2var.shape[0]
+                
+                if cost2.shape[0] > cost2var.shape[0]:
+                    rows = cost2.shape[0]
+                    for i in range(rows):
+                        cost2[i,:] = cost2[i,:] + cost2var
+                else:
+                    rows = cost2var.shape[0]
+                    for i in range(rows):
+                        cost2var[i,:] = cost2var[i,:] + cost2
+                cost2 = cost2var
                 NbrOmega2 += 1
                 maxCost2 = np.maximum(maxCost2, cost2var)
-        else:
+        else: # IKKE GENNEMTJEKKET!!
             if WVertex[i] < 1:
                 cost1var = O1[i,:]
                 cost1 += cost1var
                 NbrOmega1 += 1
                 maxCost1 = np.maximum(maxCost1, cost1var)
             else:
-                NbrEssensial += 1
-                Essensials.append(i)
+                NbrEssential += 1
+                Essentials.append(i)
 
     for i in range(Nbr2, Nbr):
         if WVertex[i] < 1:
@@ -166,18 +176,18 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
             NbrOmega1 += 1
             maxCost1 = np.maximum(maxCost1, cost1var)
         else:
-            NbrEssensial += 1
-            Essensials.append(i)
+            NbrEssential += 1
+            Essentials.append(i)
 
-    slet = fnval(IsAlignedSpline, M[:,3]) + fnval(IsAlignedSpline, M[:,4])
-    AlignedAligned = slet >= 1.5
+    slet = IsAlignedSpline(M[:,3]) + IsAlignedSpline(M[:,4])
+    AlignedAligned = slet >= 1.5 # Nephew
     AlignedGap = (slet < 1.5) & (slet > 0.5)
     GapGap = slet <= 0.5
-    NbrEssensialAlignedAligned = np.sum(AlignedAligned[Essensials])
+    NbrEssentialAlignedAligned = np.sum(AlignedAligned[Essentials])
     NbrAlignedAlignedTotal = np.sum(AlignedAligned)
-    NbrEssensialAlignedGap = np.sum(AlignedGap[Essensials])
+    NbrEssentialAlignedGap = np.sum(AlignedGap[Essentials])
     NbrAlignedGapTotal = np.sum(AlignedGap)
-    NbrEssensialGapGap = np.sum(GapGap[Essensials])
+    NbrEssentialGapGap = np.sum(GapGap[Essentials])
     NbrGapGapTotal = np.sum(GapGap)
 
 
@@ -186,33 +196,33 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
 
     if PerformEndDeformations == 0:
         RMSsum = np.sum(np.sqrt(np.sum((P - P1) ** 2, axis=1)))
-        if NbrEssensial == 0:
+        if NbrEssential == 0:
             ud = [NbrOmega1, cost1, maxCost1, NbrOmega2, cost2, maxCost2, 0, RMSsum, 0, 0, 0,
-                  sumsignraw, 0, NbrEssensialAlignedAligned, NbrAlignedAlignedTotal,
-                  NbrEssensialAlignedGap, NbrAlignedGapTotal, NbrEssensialGapGap,
+                  sumsignraw, 0, NbrEssentialAlignedAligned, NbrAlignedAlignedTotal,
+                  NbrEssentialAlignedGap, NbrAlignedGapTotal, NbrEssentialGapGap,
                   NbrGapGapTotal]
-            ud_essensials = np.zeros((0, 2))
+            ud_essentials = np.zeros((0, 2))
         else:
-            M = M[Essensials, :]
-            ud_essensials = M[:, [1, 2]]
+            M = M[Essentials, :]
+            ud_essentials = M[:, [1, 2]]
             antal = M.shape[0]
             ud = [NbrOmega1, cost1, maxCost1, NbrOmega2, cost2, maxCost2, 0,
                   RMSsum, 0, 0, antal, sumsignraw, np.sum(M[:, 5]),
-                  NbrEssensialAlignedAligned, NbrAlignedAlignedTotal,
-                  NbrEssensialAlignedGap, NbrAlignedGapTotal, NbrEssensialGapGap,
+                  NbrEssentialAlignedAligned, NbrAlignedAlignedTotal,
+                  NbrEssentialAlignedGap, NbrAlignedGapTotal, NbrEssentialGapGap,
                   NbrGapGapTotal]
-    else:
-        if NbrEssensial == 0:
-            RMSsum = np.sum(np.sqrt(np.sum((P - P1) ** 2, axis=1)))
-            ud = [NbrOmega1, cost1, maxCost1, NbrOmega2, cost2, maxCost2, 0, RMSsum, 0, 0, 0,
-                  sumsignraw, 0, NbrEssensialAlignedAligned, NbrAlignedAlignedTotal,
-                  NbrEssensialAlignedGap, NbrAlignedGapTotal, NbrEssensialGapGap,
-                  NbrGapGapTotal]
-            ud_essensials = np.zeros((0, 2))
+    # else:
+    #     if NbrEssential == 0:
+    #         RMSsum = np.sum(np.sqrt(np.sum((P - P1) ** 2, axis=1)))
+    #         ud = [NbrOmega1, cost1, maxCost1, NbrOmega2, cost2, maxCost2, 0, RMSsum, 0, 0, 0,
+    #               sumsignraw, 0, NbrEssentialAlignedAligned, NbrAlignedAlignedTotal,
+    #               NbrEssentialAlignedGap, NbrAlignedGapTotal, NbrEssentialGapGap,
+    #               NbrGapGapTotal]
+    #         ud_essentials = np.zeros((0, 2))
         # else:
-        #     M = M[Essensials, :]
+        #     M = M[Essentials, :]
         #     a, b = ApproxCheapestEndContraction(M, len)
-        #     ud_essensials = M[:, [1, 2]]
+        #     ud_essentials = M[:, [1, 2]]
         #     enddeformations = 0
         #     P1orgWindow = P1org[RePar1[0, 0]:RePar1[0, -1], :]  # cutting the aligned windows
         #     P2orgWindow = P2org[RePar2[0, 0]:RePar2[0, -1], :]
@@ -243,11 +253,11 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
             #     dybde[i, 0] = np.sum((M[:, 5] <= M[i, 5]) * (M[i, 5] <= M[:, 4]))
             # ud = [NbrOmega1, cost1, maxCost1, NbrOmega2, cost2, maxCost2, enddeformations,
             #       RMSsum, EndeFlytning, np.max(dybde), antal, sumsignraw, np.sum(M[:, 6]),
-            #       NbrEssensialAlignedAligned, NbrAlignedAlignedTotal, NbrEssensialAlignedGap,
-            #       NbrAlignedGapTotal, NbrEssensialGapGap, NbrGapGapTotal]
+            #       NbrEssentialAlignedAligned, NbrAlignedAlignedTotal, NbrEssentialAlignedGap,
+            #       NbrAlignedGapTotal, NbrEssentialGapGap, NbrGapGapTotal]
             
     
-    return ud, ud_essensials, ud_M
+    return ud, ud_essentials, ud_M
 
 
 IsAligned = np.loadtxt("Test txt/SSIWMRPTMP/IsAligned.txt")
@@ -265,6 +275,6 @@ selfintcv = np.loadtxt("Test txt/SSIWMRPTMP/selfintcv.txt")
 P1org = np.loadtxt("Test txt/SSIWMRPTMP/P1org.txt")
 P2org = np.loadtxt("Test txt/SSIWMRPTMP/P2org.txt")
 
-ud = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, len, P, P1, RePar1, RePar2, IsAligned, P1org, P2org, maxendcontraction, maxlen)
+ud,ud_essentials, ud_M = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, len, P, P1, RePar1, RePar2, IsAligned, P1org, P2org, maxendcontraction, maxlen)
 
 
