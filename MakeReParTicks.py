@@ -12,6 +12,6 @@ def MakeReParTicks(RePar, n):
     return innerlable, inner
 
 
-RePar1 = data = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeReParTicks/RePar1.txt")
-n = 8
-MakeReParTicks(RePar1,n)
+#RePar1 = data = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeReParTicks/RePar1.txt")
+#n = 8
+#MakeReParTicks(RePar1,n)
