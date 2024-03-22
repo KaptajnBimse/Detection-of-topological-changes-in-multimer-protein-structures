@@ -44,7 +44,7 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
         mode='lines',
         line=dict(color='blue', width=9),
         name='Chain 1',
-        legendgroup= 'Chain 1'
+        legendgroup= 'Chain 1',
     )
 
     trace2 = go.Scatter3d(
@@ -65,7 +65,8 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
         z = (i+1)/(5+1)*P[:,2] + (1-(i+1)/(5+1))*P1[:, 2],
         mode='lines',
         showlegend = bool(np.floor(i/4)),
-        line=dict(color='black', width=2),
+        line=dict(color='grey', width=2),
+        opacity=0.5,
         legendgroup = 'Interpolated line',
         name = 'Interpolated lines'
         ))
@@ -74,7 +75,8 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
         y = (i+1)/(5+1)*P[:,1] + (1-(i+1)/(5+1))*P1[:, 1],
         z = (i+1)/(5+1)*P[:,2] + (1-(i+1)/(5+1))*P1[:, 2],
         mode='lines',
-        line=dict(color='black', width=2),
+        line=dict(color='grey', width=2),
+        opacity=0.5,
         legendgroup = 'Interpolated line',
         showlegend = False,
         name = 'Interpolated lines'
