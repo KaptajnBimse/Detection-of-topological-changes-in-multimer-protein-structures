@@ -74,10 +74,10 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
     col3 = np.array([P[:,int(n1):int(n2-2)]])
     col4 = np.array((1 - b) * P[:, int(n2 - 2)] + b * P[:, int(n2-1)])
     col5 = Lb2
-    if len(col3) == 1:
-        pts1 = np.concatenate([col1.reshape(-1,1), col2.reshape(-1,1), col4.reshape(-1,1), col5.reshape(-1,1)],axis=1)
-    else:
-        pts1 = np.concatenate([col1.reshape(-1,1), col2.reshape(-1,1), col3.reshape(-1,1), col4.reshape(-1,1), col5.reshape(-1,1)],axis=1)
+    #if len(col3) == 1:
+        #pts1 = np.concatenate([col1.reshape(-1,1), col2.reshape(-1,1), col4.reshape(-1,1), col5.reshape(-1,1)],axis=1)
+    #else:
+    pts1 = np.concatenate([col1.reshape(-1,1), col2.reshape(-1,1), col3.reshape(-1,1), col4.reshape(-1,1), col5.reshape(-1,1)],axis=1)
 
     if M[islut, 3] < M[istart, 3]:
         n3 = np.floor(M[islut, 3])
