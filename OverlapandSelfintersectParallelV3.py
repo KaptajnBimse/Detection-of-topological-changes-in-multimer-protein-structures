@@ -101,16 +101,14 @@ def OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, 
 
     ud = [Outs, rms1, rms1Aligned, rms2, rms2Aligned, GDT_TS, TM, sumoverlap, PotSelfIntc, sumselfintc, AlignmentMetaDataOut]
 
-P1 = np.loadtxt('Test txt/P1.txt')
-P2 = np.loadtxt('Test txt/P2.txt')
-RePar1 = np.loadtxt('Test txt/RePar1.txt')
-RePar2 = np.loadtxt('Test txt/RePar2.txt')
-IsAligned = np.loadtxt('Test txt/IsAligned.txt')
-P1org = np.loadtxt('Test txt/P1org.txt')
-P2org = np.loadtxt('Test txt/P2org.txt')
-NresAverage = np.loadtxt('Test txt/NresAverage.txt')
-
-
+P1 = np.loadtxt('Test txt/OverlapandSelfintersectParallelV3/P1.txt')
+P2 = np.loadtxt('Test txt/OverlapandSelfintersectParallelV3/P2.txt')
+RePar1 = np.loadtxt('Test txt/OverlapandSelfintersectParallelV3/RePar1.txt')
+RePar2 = np.loadtxt('Test txt/OverlapandSelfintersectParallelV3/RePar2.txt')
+IsAligned = np.loadtxt('Test txt/OverlapandSelfintersectParallelV3/IsAligned.txt')
+P1org = np.loadtxt('Test txt/OverlapandSelfintersectParallelV3/P1org.txt')
+P2org = np.loadtxt('Test txt/OverlapandSelfintersectParallelV3/P2org.txt')
+NresAverage = 159
 
 options_fig = {
     'MaxLength': 15,
