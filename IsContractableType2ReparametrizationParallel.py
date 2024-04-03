@@ -197,7 +197,7 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
     exb2 = np.where(distb2 <= radiusb2 + radiushomotopy)[0]
 
     for ii in exa:
-        tmp = itls.intersectionTriangle_LineSegment(Lstart1[:, ii], Lend1[:, ii], Lstart2[:, ii], La1, La2)[0] + itls.intersection_triangle_line_segment(Lend1[:, ii], Lstart2[:, ii], Lend2[:, ii], La1, La2)[0]
+        tmp = itls.intersection_triangle_line_segment(Lstart1[:, ii], Lend1[:, ii], Lstart2[:, ii], La1, La2)[0] + itls.intersection_triangle_line_segment(Lend1[:, ii], Lstart2[:, ii], Lend2[:, ii], La1, La2)[0]
         NbrIntc += tmp
     for ii in exb:
         tmp = itls.intersection_triangle_line_segment(Lstart1[:, ii], Lend1[:, ii], Lstart2[:, ii], Lb1, Lb2)[0] + itls.intersection_triangle_line_segment(Lend1[:, ii], Lstart2[:, ii], Lend2[:, ii], Lb1, Lb2)[0]

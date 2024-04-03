@@ -119,21 +119,22 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
 
     paircount = 0
     O2 = np.zeros((Nbr*(Nbr-1)//2, 4))
-    for i in range(Nbr+1):
-        for j in range(i+1, Nbr+1):
-            if M[i-1,5]+M[j-1,5] == 0: # have opposite signs
-                if not (M[j-1,3] < M[i-1,4] or M[j-1,4] > M[i-1,3]):
-                    tmp = IsContractableType2ReparametrizationParallel(M, M0, M1, i-1, j-1, P, P1, maxlen)
+    for i in range(Nbr):
+        for j in range(i+1, Nbr):
+            if M[i,5]+M[j,5] == 0: # have opposite signs
+                if not (M[j,3] < M[i,4] or M[j,4] > M[i,3]):
+                    tmp = IsContractableType2ReparametrizationParallel(M, M0, M1, i, j, P, P1, maxlen)
+                    print(tmp)
                     if tmp[0]:
                         paircount += 1
-                        O2[paircount-1,:] = [i-1, j-1] + tmp # Indices of self-intersections saved in python format (0-indexing)
+                        O2[paircount-1,:] = [i, j] + tmp # Indices of self-intersections saved in python format (0-indexing)
 
     O2 = O2[:paircount,:]
 
     epsilon = 0.5*(np.sum(O1[:,0]) + np.sum(O2[:,2]))**(-1)
     WVertex = epsilon*O1[:,0] + (O1[:,0] == 0)
-
-    Wedge = -epsilon*O2[:,2] + WVertex[int(O2[:,0])] + WVertex[int(O2[:,1])]
+    print(O2)
+    Wedge = -epsilon*O2[:,2] + WVertex[O2[:,0]] + WVertex[O2[:,1]]
 
     edgeData = np.column_stack((O2[:,0:2], Wedge))
     result = np.array(maxWeightMatching(edgeData)[0:])
@@ -259,7 +260,7 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     
     return ud, ud_essentials, ud_M
 
-
+""" 
 IsAligned = np.loadtxt("Test txt/SSIWMRPTMP/IsAligned.txt")
 len = np.loadtxt("Test txt/SSIWMRPTMP/len.txt")
 maxendcontraction = np.loadtxt("Test txt/SSIWMRPTMP/maxendcontraction.txt")
@@ -277,4 +278,4 @@ P2org = np.loadtxt("Test txt/SSIWMRPTMP/P2org.txt")
 
 ud,ud_essentials, ud_M = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, len, P, P1, RePar1, RePar2, IsAligned, P1org, P2org, maxendcontraction, maxlen)
 
-
+ """

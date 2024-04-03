@@ -70,7 +70,7 @@ def IsContractableType1ReparametrizationParallel(M, M0, M1, i, P, P1, maxlen):
         return [0, 0]
 
     return [np.sum(dpl.d_points2line(pts[:, 1:-1], pts[:, 0], pmidt)) * 2, looplength]
-
+""" 
 i = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/i.txt")
 M = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/M.txt")
 M0 = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/M0.txt")
@@ -78,5 +78,5 @@ M1 = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/M1.txt")
 P = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/P.txt")
 P1 = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/P1.txt")
 maxlen = np.loadtxt("Test txt/IsContractableType1ReparametrizationParallel/maxlen.txt")
-
+ """
 #print(IsContractableType1ReparametrizationParallel(M, M0, M1, i, P, P1, maxlen))
