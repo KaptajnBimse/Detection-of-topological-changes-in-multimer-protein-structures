@@ -8,7 +8,9 @@ from scipy.interpolate import splrep, PPoly
 from distPP import distPP
 from maxWeightMatching import maxWeightMatching
 
-
+def print_matrix(matrix):
+    for row in matrix:
+        print(" ".join(map(str, row)))
 def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, len, P, P1, RePar1, RePar2, IsAligned, P1org, P2org, maxendcontraction, maxlen):
     # Ouptut order:
     #  1 number of local reidemeister type one moves performed
@@ -64,13 +66,16 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     f = data[sorted_indices]
     
     M = np.column_stack((A-B, A, B, A+d, B+e, C))
+    # Laver 1-indexering på søjle 3 og 4
+    #M[:,3] += 1
+    #M[:,4] += 1
     M = np.column_stack((M, 0.001*(3.8**2*np.min([(M[:,4]-1)**2, (M[:,3]-M[:,4])**2/(4*np.pi), (len-M[:,3])**2], axis=0)), f))
     ud_M = M
-    ud_M[:,3] += 1
-    ud_M[:,4] += 1
+    #ud_M[:,3] += 1 # Vi lægger 1 til for at få 1-indexing
+    #ud_M[:,4] += 1 # Vi lægger 1 til for at få 1-indexing
     M0 = M.copy()
     M1 = M.copy()
-
+    # noget galt med næstsidste søjle i M helt fra starten af!
     n1 = np.atleast_2d(RePar1).shape[1]
     # sp1 = spmak(np.arange(n1+2), RePar1[0])
     tck = splrep(np.arange(n1), RePar1, k = 3)
@@ -82,10 +87,14 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     pp2 = PPoly.from_spline(tck)
     
     M0[:,1:5] = pp(M[:,1:5])
+    M0[:,1] -= 1
+    M1[:,2] -= 1
     M0[:,3] -= 1
     M0[:,4] -= 1
     
     M1[:,1:5] = pp2(M[:,1:5])
+    M1[:,1] -= 1
+    M1[:,2] -= 1
     M1[:,3] -= 1
     M1[:,4] -= 1
     
@@ -106,26 +115,28 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     maxCost2 = np.zeros(2)
     sumsignraw = np.sum(M[:,5]) # sum of crossing changes
     NbrSelfIntc = M.shape[0]
+    
+    
     O1 = np.zeros((NbrSelfIntc, 2))
-    for j in range(NbrSelfIntc+1):
+    for j in range(NbrSelfIntc): # +1
         tmp = IsContractableType1ReparametrizationParallel(M, M0, M1, j, P, P1, maxlen)
         if tmp[0]:
-            tmp[0] = np.min([tmp[0], PriceEstEndContraction(M[j-1,4]-1), PriceEstEndContraction(len-M[j-1,3])])
+            tmp[0] = np.min([tmp[0], PriceEstEndContraction(M[j,4]-1), PriceEstEndContraction(len-M[j,3]-1)])
         else:
-            enddist = np.min([M[j-1,4]-1, len-M[j-1,3]])
+            enddist = np.min([M[j,4]-1, len-M[j,3]])
             if enddist < maxendcontraction:
                 tmp = [PriceEstEndContraction(enddist), enddist*2]
-        O1[j-1,:] = tmp
-
+        O1[j,:] = tmp
+ # iteration 1 mangler, og fejl på næstsidste iteration (og sidste)
     paircount = 0
     O2 = np.zeros((Nbr*(Nbr-1)//2, 4))
-    for i in range(Nbr):
+    for i in range(Nbr-1):
         for j in range(i+1, Nbr):
             if M[i,5]+M[j,5] == 0: # have opposite signs
                 if not (M[j,3] < M[i,4] or M[j,4] > M[i,3]):
                     tmp = IsContractableType2ReparametrizationParallel(M, M0, M1, i, j, P, P1, maxlen)
-                    print(tmp)
                     if tmp[0]:
+                        print(i,j)
                         paircount += 1
                         O2[paircount-1,:] = [i, j] + tmp # Indices of self-intersections saved in python format (0-indexing)
 
