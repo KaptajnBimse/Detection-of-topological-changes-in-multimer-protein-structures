@@ -45,15 +45,15 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
     nb2 = np.floor(sb2)
     b2 = sb2 - nb2
 
-    La1 = (1 - a) * Pts1[:, int(na-1)] + a * Pts1[:, int(na)]
+    La1 = (1 - a) * Pts1[:, int(na)] + a * Pts1[:, int(na+1)]
     #La1 = (1 - a) * Pts1[:, int(na)] + a * Pts1[:, int(na + 1)]
-    La2 = (1 - a) * Pts2[:, int(na-1)] + a * Pts2[:, int(na)]
-    La12 = (1 - a2) * Pts1[:, int(na2-1)] + a2 * Pts1[:, int(na2)]
-    La22 = (1 - a2) * Pts2[:, int(na2-1)] + a2 * Pts2[:, int(na2)]
-    Lb1 = (1 - b) * Pts1[:, int(nb-1)] + b * Pts1[:, int(nb)]
-    Lb2 = (1 - b) * Pts2[:, int(nb-1)] + b * Pts2[:, int(nb)]
-    Lb12 = (1 - b2) * Pts1[:, int(nb2-1)] + b2 * Pts1[:, int(nb2)]
-    Lb22 = (1 - b2) * Pts2[:, int(nb2-1)] + b2 * Pts2[:, int(nb2)]
+    La2 = (1 - a) * Pts2[:, int(na)] + a * Pts2[:, int(na+1)]
+    La12 = (1 - a2) * Pts1[:, int(na2)] + a2 * Pts1[:, int(na2+1)]
+    La22 = (1 - a2) * Pts2[:, int(na2)] + a2 * Pts2[:, int(na2+1)]
+    Lb1 = (1 - b) * Pts1[:, int(nb)] + b * Pts1[:, int(nb+1)]
+    Lb2 = (1 - b) * Pts2[:, int(nb)] + b * Pts2[:, int(nb+1)]
+    Lb12 = (1 - b2) * Pts1[:, int(nb2)] + b2 * Pts1[:, int(nb2+1)]
+    Lb22 = (1 - b2) * Pts2[:, int(nb2)] + b2 * Pts2[:, int(nb2+1)]
 
     mins = np.atleast_2d(np.min(M[[i, makker], 3:5], axis=0))
     maxs = np.atleast_2d(np.max(M[[i, makker], 3:5], axis=0))
@@ -70,14 +70,17 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
     b = M[islut, 4] - np.floor(M[islut, 4])
     
     col1 = La1
-    col2 = np.array([(1 - a) * P[:, int(n1)-1] + a * P[:, int(n1)]])
-    col3 = np.array([P[:,int(n1):int(n2-2)]])
-    col4 = np.array((1 - b) * P[:, int(n2 - 2)] + b * P[:, int(n2-1)])
+    col2 = np.array((1 - a) * P[:, int(n1)] + a * P[:, int(n1)+1])
+    if int(n1+1) == int(n2-1):
+        col3 = np.array([P[:, int(n1+1)]])
+    else:
+        col3 = np.array(P[:, int(n1+1):int(n2-1)])
+    col4 = np.array((1 - b) * P[:, int(n2 - 1)] + b * P[:, int(n2)])
     col5 = Lb2
-    #if len(col3) == 1:
-        #pts1 = np.concatenate([col1.reshape(-1,1), col2.reshape(-1,1), col4.reshape(-1,1), col5.reshape(-1,1)],axis=1)
-    #else:
-    pts1 = np.concatenate([col1.reshape(-1,1), col2.reshape(-1,1), col3.reshape(-1,1), col4.reshape(-1,1), col5.reshape(-1,1)],axis=1)
+    if len(col3) == 1:
+        pts1 = np.concatenate([col1.reshape(-1,1), col2.reshape(-1,1), col3.reshape(-1,1), col4.reshape(-1,1), col5.reshape(-1,1)],axis=1)
+    else:
+        pts1 = np.concatenate([col1.reshape(-1,1), col2.reshape(-1,1), col3, col4.reshape(-1,1), col5.reshape(-1,1)],axis=1)
 
     if M[islut, 3] < M[istart, 3]:
         n3 = np.floor(M[islut, 3])
@@ -85,22 +88,29 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
         a = M[islut, 3] - np.floor(M[islut, 3])
         b = M[istart, 3] - np.floor(M[istart, 3])
         
-        col1 = ((1 - a) * P[:, int(n3-1)] + a * P[:, int(n3)]).reshape(-1,1)
-        col2 = (P[:, int(n3):int(n4 - 1)])
-        col3 = ((1 - b) * P[:, int(n4 - 2)] + b * P[:, int(n4-1)]).reshape(-1,1)
+        col1 = ((1 - a) * P[:, int(n3)] + a * P[:, int(n3+1)]).reshape(-1,1)
+        if int(n3+1) == int(n4-1):
+            col2 = np.array([P[:, int(n3+1)]])
+        else:
+            col2 = (P[:, int(n3+1):int(n4)])
+        col3 = ((1 - b) * P[:, int(n4 - 1)] + b * P[:, int(n4)]).reshape(-1,1)
         if len(col2) == 1:
             pts2 = np.concatenate((col1, col3), axis=1)
         else: 
             pts2 = np.concatenate((col1, col2, col3), axis=1)
     else:
+        print("pts2 created here!", i, makker)
         n3 = np.floor(M[istart, 3])
         n4 = np.ceil(M[islut, 3])
         a = M[istart, 3] - np.floor(M[istart, 3])
         b = M[islut, 3] - np.floor(M[islut, 3])
 
-        col1 = ((1 - a) * P[:, int(n3-1)] + a * P[:, int(n3)]).reshape(-1,1)
-        col2 = (P[:, int(n3):int(n4 - 1)])
-        col3 = ((1 - b) * P[:, int(n4 - 2)] + b * P[:, int(n4-1)]).reshape(-1,1)
+        col1 = ((1 - a) * P[:, int(n3)] + a * P[:, int(n3+1)]).reshape(-1,1)
+        if int(n3+1) == int(n4-1):
+            col2 = np.array([P[:, int(n3+1)]])
+        else:
+            col2 = (P[:, int(n3+1):int(n4 - 1)])
+        col3 = ((1 - b) * P[:, int(n4 -  1)] + b * P[:, int(n4)]).reshape(-1,1)
         
         pts2 = np.concatenate((col1, col2, col3), axis=1)
         n = pts2.shape[1]
@@ -125,7 +135,7 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
 
     NbrTriangles = pts.shape[1] - 1
     P = P - np.tile(center, (1, P.shape[1]))
-    Lindex = np.concatenate((np.arange(0, int(n1-1)), np.arange(int(n2-1), int(n3 - 1)), np.arange(int(n4-1), P.shape[1] - 1)))
+    Lindex = np.concatenate((np.arange(0, int(n1)), np.arange(int(n2), int(n3 - 1)), np.arange(int(n4), P.shape[1] - 1)))
     Lstart = P[:, Lindex]
     Lend = P[:, 1 + Lindex]
 

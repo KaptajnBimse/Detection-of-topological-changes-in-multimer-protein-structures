@@ -4,7 +4,7 @@ import d_points2line as dpl
 
 def IsContractableType1ReparametrizationParallel(M, M0, M1, i, P, P1, maxlen):
     FindNumberOfOmega1_2Obstructions = 0
-    i = int(i)-1 # i is 1-indexed in the original code 
+    #i = int(i)-1 # i is 1-indexed in the original code 
     sav = M0[i, 7]
     P = ((1 - sav) * P + sav * P1).T
     mint1 = M0[i, 4]
@@ -28,7 +28,7 @@ def IsContractableType1ReparametrizationParallel(M, M0, M1, i, P, P1, maxlen):
     a = mint - n1
     b = maxt - np.floor(M[i, 3])
 
-    pts = np.column_stack(((1 - a) * P[:, n1-1] + a * P[:, n1], P[:, n1 + 0:(n2-1)], (1 - b) * P[:, n2-2] + b * P[:, n2-1]))
+    pts = np.column_stack(((1 - a) * P[:, n1] + a * P[:, n1+1], P[:, (n1+1):(n2)], (1 - b) * P[:, n2-1] + b * P[:, n2]))
     if np.sum((pts[:, 0] - pts[:, -1]) ** 2) > 10**(-15):
         pointdistance = np.sum((pts[:, 0] - pts[:, -1]) ** 2) ** 0.5
         print('WARNINGNoIntersection distance', pointdistance)
