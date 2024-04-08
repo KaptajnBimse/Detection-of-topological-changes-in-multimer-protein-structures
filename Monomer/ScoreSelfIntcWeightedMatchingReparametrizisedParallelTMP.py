@@ -129,6 +129,7 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
         O1[j,:] = tmp
  # iteration 1 mangler, og fejl på næstsidste iteration (og sidste)
     paircount = 0
+
     O2 = np.zeros((Nbr*(Nbr-1)//2, 4))
     for i in range(Nbr-1):
         for j in range(i+1, Nbr):
@@ -136,16 +137,15 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
                 if not (M[j,3] < M[i,4] or M[j,4] > M[i,3]):
                     tmp = IsContractableType2ReparametrizationParallel(M, M0, M1, i, j, P, P1, maxlen)
                     if tmp[0]:
-                        print(i,j)
                         paircount += 1
                         O2[paircount-1,:] = [i, j] + tmp # Indices of self-intersections saved in python format (0-indexing)
-
+    
     O2 = O2[:paircount,:]
 
     epsilon = 0.5*(np.sum(O1[:,0]) + np.sum(O2[:,2]))**(-1)
     WVertex = epsilon*O1[:,0] + (O1[:,0] == 0)
-    print(O2)
-    Wedge = -epsilon*O2[:,2] + WVertex[O2[:,0]] + WVertex[O2[:,1]]
+    int_O2 = O2[:,0:2].astype(int)
+    Wedge = -epsilon*O2[:,2] + WVertex[int_O2[:,0]] + WVertex[int_O2[:,1]]
 
     edgeData = np.column_stack((O2[:,0:2], Wedge))
     result = np.array(maxWeightMatching(edgeData)[0:])
@@ -158,20 +158,22 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
             if result[i] < i:
                 edge = np.where((O2[:,0] == result[i]) & (O2[:,1] == i))[0]
                 cost2var = O2[edge,2:4]
-                rows = cost2var.shape[0]
+                #rows = cost2var.shape[0]
                 
                 if cost2.shape[0] > cost2var.shape[0]:
                     rows = cost2.shape[0]
-                    for i in range(rows):
-                        cost2[i,:] = cost2[i,:] + cost2var
+                    for j in range(rows):
+                        cost2[j,:] = cost2[j,:] + cost2var
                 else:
                     rows = cost2var.shape[0]
-                    for i in range(rows):
-                        cost2var[i,:] = cost2var[i,:] + cost2
+                    for k in range(rows):
+                        cost2var[k,:] = cost2var[k,:] + cost2
+                
                 cost2 = cost2var
+                cost2var = O2[edge,2:4]
                 NbrOmega2 += 1
                 maxCost2 = np.maximum(maxCost2, cost2var)
-        else: # IKKE GENNEMTJEKKET!!
+        else:
             if WVertex[i] < 1:
                 cost1var = O1[i,:]
                 cost1 += cost1var
@@ -202,8 +204,6 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     NbrEssentialGapGap = np.sum(GapGap[Essentials])
     NbrGapGapTotal = np.sum(GapGap)
 
-
-    
     PerformEndDeformations = 0
 
     if PerformEndDeformations == 0:
@@ -223,51 +223,6 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
                   NbrEssentialAlignedAligned, NbrAlignedAlignedTotal,
                   NbrEssentialAlignedGap, NbrAlignedGapTotal, NbrEssentialGapGap,
                   NbrGapGapTotal]
-    # else:
-    #     if NbrEssential == 0:
-    #         RMSsum = np.sum(np.sqrt(np.sum((P - P1) ** 2, axis=1)))
-    #         ud = [NbrOmega1, cost1, maxCost1, NbrOmega2, cost2, maxCost2, 0, RMSsum, 0, 0, 0,
-    #               sumsignraw, 0, NbrEssentialAlignedAligned, NbrAlignedAlignedTotal,
-    #               NbrEssentialAlignedGap, NbrAlignedGapTotal, NbrEssentialGapGap,
-    #               NbrGapGapTotal]
-    #         ud_essentials = np.zeros((0, 2))
-        # else:
-        #     M = M[Essentials, :]
-        #     a, b = ApproxCheapestEndContraction(M, len)
-        #     ud_essentials = M[:, [1, 2]]
-        #     enddeformations = 0
-        #     P1orgWindow = P1org[RePar1[0, 0]:RePar1[0, -1], :]  # cutting the aligned windows
-        #     P2orgWindow = P2org[RePar2[0, 0]:RePar2[0, -1], :]
-
-        #     if a > 1:
-        #         a1 = fnval(sp1, a)
-        #         a2 = fnval(sp2, a)
-        #         enddeformations += ContractStart(a1 - RePar1[0, 0] + 1, P1orgWindow.T) + \
-        #                            ContractStart(a2 - RePar2[0, 0] + 1, P2orgWindow.T)
-        #     if b < len:
-        #         b1 = fnval(sp1, b)
-        #         b2 = fnval(sp2, b)
-        #         enddeformations += ContractEnd(b1 - RePar1[0, 0] + 1, P1orgWindow.T) + \
-        #                            ContractEnd(b2 - RePar2[0, 0] + 1, P2orgWindow.T)
-
-            # sa = a - np.floor(a)
-            # sb = b - np.floor(b)
-            # Pa = (1 - sa) * P[np.floor(a), :] + sa * P[np.ceil(a), :]
-            # P1a = (1 - sa) * P1[np.floor(a), :] + sa * P1[np.ceil(a), :]
-            # Pb = (1 - sb) * P[np.floor(b), :] + sb * P[np.ceil(b), :]
-            # P1b = (1 - sb) * P1[np.floor(b), :] + sb * P1[np.ceil(b), :]
-            # RMSsum = np.sum(np.sqrt(np.sum((P[np.ceil(a):np.floor(b), :] - P1[np.ceil(a):np.floor(b), :]) ** 2, axis=1)))
-            # EndeFlytning = distPP(Pa.T, P1a.T) * np.floor(a) + distPP(Pb.T, P1b.T) * (len - np.floor(b))
-
-            # antal = M.shape[0]
-            # dybde = np.zeros((antal, 1))
-            # for i in range(antal):
-            #     dybde[i, 0] = np.sum((M[:, 5] <= M[i, 5]) * (M[i, 5] <= M[:, 4]))
-            # ud = [NbrOmega1, cost1, maxCost1, NbrOmega2, cost2, maxCost2, enddeformations,
-            #       RMSsum, EndeFlytning, np.max(dybde), antal, sumsignraw, np.sum(M[:, 6]),
-            #       NbrEssentialAlignedAligned, NbrAlignedAlignedTotal, NbrEssentialAlignedGap,
-            #       NbrAlignedGapTotal, NbrEssentialGapGap, NbrGapGapTotal]
-            
     
     return ud, ud_essentials, ud_M
 

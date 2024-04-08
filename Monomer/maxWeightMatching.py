@@ -38,7 +38,6 @@ CHECK_DELTA = False
 # Check optimality of solution before returning; only works on integer weights.
 CHECK_OPTIMUM = True
 
-
 def maxWeightMatching(edges, maxcardinality=False):
     """Compute a maximum-weighted matching in the general undirected
     weighted graph given by "edges".  If "maxcardinality" is true,
@@ -212,6 +211,7 @@ def maxWeightMatching(edges, maxcardinality=False):
     # and record the fact that w was reached through the edge with
     # remote endpoint p.
     def assignLabel(w, t, p):
+        w = int(w)
         if DEBUG: DEBUG('assignLabel(%d,%d,%d)' % (w, t, p))
         b = inblossom[w]
         assert label[w] == 0 and label[b] == 0
@@ -233,6 +233,8 @@ def maxWeightMatching(edges, maxcardinality=False):
     # Trace back from vertices v and w to discover either a new blossom
     # or an augmenting path. Return the base vertex of the new blossom or -1.
     def scanBlossom(v, w):
+        w = int(w)
+        v = int(v)
         if DEBUG: DEBUG('scanBlossom(%d,%d)' % (v, w))
         # Trace back from v and w, placing breadcrumbs as we go.
         path = [ ]
@@ -272,6 +274,8 @@ def maxWeightMatching(edges, maxcardinality=False):
     # variable to zero; relabel its T-vertices to S and add them to the queue.
     def addBlossom(base, k):
         (v, w, wt) = edges[k]
+        w = int(w)
+        v = int(v)
         bb = inblossom[base]
         bv = inblossom[v]
         bw = inblossom[w]
@@ -448,6 +452,7 @@ def maxWeightMatching(edges, maxcardinality=False):
     # Swap matched/unmatched edges over an alternating path through blossom b
     # between vertex v and the base vertex. Keep blossom bookkeeping consistent.
     def augmentBlossom(b, v):
+        v = int(v)
         if DEBUG: DEBUG('augmentBlossom(%d,%d)' % (b, v))
         # Bubble up through the blossom tree from vertex v to an immediate
         # sub-blossom of b.
@@ -496,6 +501,8 @@ def maxWeightMatching(edges, maxcardinality=False):
     # connects a pair of S vertices.
     def augmentMatching(k):
         (v, w, wt) = edges[k]
+        w = int(w)
+        v = int(v)
         if DEBUG: DEBUG('augmentMatching(%d) (v=%d w=%d)' % (k, v, w))
         if DEBUG: DEBUG('PAIR %d %d (k=%d)' % (v, w, k))
         for (s, p) in ((v, 2*k+1), (w, 2*k)):
@@ -548,6 +555,8 @@ def maxWeightMatching(edges, maxcardinality=False):
         # 1. all matched edges have zero slack;
         for k in range(nedge):
             (i, j, wt) = edges[k]
+            i = int(i)
+            j = int(j)
             s = dualvar[int(i)] + dualvar[int(j)] - 2 * wt
             iblossoms = [ i ]
             jblossoms = [ j ]
@@ -676,6 +685,7 @@ def maxWeightMatching(edges, maxcardinality=False):
                 for p in neighbend[v]:
                     k = p // 2
                     w = endpoint[p]
+                    w = int(w)
                     # w is a neighbour to v
                     if inblossom[v] == inblossom[int(w)]:
                         # this edge is internal to a blossom; ignore it
@@ -713,17 +723,17 @@ def maxWeightMatching(edges, maxcardinality=False):
                             assert label[inblossom[w]] == 2
                             label[w] = 2
                             labelend[w] = p ^ 1
-                    elif label[inblossom[w]] == 1:
+                    elif label[inblossom[int(w)]] == 1:
                         # keep track of the least-slack non-allowable edge to
                         # a different S-blossom.
                         b = inblossom[v]
                         if bestedge[b] == -1 or kslack < slack(bestedge[b]):
                             bestedge[b] = k
-                    elif label[w] == 0:
+                    elif label[int(w)] == 0:
                         # w is a free vertex (or an unreached vertex inside
                         # a T-blossom) but we can not reach it yet;
                         # keep track of the least-slack edge that reaches w.
-                        if bestedge[w] == -1 or kslack < slack(bestedge[w]):
+                        if bestedge[int(w)] == -1 or kslack < slack(bestedge[w]):
                             bestedge[w] = k
 
             if augmented:
@@ -815,6 +825,8 @@ def maxWeightMatching(edges, maxcardinality=False):
                 # Use the least-slack edge to continue the search.
                 allowedge[deltaedge] = True
                 (i, j, wt) = edges[deltaedge]
+                i = int(i)
+                j = int(j)
                 if label[inblossom[i]] == 0:
                     i, j = j, i
                 assert label[inblossom[i]] == 1
@@ -823,6 +835,8 @@ def maxWeightMatching(edges, maxcardinality=False):
                 # Use the least-slack edge to continue the search.
                 allowedge[deltaedge] = True
                 (i, j, wt) = edges[deltaedge]
+                i = int(i)
+                j = int(j)
                 assert label[inblossom[i]] == 1
                 queue.append(i)
             elif deltatype == 4:
