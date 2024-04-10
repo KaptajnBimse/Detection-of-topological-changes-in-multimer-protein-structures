@@ -110,6 +110,17 @@ P1org = np.loadtxt('Monomer/Test txt/NewTest/P1org.txt')
 P2org = np.loadtxt('Monomer/Test txt/NewTest/P2org.txt')
 NresAverage = 159
 
+
+# P1 = np.loadtxt('Monomer/Test txt/Omega2a_b/P1.txt')
+# P2 = np.loadtxt('Monomer/Test txt/Omega2a_b/P2.txt')
+# RePar1 = np.loadtxt('Monomer/Test txt/Omega2a_b/RePar1.txt')
+# RePar2 = np.loadtxt('Monomer/Test txt/Omega2a_b/RePar2.txt')
+# IsAligned = np.loadtxt('Monomer/Test txt/Omega2a_b/IsAligned.txt')
+# P1org = np.loadtxt('Monomer/Test txt/Omega2a_b/P1org.txt')
+# P2org = np.loadtxt('Monomer/Test txt/Omega2a_b/P2org.txt')
+# NresAverage = np.loadtxt('Monomer/Test txt/Omega2a_b/NresAverage.txt')
+
+
 options_fig = {
     'MaxLength': 15,
     'dmax': 10,
