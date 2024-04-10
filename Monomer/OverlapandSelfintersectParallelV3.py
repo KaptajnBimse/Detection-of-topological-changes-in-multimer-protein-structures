@@ -101,14 +101,15 @@ def OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, 
 
     ud = [Outs, rms1, rms1Aligned, rms2, rms2Aligned, GDT_TS, TM, sumoverlap, PotSelfIntc, sumselfintc, AlignmentMetaDataOut]
 
-P1 = np.loadtxt('Monomer/Test txt/NewTest/P1.txt')
-P2 = np.loadtxt('Monomer/Test txt/NewTest/P2.txt')
-RePar1 = np.loadtxt('Monomer/Test txt/NewTest/RePar1.txt')
-RePar2 = np.loadtxt('Monomer/Test txt/NewTest/RePar2.txt')
-IsAligned = np.loadtxt('Monomer/Test txt/NewTest/IsAligned.txt')
-P1org = np.loadtxt('Monomer/Test txt/NewTest/P1org.txt')
-P2org = np.loadtxt('Monomer/Test txt/NewTest/P2org.txt')
-NresAverage = 159
+P1 = np.loadtxt('Monomer/Test txt/TestEssential/P1.txt')
+P2 = np.loadtxt('Monomer/Test txt/TestEssential/P2.txt')
+RePar1 = np.loadtxt('Monomer/Test txt/TestEssential/RePar1.txt')
+RePar2 = np.loadtxt('Monomer/Test txt/TestEssential/RePar2.txt')
+IsAligned = np.loadtxt('Monomer/Test txt/TestEssential/IsAligned.txt')
+P1org = np.loadtxt('Monomer/Test txt/TestEssential/P1org.txt')
+P2org = np.loadtxt('Monomer/Test txt/TestEssential/P2org.txt')
+NresAverage = np.loadtxt('Monomer/Test txt/TestEssential/NresAverage.txt')
+
 
 
 # P1 = np.loadtxt('Monomer/Test txt/Omega2a_b/P1.txt')
