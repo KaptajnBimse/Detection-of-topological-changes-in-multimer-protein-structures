@@ -66,23 +66,15 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     f = data[sorted_indices]
     
     M = np.column_stack((A-B, A, B, A+d, B+e, C))
-    # Laver 1-indexering på søjle 3 og 4
-    #M[:,3] += 1
-    #M[:,4] += 1
     M = np.column_stack((M, 0.001*(3.8**2*np.min([(M[:,4]-1)**2, (M[:,3]-M[:,4])**2/(4*np.pi), (len-M[:,3])**2], axis=0)), f))
     ud_M = M
-    #ud_M[:,3] += 1 # Vi lægger 1 til for at få 1-indexing
-    #ud_M[:,4] += 1 # Vi lægger 1 til for at få 1-indexing
     M0 = M.copy()
     M1 = M.copy()
-    # noget galt med næstsidste søjle i M helt fra starten af!
     n1 = np.atleast_2d(RePar1).shape[1]
-    # sp1 = spmak(np.arange(n1+2), RePar1[0])
     tck = splrep(np.arange(n1), RePar1, k = 3)
     pp = PPoly.from_spline(tck)
     
     n2 = np.atleast_2d(RePar2).shape[1]
-    # sp1 = spmak(np.arange(n1+2), RePar1[0])
     tck = splrep(np.arange(n2), RePar2, k = 3)
     pp2 = PPoly.from_spline(tck)
     
@@ -127,7 +119,6 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
             if enddist < maxendcontraction:
                 tmp = [PriceEstEndContraction(enddist), enddist*2]
         O1[j,:] = tmp
- # iteration 1 mangler, og fejl på næstsidste iteration (og sidste)
     paircount = 0
 
     O2 = np.zeros((Nbr*(Nbr-1)//2, 4))
