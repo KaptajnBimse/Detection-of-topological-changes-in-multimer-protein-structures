@@ -120,76 +120,77 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
     # Show plot
     fig.show()
 
-    trace1_copy = go.Scatter3d(
-        x=P[:, 0],
-        y=P[:, 1],
-        z=P[:, 2],
-        mode='lines',
-        line=dict(color='blue', width=9),
-        name='Chain 1',
-        legendgroup= 'Chain 1',
-        showlegend= False
-    )
+    if ud_essensials.shape[0] > 0:
+        trace1_copy = go.Scatter3d(
+            x=P[:, 0],
+            y=P[:, 1],
+            z=P[:, 2],
+            mode='lines',
+            line=dict(color='blue', width=9),
+            name='Chain 1',
+            legendgroup= 'Chain 1',
+            showlegend= False
+        )
 
-    trace2_copy = go.Scatter3d(
-        x=P1[:, 0],
-        y=P1[:, 1],
-        z=P1[:, 2],
-        mode='lines',
-        line=dict(color='red', width=9),
-        name='Chain 2',
-        legendgroup= 'Chain 2',
-        showlegend= False
-    )
+        trace2_copy = go.Scatter3d(
+            x=P1[:, 0],
+            y=P1[:, 1],
+            z=P1[:, 2],
+            mode='lines',
+            line=dict(color='red', width=9),
+            name='Chain 2',
+            legendgroup= 'Chain 2',
+            showlegend= False
+        )
 
 
 
-    index = ((np.arange(ud_essensials[:,0]-10,ud_essensials[:,0]+10).astype(int),np.arange(ud_essensials[:,1]-10,ud_essensials[:,1]+10).astype(int)))
-    print(index)
+        index = ((np.arange(ud_essensials[:,0]-10,ud_essensials[:,0]+10).astype(int),np.arange(ud_essensials[:,1]-10,ud_essensials[:,1]+10).astype(int)))
+        print(index)
 
-    trace1.x = trace1.x[index[0]]
-    trace1.y = trace1.y[index[0]]
-    trace1.z = trace1.z[index[0]]
+        trace1.x = trace1.x[index[0]]
+        trace1.y = trace1.y[index[0]]
+        trace1.z = trace1.z[index[0]]
 
-    trace1_copy.x = trace1_copy.x[index[1]]
-    trace1_copy.y = trace1_copy.y[index[1]]
-    trace1_copy.z = trace1_copy.z[index[1]]
+        trace1_copy.x = trace1_copy.x[index[1]]
+        trace1_copy.y = trace1_copy.y[index[1]]
+        trace1_copy.z = trace1_copy.z[index[1]]
 
-    trace2.x = trace2.x[index[0]]
-    trace2.y = trace2.y[index[0]]
-    trace2.z = trace2.z[index[0]]
-    trace2_copy.x = trace2_copy.x[index[1]]
-    trace2_copy.y = trace2_copy.y[index[1]]
-    trace2_copy.z = trace2_copy.z[index[1]]
+        trace2.x = trace2.x[index[0]]
+        trace2.y = trace2.y[index[0]]
+        trace2.z = trace2.z[index[0]]
+        trace2_copy.x = trace2_copy.x[index[1]]
+        trace2_copy.y = trace2_copy.y[index[1]]
+        trace2_copy.z = trace2_copy.z[index[1]]
 
-    for i in range(len(traceInterPol)):
-        traceInterPol[i].x = traceInterPol[i].x[index[0]]
-        traceInterPol[i].y = traceInterPol[i].y[index[0]]
-        traceInterPol[i].z = traceInterPol[i].z[index[0]]
+        for i in range(len(traceInterPol)):
+            traceInterPol[i].x = traceInterPol[i].x[index[0]]
+            traceInterPol[i].y = traceInterPol[i].y[index[0]]
+            traceInterPol[i].z = traceInterPol[i].z[index[0]]
 
-        traceInterPol_copy[i].x = traceInterPol_copy[i].x[index[1]]
-        traceInterPol_copy[i].y = traceInterPol_copy[i].y[index[1]]
-        traceInterPol_copy[i].z = traceInterPol_copy[i].z[index[1]]
-    
-    # Create figure
-    fig = go.Figure(data=[trace1, trace2, trace1_copy, trace2_copy] + traceInterPol+traceInterPol_copy +Essential_residues)
+            traceInterPol_copy[i].x = traceInterPol_copy[i].x[index[1]]
+            traceInterPol_copy[i].y = traceInterPol_copy[i].y[index[1]]
+            traceInterPol_copy[i].z = traceInterPol_copy[i].z[index[1]]
+        
+        # Create figure
+        fig = go.Figure(data=[trace1, trace2, trace1_copy, trace2_copy] + traceInterPol+traceInterPol_copy +Essential_residues)
 
-    # Set layout
-    fig.update_layout(
-        scene=dict(
-            xaxis=dict(title='X Label'),
-            yaxis=dict(title='Y Label'),
-            zaxis=dict(title='Z Label'),
-            bgcolor='white',
-            camera=dict(
-                up=dict(x=0, y=0, z=1),
-                center=dict(x=0, y=0, z=0),
-                eye=dict(x=-1.25, y=-1.25, z=1)
-            )
-        ),
-    )
-    # Show plot
-    fig.show()
+        # Set layout
+        fig.update_layout(
+            scene=dict(
+                xaxis=dict(title='X Label'),
+                yaxis=dict(title='Y Label'),
+                zaxis=dict(title='Z Label'),
+                bgcolor='white',
+                camera=dict(
+                    up=dict(x=0, y=0, z=1),
+                    center=dict(x=0, y=0, z=0),
+                    eye=dict(x=-1.25, y=-1.25, z=1)
+                )
+            ),
+        )
+        # Show plot
+        fig.show()
 
 
 # RePar1 = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeSelfIntcFigureV3/RePar1.txt")

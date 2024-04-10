@@ -41,6 +41,22 @@ def two_PDBP_to_seq(PDB1_filename, PDB2_filename):
     ca2 = [(atom.full_id[2], atom.full_id[3][1], *atom.get_coord()) for atom in s2.get_atoms() if atom.full_id[4][0] == "CA"]
     df2 = pd.DataFrame(ca2, columns=["chain", "residue_number", "x", "y", "z"])
 
+    x_mean = df1["x"].mean()
+    y_mean = df1["y"].mean()
+    z_mean = df1["z"].mean()
+
+    df1["x"] = df1["x"] - x_mean
+    df1["y"] = df1["y"] - y_mean
+    df1["z"] = df1["z"] - z_mean
+
+    x_mean = df2["x"].mean()
+    y_mean = df2["y"].mean()
+    z_mean = df2["z"].mean()
+
+    df2["x"] = df2["x"] - x_mean
+    df2["y"] = df2["y"] - y_mean
+    df2["z"] = df2["z"] - z_mean
+
     df1["P"] = df1[["x", "y", "z"]].values.tolist()
     df2["P"] = df2[["x", "y", "z"]].values.tolist()
 
