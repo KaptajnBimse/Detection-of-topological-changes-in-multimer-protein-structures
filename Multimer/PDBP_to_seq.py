@@ -26,10 +26,10 @@ def one_PDB_to_seq(PDB_filename):
         seq1["Chain_" + df1["chain"].unique()[i]] = pp.get_sequence()
         i += 1
     i = 0
-    return P1, seq1
+    return P1, seq1, s1
 
 
-def two_PDBP_to_seq(PDB1_filename, PDB2_filename):
+def two_PDB_to_seq(PDB1_filename, PDB2_filename):
 
     p = PDBParser(QUIET=True)
     s1 = p.get_structure("s1", PDB1_filename)

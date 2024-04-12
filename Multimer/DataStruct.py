@@ -6,9 +6,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from Bio.PDB.Polypeptide import PPBuilder
 from Bio import Align
-from PDBP_to_seq import two_PDBP_to_seq
+from PDBP_to_seq import two_PDB_to_seq, one_PDB_to_seq
 
-P1, P2, seq1, seq2, ref_structure, sample_structure= two_PDBP_to_seq("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/T1026.pdb", "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/T1026TS015_5")
+P1, P2, seq1, seq2, ref_structure, sample_structure= two_PDB_to_seq("Multimer/examples/Multimer PDB/1y8k.pdb", "Multimer/examples/Multimer PDB/1y8i.pdb")
 
 aligner = Align.PairwiseAligner()
 
@@ -17,7 +17,6 @@ alignments = aligner.align(seq1["Chain_ "], seq2["Chain_ "])
 # for alignment in sorted(alignments):
 
 #     print("Score = %.1f:" % alignment.score)
-
 #     print(alignment)
 
 align = sorted(alignments)[0]
@@ -89,34 +88,34 @@ for chain in df["chain"].unique():
 
 
 
-#Plot P1, P2 and P in 3d using plotly
+# #Plot P1, P2 and P in 3d using plotly
 import plotly.graph_objects as go
 
 
-Truep1 = np.loadtxt("Multimer/Test txt/TestAlign/P1.txt")
-Truep2 = np.loadtxt("Multimer/Test txt/TestAlign/P2.txt")
+# Truep1 = np.loadtxt("Multimer/Test txt/TestAlign/P1.txt")
+# Truep2 = np.loadtxt("Multimer/Test txt/TestAlign/P2.txt")
 
-trace1 = go.Scatter3d(
-        x=Truep1[:, 0],
-        y=Truep1[:, 1],
-        z=Truep1[:, 2],
-        mode='lines',
-        line=dict(width=9),
-        name='True 1',
-        legendgroup= 'Chain 1',
-    )
+# trace1 = go.Scatter3d(
+#         x=Truep1[:, 0],
+#         y=Truep1[:, 1],
+#         z=Truep1[:, 2],
+#         mode='lines',
+#         line=dict(width=9),
+#         name='True 1',
+#         legendgroup= 'Chain 1',
+#     )
 
-trace2 = go.Scatter3d(
-        x=Truep2[:, 0],
-        y=Truep2[:, 1],
-        z=Truep2[:, 2],
-        mode='lines',
-        line=dict( width=9),
-        name='True 1',
-        legendgroup= 'Chain 1',
-    )
+# trace2 = go.Scatter3d(
+#         x=Truep2[:, 0],
+#         y=Truep2[:, 1],
+#         z=Truep2[:, 2],
+#         mode='lines',
+#         line=dict( width=9),
+#         name='True 1',
+#         legendgroup= 'Chain 1',
+#     )
 
-fig = go.Figure(data=[trace2])
+fig = go.Figure()
 
 for chain in P1.keys():
     fig.add_trace(go.Scatter3d(x=[i[0] for i in P1[chain]], y=[i[1] for i in P1[chain]], z=[i[2] for i in P1[chain]], mode='lines', line=dict(width=9), name=chain))
@@ -124,8 +123,8 @@ for chain in P1.keys():
 # for chain in P2.keys():
 #     fig.add_trace(go.Scatter3d(x=[i[0] for i in P2[chain]], y=[i[1] for i in P2[chain]], z=[i[2] for i in P2[chain]], mode='lines', line=dict(width=9), name=chain))
 
-# for chain in P.keys():
-#     fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain]], y=[i[1] for i in P[chain]], z=[i[2] for i in P[chain]], mode='lines', line=dict(width=9), name="Aligned "+chain))
+for chain in P.keys():
+    fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain]], y=[i[1] for i in P[chain]], z=[i[2] for i in P[chain]], mode='lines', line=dict(width=9), name="Aligned "+chain))
 
 
 
