@@ -8,6 +8,7 @@ from Bio.PDB.Polypeptide import PPBuilder, CaPPBuilder
 from Bio import Align
 from PDBP_to_seq import two_PDB_to_seq, one_PDB_to_seq
 import itertools
+from Align_3D import Align_3D
 
 def find_increasing_subarrays(arr):
     # Initialize the current length and max length
@@ -71,9 +72,10 @@ for i in range(nr_chains):
 # permutations = list(itertools.permutations(chain_name2))
 
 # # Function to calculate distance matrix for a permutation
-# def distance_matrix_for_permutation(perm):
-#     best_perm = None
-#     sz = np.inf
+# def distance_matrix_for_permutation(perm,tol):
+    # best_perm = None
+    # sz = np.inf
+    # best_perms = []
 #     for letter in perm:
 #         for i in range(nr_chains):
 #             for j in range(nr_chains):
@@ -83,35 +85,42 @@ for i in range(nr_chains):
 #                     distance_matrix2[i, j] = np.linalg.norm(np.array(chain_com2[letter[i]]) - np.array(chain_com2[letter[j]]))
 #                     distance_matrix2[j, i] = distance_matrix2[i, j]
 #         diff = np.abs(distance_matrix1 - distance_matrix2)
-#         if sz > np.linalg.norm(diff):
-#             sz = np.linalg.norm(diff)
-#             best_perm = letter
-#     return best_perm
+#         if (1/(1+tol))*sz > norm_diff:
+            # sz = norm_diff
+            # best_perms.append(letter)
+#     return best_perms
 # best_perm = distance_matrix_for_permutation(permutations)
 
 permutations = list(itertools.permutations(chain_name2))
 
-# Function to calculate distance matrix for a permutation
-def distance_matrix_for_permutation(perm,tol):
-    best_perm = None
-    sz = np.inf
-    best_perms = []
-    for letter in perm:
-        for i in range(nr_chains):
-            for j in range(nr_chains):
-                if chain_name2[i] == chain_name2[j]:
-                    distance_matrix2[i, j] = 0
-                else:
-                    distance_matrix2[i, j] = np.linalg.norm(np.array(chain_com2[letter[i]]) - np.array(chain_com2[letter[j]]))
-                    distance_matrix2[j, i] = distance_matrix2[i, j]
-        diff = np.abs(distance_matrix1 - distance_matrix2)
-        norm_diff = np.linalg.norm(diff)
-        if (1/(1+tol))*sz > norm_diff:
-            sz = norm_diff
-            best_perms.append(letter)
-    return best_perms
+i = 0
+# Creating a NumPy array with the same length as lists and 3 columns
+com_array = np.zeros((len(chain_com1), 3))
 
-best_perms = distance_matrix_for_permutation(permutations,0.1)
+for chain in chain_com1.keys():
+    # Populating the array with values from lists
+    for j in range(len(chain_com1[chain])):
+        com_array[i,j] = chain_com1[chain][j]
+    i += 1
+
+# Function to calculate distance matrix for a permutation
+def distance_matrix_for_permutation(perm):
+    best_perm = None
+    min_RMSD = np.inf
+    for letter in perm:
+        com_array2 = np.zeros((len(chain_com2), 3))
+        for chain in letter:
+            for i in range(len(chain_com2)):
+                for j in range(len(chain_com2[chain])):
+                    com_array2[i,j] = chain_com2[chain][j]
+        #reordered_chain_com2 = {l: chain_com2[l] for l in letter}
+        transformed_pts, RMSD = Align_3D(np.array(com_array2), np.array(com_array))
+        if min_RMSD > RMSD:
+            min_RMSD = RMSD
+            best_perm = letter
+    return best_perm
+
+best_perms = distance_matrix_for_permutation(permutations)
 
 
 # bestemme massemidtpunkt for hver kæde i query og target hexamer.
