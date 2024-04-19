@@ -33,7 +33,7 @@ def find_increasing_subarrays(arr):
 
 
 #P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2= two_PDB_to_seq("examples/Multimer PDB/CRUA_hexamer_positive.pdb", "examples/Multimer PDB/CRU1_hexamer_negative.pdb")
-P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2= two_PDB_to_seq("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
+P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_com1, chain_com2= two_PDB_to_seq("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
 , "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
 )
 
@@ -41,9 +41,9 @@ chain_name1 = list(seq1.keys())
 chain_name2 = list(seq2.keys())
 
 
-# ------------------------------
-#new_name = {"Chain_A": "Chain_D", "Chain_B": "Chain_E", "Chain_C": "Chain_B", "Chain_D": "Chain_F", "Chain_E": "Chain_C", "Chain_F": "Chain_A"}
-new_name = {"Chain_A": "Chain_B", "Chain_B": "Chain_D", "Chain_C": "Chain_A", "Chain_D": "Chain_C", "Chain_E": "Chain_F", "Chain_F": "Chain_E"}
+# # ------------------------------
+new_name = {"Chain_A": "Chain_B", "Chain_B": "Chain_A", "Chain_C": "Chain_D", "Chain_D": "Chain_C", "Chain_E": "Chain_F", "Chain_F": "Chain_E"}
+#new_name = {"Chain_A": "Chain_B", "Chain_B": "Chain_D", "Chain_C": "Chain_A", "Chain_D": "Chain_C", "Chain_E": "Chain_F", "Chain_F": "Chain_E"}
 
 
 seq2 = dict((new_name[key], value) for (key, value) in seq2.items())
@@ -72,8 +72,8 @@ for model in sample_structure:
 
 renames2 = {
     "1": "B",
-    "2": "D",
-    "3": "A",
+    "2": "A",
+    "3": "D",
     "4": "C",
     "5": "F",
     "6": "E",
@@ -82,7 +82,7 @@ renames2 = {
 for model in sample_structure:
     for chain in model:
         old_name = chain.get_id()
-        new_name = renames.get(old_name)
+        new_name = renames2.get(old_name)
         if new_name:
             print(f"renaming chain {old_name} to {new_name}")
             chain.id = new_name
@@ -90,6 +90,9 @@ for model in sample_structure:
             print(f"keeping chain name {old_name}")
 
 # ------------------------------
+
+chain_name1 = list(seq1.keys())
+chain_name2 = list(seq2.keys())
 
 aligner = Align.PairwiseAligner()
 
@@ -229,6 +232,7 @@ for key in P:
 # Lav repar
 
 
+
 # #Plot P1, P2 and P in 3d using plotly
 import plotly.graph_objects as go
 
@@ -259,13 +263,13 @@ import plotly.graph_objects as go
 fig = go.Figure()
 
 for chain in P1.keys():
-    fig.add_trace(go.Scatter3d(x=[i[0] for i in P1[chain]], y=[i[1] for i in P1[chain]], z=[i[2] for i in P1[chain]], mode='lines', line=dict(width=9), name=chain))
+    fig.add_trace(go.Scatter3d(x=[i[0] for i in P1[chain]], y=[i[1] for i in P1[chain]], z=[i[2] for i in P1[chain]], mode='lines', line=dict(width=9, color = "red"), name=chain))
 
 # for chain in P2.keys():
 #     fig.add_trace(go.Scatter3d(x=[i[0] for i in P2[chain]], y=[i[1] for i in P2[chain]], z=[i[2] for i in P2[chain]], mode='lines', line=dict(width=9), name=chain))
 
 for chain in P.keys():
-    fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain]], y=[i[1] for i in P[chain]], z=[i[2] for i in P[chain]], mode='lines', line=dict(width=9), name="Aligned "+chain))
+    fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain]], y=[i[1] for i in P[chain]], z=[i[2] for i in P[chain]], mode='lines', line=dict(width=9,color = 'blue'), name="Aligned "+chain))
 
 
 
