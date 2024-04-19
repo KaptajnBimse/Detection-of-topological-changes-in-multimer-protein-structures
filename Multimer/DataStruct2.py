@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from Bio.PDB.Polypeptide import PPBuilder, CaPPBuilder
 from Bio import Align
 from PDBP_to_seq import two_PDB_to_seq, one_PDB_to_seq
+import itertools
 
 def find_increasing_subarrays(arr):
     # Initialize the current length and max length
@@ -38,6 +39,7 @@ chain_name1 = list(seq1.keys())
 chain_name2 = list(seq2.keys())
 
 distance_matrix1 = np.zeros((len(chain_name1), len(chain_name1)))
+distance_matrix2 = np.zeros((len(chain_name2), len(chain_name2)))
 nr_chains = len(chain_name1)
 
 for i in range(nr_chains):
@@ -47,33 +49,69 @@ for i in range(nr_chains):
         else:
             distance_matrix1[i, j] = np.linalg.norm(np.array(chain_com1[chain_name1[i]]) - np.array(chain_com1[chain_name1[j]]))
             distance_matrix1[j, i] = distance_matrix1[i, j]
-
-
-
-distance_matrix2 = np.zeros((len(chain_name2), len(chain_name2)))
-nr_chains = len(chain_name2)
-for i in range(nr_chains):
-    for j in range(nr_chains):
         if chain_name2[i] == chain_name2[j]:
             distance_matrix2[i, j] = 0
         else:
             distance_matrix2[i, j] = np.linalg.norm(np.array(chain_com2[chain_name2[i]]) - np.array(chain_com2[chain_name2[j]]))
             distance_matrix2[j, i] = distance_matrix2[i, j]
 
-row1 = np.sum(distance_matrix1, axis = 0)
-row2 = np.sum(distance_matrix2, axis = 0)
+# row1 = np.sum(distance_matrix1, axis = 0)
+# row2 = np.sum(distance_matrix2, axis = 0)
+# min_array = np.full((len(row1), 3), np.inf)
+# for i in range(len(row1)):
+#     for j in range(len(row2)):
+#         if j not in min_array[:,2]:
+#             min_temp = np.abs(row1[i]-row2[j])
+#             print(min_temp)
+#             if min_temp < min_array[i,0]:
+#                 min_array[i,0] = min_temp
+#                 min_array[i,1] = i
+#                 min_array[i,2] = j
 
+# permutations = list(itertools.permutations(chain_name2))
 
-min_array = np.full((len(row1), 3), np.inf)
-for i in range(len(row1)):
-    for j in range(len(row2)):
-        if j not in min_array[:,2]:
-            min_temp = np.abs(row1[i]-row2[j])
-            print(min_temp)
-            if min_temp < min_array[i,0]:
-                min_array[i,0] = min_temp
-                min_array[i,1] = i
-                min_array[i,2] = j
+# # Function to calculate distance matrix for a permutation
+# def distance_matrix_for_permutation(perm):
+#     best_perm = None
+#     sz = np.inf
+#     for letter in perm:
+#         for i in range(nr_chains):
+#             for j in range(nr_chains):
+#                 if chain_name2[i] == chain_name2[j]:
+#                     distance_matrix2[i, j] = 0
+#                 else:
+#                     distance_matrix2[i, j] = np.linalg.norm(np.array(chain_com2[letter[i]]) - np.array(chain_com2[letter[j]]))
+#                     distance_matrix2[j, i] = distance_matrix2[i, j]
+#         diff = np.abs(distance_matrix1 - distance_matrix2)
+#         if sz > np.linalg.norm(diff):
+#             sz = np.linalg.norm(diff)
+#             best_perm = letter
+#     return best_perm
+# best_perm = distance_matrix_for_permutation(permutations)
+
+permutations = list(itertools.permutations(chain_name2))
+
+# Function to calculate distance matrix for a permutation
+def distance_matrix_for_permutation(perm,tol):
+    best_perm = None
+    sz = np.inf
+    best_perms = []
+    for letter in perm:
+        for i in range(nr_chains):
+            for j in range(nr_chains):
+                if chain_name2[i] == chain_name2[j]:
+                    distance_matrix2[i, j] = 0
+                else:
+                    distance_matrix2[i, j] = np.linalg.norm(np.array(chain_com2[letter[i]]) - np.array(chain_com2[letter[j]]))
+                    distance_matrix2[j, i] = distance_matrix2[i, j]
+        diff = np.abs(distance_matrix1 - distance_matrix2)
+        norm_diff = np.linalg.norm(diff)
+        if (1/(1+tol))*sz > norm_diff:
+            sz = norm_diff
+            best_perms.append(letter)
+    return best_perms
+
+best_perms = distance_matrix_for_permutation(permutations,0.1)
 
 
 # bestemme massemidtpunkt for hver kæde i query og target hexamer.
