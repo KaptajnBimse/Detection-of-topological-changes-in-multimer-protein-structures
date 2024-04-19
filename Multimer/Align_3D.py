@@ -15,7 +15,7 @@ def Align_3D(P1, P2):
     n = P1.shape[0]
     meanp = mean(P2,axis=0)
     meanpt = mean(P1, axis = 0)
-    print(meanp, meanpt)
+    #print(meanp, meanpt)
 
     q= P2-meanp
     qt = P1-meanpt
@@ -29,7 +29,7 @@ def Align_3D(P1, P2):
     d = sign(det(u@vh))
 
 
-    R = u@(vh)
+    R = u@array([[1,0,0],[0,1,0],[0,0,d]])@(vh)
 
     t = 1/n*(P1.sum(axis = 0)-P2.sum(axis=0))
     # print(t)
@@ -37,7 +37,7 @@ def Align_3D(P1, P2):
 
     RMSD = linalg.norm(q,2)**2+ linalg.norm(qt,2)**2 - 2 * (s[0] + s[1] + d*s[2])
 
-    return transformed_pts, RMSD
+    return transformed_pts, R, RMSD
 
 
 # #generate test data
