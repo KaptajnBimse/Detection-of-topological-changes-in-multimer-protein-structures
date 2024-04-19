@@ -9,9 +9,10 @@ from Bio import Align
 from PDBP_to_seq import two_PDB_to_seq, one_PDB_to_seq
 
 def find_increasing_subarrays(arr):
-    # Initialize the current length and max length
+    # Initialize the current length and the result list
     current_length = 1
-    lengths = []
+    result = []
+    result2 = []
 
     # Iterate over the array
     for i in range(1, len(arr)):
@@ -19,14 +20,16 @@ def find_increasing_subarrays(arr):
         if arr[i] == arr[i - 1] + 1:
             current_length += 1
         else:
-            # Otherwise, store the current length and reset it
-            lengths.append(current_length)
+            # Otherwise, add the current length to the result list current_length times, and reset it
+            result.extend(np.linspace(1, current_length, current_length, dtype=int))
+            result2.extend([current_length]*current_length)
             current_length = 1
 
     # Don't forget to add the last subarray length
-    lengths.append(current_length)
+    result.extend(np.linspace(1, current_length, current_length, dtype=int))
+    result2.extend([current_length]*current_length)
 
-    return lengths
+    return result, result2
 
 
 #P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2= two_PDB_to_seq("examples/Multimer PDB/CRUA_hexamer_positive.pdb", "examples/Multimer PDB/CRU1_hexamer_negative.pdb")
@@ -38,6 +41,56 @@ chain_name1 = list(seq1.keys())
 chain_name2 = list(seq2.keys())
 
 
+# ------------------------------
+#new_name = {"Chain_A": "Chain_D", "Chain_B": "Chain_E", "Chain_C": "Chain_B", "Chain_D": "Chain_F", "Chain_E": "Chain_C", "Chain_F": "Chain_A"}
+new_name = {"Chain_A": "Chain_B", "Chain_B": "Chain_D", "Chain_C": "Chain_A", "Chain_D": "Chain_C", "Chain_E": "Chain_F", "Chain_F": "Chain_E"}
+
+
+seq2 = dict((new_name[key], value) for (key, value) in seq2.items())
+P2 = dict((new_name[key], value) for (key, value) in P2.items())
+chain_name1 = list(seq1.keys())
+chain_name2 = list(seq2.keys())
+
+
+renames = {
+    "A": "1",
+    "B": "2",
+    "C": "3",
+    "D": "4",
+    "E": "5",
+    "F": "6",
+}
+for model in sample_structure:
+    for chain in model:
+        old_name = chain.get_id()
+        new_name = renames.get(old_name)
+        if new_name:
+            print(f"renaming chain {old_name} to {new_name}")
+            chain.id = new_name
+        else:
+            print(f"keeping chain name {old_name}")
+
+renames2 = {
+    "1": "B",
+    "2": "D",
+    "3": "A",
+    "4": "C",
+    "5": "F",
+    "6": "E",
+}
+
+for model in sample_structure:
+    for chain in model:
+        old_name = chain.get_id()
+        new_name = renames.get(old_name)
+        if new_name:
+            print(f"renaming chain {old_name} to {new_name}")
+            chain.id = new_name
+        else:
+            print(f"keeping chain name {old_name}")
+
+# ------------------------------
+
 aligner = Align.PairwiseAligner()
 
 align = {}
@@ -45,6 +98,8 @@ for chain in seq1:
     alignments = aligner.align(seq1[chain], seq2[chain])
     align[chain] = alignments[0]
     print("Score = %.1f:" % alignments[0].score)
+
+
 
 atoms_to_be_aligned = {}
 for chain in seq1:
@@ -125,27 +180,53 @@ df["P"] = df[["x", "y", "z"]].values.tolist()
 #-------
 
 P = {}
-for chain in df["chain"].unique():
-    P["Chain_" + chain] = df[df["chain"] == chain]["P"].array
+repar = {}
+repar1 = {}
+
+"""for chain in df["chain"].unique():
+    P["Chain_" + chain] = df[df["chain"] == chain]["P"].tolist()
+    P1["Chain_" + chain] = P1["Chain_" + chain].tolist()
+
+    repar["Chain_" + chain] = np.linspace(0,len(P["Chain_" + chain]),len(P["Chain_" + chain])+1).tolist()
+    repar1["Chain_" + chain] = np.linspace(0,len(P1["Chain_" + chain]),len(P1["Chain_" + chain])+1).tolist()
+"""
+for chain in chain_name2:
+    P[chain] = df[df["chain"] == chain.replace("Chain_","")]["P"].tolist()
+    P1[chain] = P1[chain].tolist()
+
+    repar[chain] = np.linspace(0,len(P[chain]),len(P[chain])+1).tolist()
+    repar1[chain] = np.linspace(0,len(P1[chain]),len(P1[chain])+1).tolist()
 
 
-
-#find indicies where (align["Chain_A"])[0] is == "-"
 indices_target = {}
-indices_quary = {}
+indices_query = {}
 for key in P:
-  indices_target[key] = [i for i, x in enumerate(align["Chain_A"][0]) if x == "-"]
-  indices_quary[key]  = [i for i, x in enumerate(align["Chain_A"][1]) if x == "-"]
+  indices_target[key] = [i for i, x in enumerate(align[key][0]) if x == "-"]
+  indices_query[key]  = [i for i, x in enumerate(align[key][1]) if x == "-"]
 
-  Len_hole_target = find_increasing_subarrays(indices_target[key])
-  Len_hole_quary = find_increasing_subarrays(indices_quary[key])
+  Factor_hole_target, Index_hole_target  = find_increasing_subarrays(indices_target[key])
+  Factor_hole_query, Index_hole_query = find_increasing_subarrays(indices_query[key])
 
   for i in range(len(indices_target[key])):
     index = indices_target[key][i]
-    P[key].insert(indices_target[key][i],[P[key][]])
+    alpha = Index_hole_target[i]/(Factor_hole_target[i]+1)
+    new_point = [alpha*P1[key][index-(Index_hole_target[i]-1)][0]+(1-alpha)*P1[key][index-(Index_hole_target[i]-1)+1][0],
+                alpha*P1[key][index-(Index_hole_target[i]-1)][1]+(1-alpha)*P1[key][index-(Index_hole_target[i]-1)+1][1],
+                alpha*P1[key][index-(Index_hole_target[i]-1)][2]+(1-alpha)*P1[key][index-(Index_hole_target[i]-1)+1][2]]
+    P1[key].insert(index+1,new_point)
+    repar1[key].insert(index+i,index+alpha)
+    print(repar1[key][(index+i-5):(index+i+5)])
 
+  for i in range(len(indices_query[key])):
+    index = indices_query[key][i]
+    alpha = Index_hole_query[i]/(Factor_hole_query[i]+1)
+    new_point = [alpha*P[key][index-(Index_hole_query[i]-1)][0]+(1-alpha)*P[key][index-(Index_hole_query[i]-1)+1][0],
+                alpha*P[key][index-(Index_hole_query[i]-1)][1]+(1-alpha)*P[key][index-(Index_hole_query[i]-1)+1][1],
+                alpha*P[key][index-(Index_hole_query[i]-1)][2]+(1-alpha)*P[key][index-(Index_hole_query[i]-1)+1][2]]
+    P[key].insert(index+1,new_point)
+    repar[key].insert(index+1,index+alpha)
 
-
+# Lav repar
 
 
 # #Plot P1, P2 and P in 3d using plotly
@@ -192,8 +273,9 @@ for chain in P.keys():
 fig.show()
 
 #Create a plot for each pair of chains
-for chain in P1.keys():
+
+for i in range(len(P1.keys())):
     fig = go.Figure()
-    fig.add_trace(go.Scatter3d(x=[i[0] for i in P1[chain]], y=[i[1] for i in P1[chain]], z=[i[2] for i in P1[chain]], mode='lines', line=dict(width=9), name='P1'))
-    fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain]], y=[i[1] for i in P[chain]], z=[i[2] for i in P[chain]], mode='lines', line=dict(width=9), name='P'))
+    fig.add_trace(go.Scatter3d(x=[i[0] for i in P1[chain_name1[i]]], y=[i[1] for i in P1[chain_name1[i]]], z=[i[2] for i in P1[chain_name1[i]]], mode='lines', line=dict(width=9), name='P1'))
+    fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name2[i]]], y=[i[1] for i in P[chain_name2[i]]], z=[i[2] for i in P[chain_name2[i]]], mode='lines', line=dict(width=9), name='P'))
     fig.show()

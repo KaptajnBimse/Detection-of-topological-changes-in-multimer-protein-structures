@@ -25,7 +25,7 @@ def one_PDB_to_seq(PDB_filename):
 
     # Get the sequence
     seq1 = {}
-    tot_seq1 = Seq("")
+    tot_seq1 = Seq("") #slet?
     ppb=PPBuilder()
     if len(ppb.build_peptides(s1)) != len(df1["chain"].unique()):
         ppb=CaPPBuilder()
@@ -34,7 +34,7 @@ def one_PDB_to_seq(PDB_filename):
     i = 0
     for pp in ppb.build_peptides(s1):
         seq1["Chain_" + df1["chain"].unique()[i]] = pp.get_sequence()
-        tot_seq1 += pp.get_sequence()
+        tot_seq1 += pp.get_sequence() #Slet?
         #CaPP
         i += 1
     
