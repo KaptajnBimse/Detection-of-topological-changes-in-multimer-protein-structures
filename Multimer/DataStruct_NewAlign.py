@@ -39,23 +39,23 @@ P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_c
 )
 
 # Find optimal chain pairs
-Best_chain_pairs = [('Chain_A', 'Chain_B', 'Chain_C', 'Chain_D', 'Chain_E', 'Chain_F'), ('Chain_D', 'Chain_C', 'Chain_B', 'Chain_A', 'Chain_E', 'Chain_F'), ('Chain_B', 'Chain_A', 'Chain_D', 'Chain_C', 'Chain_E', 'Chain_F'), ('Chain_B', 'Chain_A', 'Chain_D', 'Chain_C', 'Chain_F', 'Chain_E')]
+Best_chain_pairs = [('Chain_D', 'Chain_C', 'Chain_B', 'Chain_A', 'Chain_E', 'Chain_F')]
 #Index for best chain pair
-Best_chain_index = 1
+Best_chain_index = 0
 #Reorder chains in P2 and seq2
 P2_Reorder = {Best_chain_pairs[Best_chain_index][i]: P2[Best_chain_pairs[0][i]] for i in range(len(P2))}
 seq2_Reorder = {Best_chain_pairs[Best_chain_index][i]: seq2[Best_chain_pairs[0][i]] for i in range(len(seq2))}
 
 chain_name1 = list(seq1.keys())
-chain_name2 = list(seq2.keys())
+chain_name2 = list(seq2_Reorder.keys())
 
 
 aligner = Align.PairwiseAligner()
 
 align = {}
-for chain in seq1:
-    alignments = aligner.align(seq1[chain], seq2[chain])
-    align[chain] = alignments[0]
+for chain1, chain2 in zip(chain_name1, chain_name2):
+    alignments = aligner.align(seq1[chain1], seq2[chain2])
+    align[chain1] = alignments[0]
     print("Score = %.1f:" % alignments[0].score)
 
 
@@ -101,10 +101,10 @@ for chain in P1:
 aligment_points1 = np.zeros((0,3))
 aligment_points2 = np.zeros((0,3))
 
-for chain in P1:
-    for i in atoms_to_be_aligned[chain]:
-        aligment_points1 = np.vstack((aligment_points1, P1[chain][i-1]))
-        aligment_points2 = np.vstack((aligment_points2, P2_Reorder[chain][i-1]))
+for chain1, chain2 in zip(P1, P2_Reorder):
+    for i in atoms_to_be_aligned[chain1]:
+        aligment_points1 = np.vstack((aligment_points1, P1[chain1][i-1]))
+        aligment_points2 = np.vstack((aligment_points2, P2_Reorder[chain2][i-1]))
 
 aligment_points1 = aligment_points1[1:,:]
 aligment_points2 = aligment_points2[1:,:]
@@ -112,10 +112,13 @@ aligment_points2 = aligment_points2[1:,:]
 
 Transformed_points, R, rmsd = Align_3D(aligment_points1, aligment_points2)
 
+#Remember to transform the points that does not sequence align
+
+
 P = {}
 start = 0
 for chain in P1:
-    P[chain] = Transformed_points[start:start+len(atoms_to_be_aligned[chain])]
+    P[chain] = Transformed_points[start:start+len(atoms_to_be_aligned[chain])-1]
     start += len(atoms_to_be_aligned[chain])
 
 for chain in P1:
@@ -215,5 +218,7 @@ fig.show()
 for i in range(len(P1.keys())):
     fig = go.Figure()
     fig.add_trace(go.Scatter3d(x=[i[0] for i in P1[chain_name1[i]]], y=[i[1] for i in P1[chain_name1[i]]], z=[i[2] for i in P1[chain_name1[i]]], mode='lines', line=dict(width=9), name='P1'))
-    fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name2[i]]], y=[i[1] for i in P[chain_name2[i]]], z=[i[2] for i in P[chain_name2[i]]], mode='lines', line=dict(width=9), name='P'))
+    fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name1[i]]], y=[i[1] for i in P[chain_name1[i]]], z=[i[2] for i in P[chain_name1[i]]], mode='lines', line=dict(width=9), name='P'))
     fig.show()
+
+print(rmsd)

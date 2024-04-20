@@ -28,7 +28,6 @@ def Align_3D(P1, P2):
     u, s, vh = svd(A, full_matrices=True)
     d = sign(det(u@vh))
 
-
     R = u@array([[1,0,0],[0,1,0],[0,0,d]])@(vh)
 
     t = 1/n*(P1.sum(axis = 0)-P2.sum(axis=0))
