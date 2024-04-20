@@ -9,6 +9,24 @@ from Bio import Align
 from PDBP_to_seq import two_PDB_to_seq, one_PDB_to_seq
 from Align_3D import Align_3D
 
+def find_missing_numbers(arr, n):
+    # Calculate the sum of integers from 1 to n
+    total_sum = n * (n + 1) // 2
+    
+    # Calculate the sum of elements in the array
+    arr_sum = sum(arr)
+    
+    # Calculate the difference to find the sum of missing numbers
+    missing_sum = total_sum - arr_sum
+    
+    # Find the missing numbers
+    missing_numbers = []
+    for i in range(1, n + 1):
+        if i not in arr:
+            missing_numbers.append(i)
+    
+    return missing_numbers
+
 def find_increasing_subarrays(arr):
     # Initialize the current length and the result list
     current_length = 1
@@ -115,11 +133,15 @@ Transformed_points, R, rmsd = Align_3D(aligment_points1, aligment_points2)
 #Remember to transform the points that does not sequence align
 
 
+
 P = {}
 start = 0
 for chain in P1:
     P[chain] = Transformed_points[start:start+len(atoms_to_be_aligned[chain])-1]
     start += len(atoms_to_be_aligned[chain])
+    # atoms_not_aligned = find_missing_numbers(atoms_to_be_aligned[chain], len(P[chain]))
+    # for i in atoms_not_aligned:
+    #     P[chain] = np.insert(P[chain], i-1, P2_Reorder[chain][i-1], axis=0)
 
 for chain in P1:
     P1[chain] = P1[chain].tolist()
