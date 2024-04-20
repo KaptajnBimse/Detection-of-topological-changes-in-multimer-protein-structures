@@ -79,7 +79,7 @@ for chain in P1:
     # Creating a NumPy array with the same length as lists and 3 columns
     P1_array = np.zeros((len(lists1), 3))
     P2_array = np.zeros((len(lists2), 3))
-
+ 
     # Populating the array with values from lists
     for i, sublist in enumerate(lists1):
         P1_array[i] = sublist
