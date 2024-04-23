@@ -9,6 +9,24 @@ from Bio import Align
 from PDBP_to_seq import two_PDB_to_seq, one_PDB_to_seq
 from Align_3D import Align_3D
 
+def find_missing_numbers(arr, n):
+    # Calculate the sum of integers from 1 to n
+    total_sum = n * (n + 1) // 2
+    
+    # Calculate the sum of elements in the array
+    arr_sum = sum(arr)
+    
+    # Calculate the difference to find the sum of missing numbers
+    # missing_sum = total_sum - arr_sum
+    
+    # Find the missing numbers
+    missing_numbers = []
+    for i in range(1, n + 1):
+        if i not in arr:
+            missing_numbers.append(i)
+    
+    return missing_numbers
+
 def find_increasing_subarrays(arr):
     # Initialize the current length and the result list
     current_length = 1
@@ -39,32 +57,38 @@ P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_c
 )
 
 # Find optimal chain pairs
-Best_chain_pairs = [('Chain_A', 'Chain_B', 'Chain_C', 'Chain_D', 'Chain_E', 'Chain_F'), ('Chain_D', 'Chain_C', 'Chain_B', 'Chain_A', 'Chain_E', 'Chain_F'), ('Chain_B', 'Chain_A', 'Chain_D', 'Chain_C', 'Chain_E', 'Chain_F'), ('Chain_B', 'Chain_A', 'Chain_D', 'Chain_C', 'Chain_F', 'Chain_E')]
+Best_chain_pairs = [('Chain_D', 'Chain_C', 'Chain_B', 'Chain_A', 'Chain_E', 'Chain_F')]
 #Index for best chain pair
-Best_chain_index = 1
+Best_chain_index = 0
 #Reorder chains in P2 and seq2
 P2_Reorder = {Best_chain_pairs[Best_chain_index][i]: P2[Best_chain_pairs[0][i]] for i in range(len(P2))}
 seq2_Reorder = {Best_chain_pairs[Best_chain_index][i]: seq2[Best_chain_pairs[0][i]] for i in range(len(seq2))}
 
 chain_name1 = list(seq1.keys())
-chain_name2 = list(seq2.keys())
+chain_name2 = list(seq2_Reorder.keys())
 
 
 aligner = Align.PairwiseAligner()
 
 align = {}
-for chain in seq1:
-    alignments = aligner.align(seq1[chain], seq2[chain])
-    align[chain] = alignments[0]
+for chain1, chain2 in zip(chain_name1, chain_name2):
+    alignments = aligner.align(seq1[chain1], seq2[chain2])
+    align[chain1] = alignments[0]
     print("Score = %.1f:" % alignments[0].score)
 
 
-atoms_to_be_aligned = {}
-for chain in seq1:
-  Num_holes = align[chain].aligned[0].shape[0]
-  atoms_to_be_aligned[chain] = []
-  for i in range(Num_holes):
-    atoms_to_be_aligned[chain].extend(range((align[chain].aligned[0][i][0]+1),(align[chain].aligned[0][i][1])+1))
+atoms_to_be_aligned1 = {}
+atoms_to_be_aligned2 = {}
+for chain1, chain2 in zip(chain_name1, chain_name2):
+    Num_holes = align[chain1].aligned[0].shape[0]
+    atoms_to_be_aligned1[chain1] = []
+    atoms_to_be_aligned2[chain2] = []
+    for i in range(Num_holes-1):
+        atoms_to_be_aligned1[chain1].extend(range((align[chain1].aligned[0][i][0]),(align[chain1].aligned[0][i][1])))
+        atoms_to_be_aligned2[chain2].extend(range((align[chain1].aligned[1][i][0]),(align[chain1].aligned[1][i][1])))
+
+    atoms_to_be_aligned1[chain1].extend(range((align[chain1].aligned[0][Num_holes-1][0]),(align[chain1].aligned[0][Num_holes-1][1])+1))
+    atoms_to_be_aligned2[chain2].extend(range((align[chain1].aligned[1][Num_holes-1][0]),(align[chain1].aligned[1][Num_holes-1][1])+1))
 
 
 
@@ -79,7 +103,7 @@ for chain in P1:
     # Creating a NumPy array with the same length as lists and 3 columns
     P1_array = np.zeros((len(lists1), 3))
     P2_array = np.zeros((len(lists2), 3))
-
+ 
     # Populating the array with values from lists
     for i, sublist in enumerate(lists1):
         P1_array[i] = sublist
@@ -101,10 +125,11 @@ for chain in P1:
 aligment_points1 = np.zeros((0,3))
 aligment_points2 = np.zeros((0,3))
 
-for chain in P1:
-    for i in atoms_to_be_aligned[chain]:
-        aligment_points1 = np.vstack((aligment_points1, P1[chain][i-1]))
-        aligment_points2 = np.vstack((aligment_points2, P2_Reorder[chain][i-1]))
+for chain1, chain2 in zip(P1, P2_Reorder):
+    for i in atoms_to_be_aligned1[chain1]:
+        aligment_points1 = np.vstack((aligment_points1, P1[chain1][i-1]))
+    for i in atoms_to_be_aligned2[chain2]:
+        aligment_points2 = np.vstack((aligment_points2, P2_Reorder[chain2][i-1]))
 
 aligment_points1 = aligment_points1[1:,:]
 aligment_points2 = aligment_points2[1:,:]
@@ -112,11 +137,19 @@ aligment_points2 = aligment_points2[1:,:]
 
 Transformed_points, R, rmsd = Align_3D(aligment_points1, aligment_points2)
 
+#Remember to transform the points that does not sequence align
+
+
+
 P = {}
 start = 0
-for chain in P1:
-    P[chain] = Transformed_points[start:start+len(atoms_to_be_aligned[chain])]
-    start += len(atoms_to_be_aligned[chain])
+for chain1, chain2 in zip(P1, P2_Reorder):
+    P[chain1] = Transformed_points[start:start+len(atoms_to_be_aligned2[chain1])-1]
+    start += len(atoms_to_be_aligned2[chain1])
+    # atoms_not_aligned = find_missing_numbers(atoms_to_be_aligned2[chain1], len(P[chain1]))
+    atoms_not_aligned = [i for i, x in enumerate(align[chain1][0]) if x == "-"]
+    for i in atoms_not_aligned:
+        P[chain1] = np.insert(P[chain1], i-1, R@P2_Reorder[chain2][i-1], axis=0)
 
 for chain in P1:
     P1[chain] = P1[chain].tolist()
@@ -130,9 +163,9 @@ repar = {}
 repar1 = {}
 
 
-for chain in chain_name2:
-    repar[chain] = np.linspace(0,len(P[chain]),len(P[chain])+1).tolist()
-    repar1[chain] = np.linspace(0,len(P1[chain]),len(P1[chain])+1).tolist()
+for chain in chain_name1:
+    repar[chain] = np.linspace(0,len(P[chain])-1,len(P[chain])).tolist()
+    repar1[chain] = np.linspace(0,len(P1[chain])-1,len(P1[chain])).tolist()
 
 
 indices_target = {}
@@ -146,22 +179,22 @@ for key in P:
 
   for i in range(len(indices_target[key])):
     index = indices_target[key][i]
-    alpha = Index_hole_target[i]/(Factor_hole_target[i]+1)
-    new_point = [alpha*P1[key][index-(Index_hole_target[i]-1)][0]+(1-alpha)*P1[key][index-(Index_hole_target[i]-1)+1][0],
-                alpha*P1[key][index-(Index_hole_target[i]-1)][1]+(1-alpha)*P1[key][index-(Index_hole_target[i]-1)+1][1],
-                alpha*P1[key][index-(Index_hole_target[i]-1)][2]+(1-alpha)*P1[key][index-(Index_hole_target[i]-1)+1][2]]
-    P1[key].insert(index+1,new_point)
-    repar1[key].insert(index+i,index+alpha)
-    print(repar1[key][(index+i-5):(index+i+5)])
+    alpha = Factor_hole_target[i]/(Index_hole_target[i]+1)
+    new_point = [alpha*P[key][index-(Index_hole_target[i])][0]+(1-alpha)*P[key][index-(Index_hole_target[i])+1][0],
+                alpha*P[key][index-(Index_hole_target[i])][1]+(1-alpha)*P[key][index-(Index_hole_target[i])+1][1],
+                alpha*P[key][index-(Index_hole_target[i])][2]+(1-alpha)*P[key][index-(Index_hole_target[i])+1][2]]
+    P[key].insert(index,new_point)
+    repar1[key].insert(index+i-Factor_hole_target[i]+2,index+alpha-(Factor_hole_target[i]-1))
+    # print(repar1[key][(index+i-5):(index+i+5)])
 
   for i in range(len(indices_query[key])):
     index = indices_query[key][i]
-    alpha = Index_hole_query[i]/(Factor_hole_query[i]+1)
-    new_point = [alpha*P[key][index-(Index_hole_query[i]-1)][0]+(1-alpha)*P[key][index-(Index_hole_query[i]-1)+1][0],
-                alpha*P[key][index-(Index_hole_query[i]-1)][1]+(1-alpha)*P[key][index-(Index_hole_query[i]-1)+1][1],
-                alpha*P[key][index-(Index_hole_query[i]-1)][2]+(1-alpha)*P[key][index-(Index_hole_query[i]-1)+1][2]]
-    P[key].insert(index+1,new_point)
-    repar[key].insert(index+1,index+alpha)
+    alpha = Factor_hole_query[i]/(Index_hole_query[i]+1)
+    new_point = [alpha*P1[key][index-(Index_hole_query[i]-1)][0]+(1-alpha)*P1[key][index-(Index_hole_query[i]-1)+1][0],
+                alpha*P1[key][index-(Index_hole_query[i]-1)][1]+(1-alpha)*P1[key][index-(Index_hole_query[i]-1)+1][1],
+                alpha*P1[key][index-(Index_hole_query[i]-1)][2]+(1-alpha)*P1[key][index-(Index_hole_query[i]-1)+1][2]]
+    P1[key].insert(index,new_point)
+    repar[key].insert(index+i-Factor_hole_query[i]+2,index+alpha-(Factor_hole_query[i]-1))
 
 # Lav repar
 
@@ -215,5 +248,7 @@ fig.show()
 for i in range(len(P1.keys())):
     fig = go.Figure()
     fig.add_trace(go.Scatter3d(x=[i[0] for i in P1[chain_name1[i]]], y=[i[1] for i in P1[chain_name1[i]]], z=[i[2] for i in P1[chain_name1[i]]], mode='lines', line=dict(width=9), name='P1'))
-    fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name2[i]]], y=[i[1] for i in P[chain_name2[i]]], z=[i[2] for i in P[chain_name2[i]]], mode='lines', line=dict(width=9), name='P'))
+    fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name1[i]]], y=[i[1] for i in P[chain_name1[i]]], z=[i[2] for i in P[chain_name1[i]]], mode='lines', line=dict(width=9), name='P'))
     fig.show()
+
+print(rmsd)
