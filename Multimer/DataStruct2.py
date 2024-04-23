@@ -114,7 +114,7 @@ def distance_matrix_for_permutation(perm):
                 for j in range(len(chain_com2[chain])):
                     com_array2[i,j] = chain_com2[chain][j]
         #reordered_chain_com2 = {l: chain_com2[l] for l in letter}
-        transformed_pts, RMSD = Align_3D(np.array(com_array2), np.array(com_array))
+        transformed_pts, R, RMSD = Align_3D(np.array(com_array2), np.array(com_array))
         if min_RMSD > RMSD:
             min_RMSD = RMSD
             best_perm = letter
