@@ -8,6 +8,7 @@ from Bio.PDB.Polypeptide import PPBuilder, CaPPBuilder
 from Bio import Align
 from PDBP_to_seq import two_PDB_to_seq, one_PDB_to_seq
 from Align_3D import Align_3D
+import itertools
 
 def find_missing_numbers(arr, n):
     # Calculate the sum of integers from 1 to n
@@ -52,12 +53,21 @@ def find_increasing_subarrays(arr):
 
 
 #P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2= two_PDB_to_seq("examples/Multimer PDB/CRUA_hexamer_positive.pdb", "examples/Multimer PDB/CRU1_hexamer_negative.pdb")
-P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_com1, chain_com2= two_PDB_to_seq("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
-, "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
+
+# Jonas:
+#P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_com1, chain_com2= two_PDB_to_seq("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
+#, "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
+#)
+
+#Adam:
+P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_com1, chain_com2 = two_PDB_to_seq("/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
+, "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
 )
 
+'''
 # Find optimal chain pairs
 Best_chain_pairs = [('Chain_D', 'Chain_C', 'Chain_B', 'Chain_A', 'Chain_E', 'Chain_F')]
+
 #Index for best chain pair
 Best_chain_index = 0
 #Reorder chains in P2 and seq2
@@ -66,6 +76,81 @@ seq2_Reorder = {Best_chain_pairs[Best_chain_index][i]: seq2[Best_chain_pairs[0][
 
 chain_name1 = list(seq1.keys())
 chain_name2 = list(seq2_Reorder.keys())
+'''
+
+chain_name1 = list(seq1.keys())
+chain_name2 = list(seq2.keys())
+
+
+#_____________________________________
+distance_matrix1 = np.zeros((len(chain_name1), len(chain_name1)))
+distance_matrix2 = np.zeros((len(chain_name2), len(chain_name2)))
+nr_chains = len(chain_name1)
+
+for i in range(nr_chains):
+    for j in range(nr_chains):
+        if chain_name1[i] == chain_name1[j]:
+            distance_matrix1[i, j] = 0
+        else:
+            distance_matrix1[i, j] = np.linalg.norm(np.array(chain_com1[chain_name1[i]]) - np.array(chain_com1[chain_name1[j]]))
+            distance_matrix1[j, i] = distance_matrix1[i, j]
+        if chain_name2[i] == chain_name2[j]:
+            distance_matrix2[i, j] = 0
+        else:
+            distance_matrix2[i, j] = np.linalg.norm(np.array(chain_com2[chain_name2[i]]) - np.array(chain_com2[chain_name2[j]]))
+            distance_matrix2[j, i] = distance_matrix2[i, j]
+
+permutations = list(itertools.permutations(chain_name2))
+
+i = 0
+# Creating a NumPy array with the same length as lists and 3 columns
+com_array = np.zeros((len(chain_com1), 3))
+
+for chain in chain_com1.keys():
+    # Populating the array with values from lists
+    for j in range(len(chain_com1[chain])):
+        com_array[i,j] = chain_com1[chain][j]
+    i += 1
+
+# Function to calculate distance matrix for a permutation
+def distance_matrix_for_permutation(perm):
+    best_perm = None
+    min_RMSD = np.inf
+    best_perms = []
+    for letter in perm:
+        com_array2 = np.zeros((len(chain_com2), 3))
+        i = 0
+        for chain in letter:
+            for j in range(len(chain_com2[chain])):
+                com_array2[i,j] = chain_com2[chain][j]
+            i+=1
+        transformed_pts, R, RMSD = Align_3D(np.array(com_array2), np.array(com_array))
+        if min_RMSD >= RMSD:
+            min_RMSD = RMSD
+            best_perms.append(letter)
+    best_perms = best_perms[-1]
+    return best_perms
+
+best_perms = distance_matrix_for_permutation(permutations)
+
+#__________________________________________________________
+# Find optimal chain pairs
+Best_chain_pairs = [best_perms]
+
+#Index for best chain pair
+Best_chain_index = 0
+#Reorder chains in P2 and seq2
+P2_Reorder = {Best_chain_pairs[Best_chain_index][i]: P2[Best_chain_pairs[0][i]] for i in range(len(P2))}
+seq2_Reorder = {Best_chain_pairs[Best_chain_index][i]: seq2[Best_chain_pairs[0][i]] for i in range(len(seq2))}
+
+chain_name1 = list(seq1.keys())
+chain_name2 = list(seq2_Reorder.keys())
+
+#__________________________________________________________
+
+
+
+
 
 
 aligner = Align.PairwiseAligner()
