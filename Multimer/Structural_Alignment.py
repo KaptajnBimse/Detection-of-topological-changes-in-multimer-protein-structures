@@ -277,6 +277,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
 
     print("RMSD of structual alignment " + str(rmsd))
     # print(best_perms)
+    return P1, P, repar1, repar
 
 
 # pdb_file1 = "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
