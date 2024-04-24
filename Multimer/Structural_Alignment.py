@@ -73,6 +73,8 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         return best_perms
 
     P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_com1, chain_com2 = two_PDB_to_seq(pdb_file1, pdb_file2)
+    P1_org = P1.copy()
+    P2_org = P2.copy()
 
     chain_name1 = list(seq1.keys())
     chain_name2 = list(seq2.keys())
@@ -221,8 +223,8 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
     indices_query = {}
     
     for key in P:
-      indices_target[key] = [i for i, x in enumerate(align[key][0]) if x == "-"]
-      indices_query[key]  = [i for i, x in enumerate(align[key][1]) if x == "-"]
+      indices_target[key] = [i for i, x in enumerate(align[key][1]) if x == "-"]
+      indices_query[key]  = [i for i, x in enumerate(align[key][0]) if x == "-"]
       # print(indices_target[key])
       # print(indices_query[key])
       Factor_hole_target, Index_hole_target  = find_increasing_subarrays(indices_target[key])
@@ -235,7 +237,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
                        alpha*P[key][index-(Index_hole_target[i])][1]+(1-alpha)*P[key][index-(Index_hole_target[i])+1][1],
                        alpha*P[key][index-(Index_hole_target[i])][2]+(1-alpha)*P[key][index-(Index_hole_target[i])+1][2]]
           P[key].insert(index,new_point)
-          repar1[key].insert(index+i-Factor_hole_target[i]+2,index+alpha-(Factor_hole_target[i]-1))
+          repar[key].insert(index+i-Factor_hole_target[i]+2,index+alpha-(Factor_hole_target[i]-1))
           # print(repar1[key][(index+i-5):(index+i+5)])
 
       for i in range(len(indices_query[key])):
@@ -245,7 +247,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
                        alpha*P1[key][index-(Index_hole_query[i]-1)][1]+(1-alpha)*P1[key][index-(Index_hole_query[i]-1)+1][1],
                        alpha*P1[key][index-(Index_hole_query[i]-1)][2]+(1-alpha)*P1[key][index-(Index_hole_query[i]-1)+1][2]]
           P1[key].insert(index,new_point)
-          repar[key].insert(index+i-Factor_hole_query[i]+2,index+alpha-(Factor_hole_query[i]-1))
+          repar1[key].insert(index+i-Factor_hole_query[i]+2,index+alpha-(Factor_hole_query[i]-1))
 
     # Lav repar
     if makefigure == 1:
@@ -277,14 +279,25 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
 
     print("RMSD of structual alignment " + str(rmsd))
     # print(best_perms)
-    return P1, P, repar1, repar
+
+    is_aligned = {}
+    NresAverage = {}
+
+    for chain in repar:
+        is_aligned[chain] = np.ones(len(repar1[chain]))
+        NresAverage[chain] = (len(P1_org[chain])+len(P2_org[chain]))/2
+        P1[chain] = np.array(P1[chain])
+        P[chain] = np.array(P[chain])
+
+
+    return P1, P, repar1, repar, is_aligned, NresAverage
 
 
 # pdb_file1 = "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
 # pdb_file2 = "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
 
-pdb_file1 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB//CRUA_hexamer_positive.pdb"
-pdb_file2 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
+#pdb_file1 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB//CRUA_hexamer_positive.pdb"
+#pdb_file2 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
 
 
-structural_alignment(pdb_file1, pdb_file2)
+#P1, P, repar1, repar, is_aligned, NresAverage = structural_alignment(pdb_file1, pdb_file2)

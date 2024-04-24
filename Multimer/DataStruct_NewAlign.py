@@ -77,14 +77,14 @@ def distance_matrix_for_permutation(perm):
 
 
 # Jonas:
-#P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_com1, chain_com2= two_PDB_to_seq("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
-#, "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
-#)
+P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_com1, chain_com2= two_PDB_to_seq("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
+, "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
+)
 
 #Adam:
-P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_com1, chain_com2 = two_PDB_to_seq("/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
-, "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
-)
+# P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_com1, chain_com2 = two_PDB_to_seq("/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
+# , "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
+# )
 
 
 
@@ -168,6 +168,7 @@ for chain1, chain2 in zip(chain_name1, chain_name2):
     atoms_to_be_aligned2[chain2].extend(range((align[chain1].aligned[1][Num_holes-1][0]),(align[chain1].aligned[1][Num_holes-1][1])+1))
 
 
+P1_final = P1.copy()
 
 for chain in P1:
     P1[chain] = P1[chain].tolist()
@@ -248,8 +249,8 @@ for chain in chain_name1:
 indices_target = {}
 indices_query = {}
 for key in P:
-  indices_target[key] = [i for i, x in enumerate(align[key][0]) if x == "-"]
-  indices_query[key]  = [i for i, x in enumerate(align[key][1]) if x == "-"]
+  indices_target[key] = [i for i, x in enumerate(align[key][1]) if x == "-"]
+  indices_query[key]  = [i for i, x in enumerate(align[key][0]) if x == "-"]
 
   Factor_hole_target, Index_hole_target  = find_increasing_subarrays(indices_target[key])
   Factor_hole_query, Index_hole_query = find_increasing_subarrays(indices_query[key])
@@ -261,7 +262,7 @@ for key in P:
                 alpha*P[key][index-(Index_hole_target[i])][1]+(1-alpha)*P[key][index-(Index_hole_target[i])+1][1],
                 alpha*P[key][index-(Index_hole_target[i])][2]+(1-alpha)*P[key][index-(Index_hole_target[i])+1][2]]
     P[key].insert(index,new_point)
-    repar1[key].insert(index+i-Factor_hole_target[i]+2,index+alpha-(Factor_hole_target[i]-1))
+    repar[key].insert(index+i-Factor_hole_target[i]+2,index+alpha-(Factor_hole_target[i]-1))
     # print(repar1[key][(index+i-5):(index+i+5)])
 
   for i in range(len(indices_query[key])):
@@ -271,7 +272,7 @@ for key in P:
                 alpha*P1[key][index-(Index_hole_query[i]-1)][1]+(1-alpha)*P1[key][index-(Index_hole_query[i]-1)+1][1],
                 alpha*P1[key][index-(Index_hole_query[i]-1)][2]+(1-alpha)*P1[key][index-(Index_hole_query[i]-1)+1][2]]
     P1[key].insert(index,new_point)
-    repar[key].insert(index+i-Factor_hole_query[i]+2,index+alpha-(Factor_hole_query[i]-1))
+    repar1[key].insert(index+i-Factor_hole_query[i]+2,index+alpha-(Factor_hole_query[i]-1))
 
 # Lav repar
 
