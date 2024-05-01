@@ -21,12 +21,8 @@ def NEAMReparametrizationParallel(P1, P2, RePar1, RePar2, IsAligned, Smoothning)
     overlapalt = Dmin - np.sqrt(np.sum(dP1**2, axis=2))
     overlap[ddPNormSqr < 1.0E-15] = overlapalt[ddPNormSqr < 1.0E-15]
     overlap = np.maximum(overlap, 0)
-<<<<<<< HEAD
-    #___________________________________________________________________________
-=======
 
     
->>>>>>> 9e03e534733566c26700b52e47caa4253520f42c
     alignedaligned = np.outer(IsAligned, IsAligned)
     overlapaligned = overlap * alignedaligned
     tmp1 = np.diff(RePar1)

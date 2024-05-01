@@ -573,7 +573,7 @@ def maxWeightMatching(edges, maxcardinality=False):
             assert s >= 0
             if mate[int(i)] // 2 == k or mate[int(j)] // 2 == k:
                 assert mate[int(i)] // 2 == k and mate[int(j)] // 2 == k
-                assert s == 0
+                assert s == 0, "hej"
         # 2. all single vertices have zero dual value;
         for v in range(int(nvertex)):
             assert mate[v] >= 0 or dualvar[v] + vdualoffset == 0
