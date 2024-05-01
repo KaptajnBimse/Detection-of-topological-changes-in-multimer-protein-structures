@@ -10,7 +10,7 @@ from PDBP_to_seq import two_PDB_to_seq, one_PDB_to_seq
 from Align_3D import Align_3D
 import itertools
 
-def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
+def structural_alignment(pdb_file1, pdb_file2, makefigure = 1):
     
     def find_missing_numbers(arr, n):
         # Calculate the sum of integers from 1 to n
@@ -75,6 +75,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
     P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_com1, chain_com2 = two_PDB_to_seq(pdb_file1, pdb_file2)
     P1_org = P1.copy()
     P2_org = P2.copy()
+
 
     chain_name1 = list(seq1.keys())
     chain_name2 = list(seq2.keys())
@@ -285,9 +286,14 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
 
     for chain in repar:
         is_aligned[chain] = np.ones(len(repar1[chain]))
-        NresAverage[chain] = (len(P1_org[chain])+len(P2_org[chain]))/2
+        # NresAverage[chain] = (len(P1_org[chain])+len(P2_org[chain]))/2
         P1[chain] = np.array(P1[chain])
         P[chain] = np.array(P[chain])
+
+    P1org_tot = np.concatenate(list(P1_org.values()), axis = 0)
+    P2org_tot = np.concatenate(list(P2_org.values()), axis = 0)
+    # print(P2_org)
+    NresAverage = (len(P1org_tot)+len(P2org_tot))/2
 
 
     return P1, P, repar1, repar, is_aligned, NresAverage
@@ -296,8 +302,8 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
 pdb_file1 = "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
 pdb_file2 = "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
 
-#pdb_file1 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB//CRUA_hexamer_positive.pdb"
-#pdb_file2 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
+pdb_file1 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB//CRUA_hexamer_positive.pdb"
+pdb_file2 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
 
 
 P1, P, repar1, repar, is_aligned, NresAverage = structural_alignment(pdb_file1, pdb_file2)
