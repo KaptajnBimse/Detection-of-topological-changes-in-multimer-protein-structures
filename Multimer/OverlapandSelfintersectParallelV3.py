@@ -118,7 +118,7 @@ def OverlapandSelfintersectParallelV3(P1_multi, P2_multi, RePar1_multi, RePar2_m
             chain2 = P1_multi.keys()[j]
             P2 = P2_multi[chain2]
             m = len(P2)
-
+            
             tmp = np.zeros((n-1, n-1, 4))
             tmp[:,:,0] = overlap[chain + chain2][0:n-1, 0:n-1]
             tmp[:,:,1] = overlap[chain + chain2][1:n, 0:n-1]

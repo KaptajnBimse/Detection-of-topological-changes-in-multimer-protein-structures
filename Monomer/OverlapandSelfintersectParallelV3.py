@@ -39,6 +39,11 @@ def OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, 
 
     overlap, _, _, _ = NEAMReparametrizationParallel(P1, P2, RePar1, RePar2, IsAligned, Smoothning)
 
+    import plotly.express as px
+
+    #fig = px.imshow(overlap, labels=dict(x="Residue 1", y="Residue 2", color="Overlap"), color_continuous_scale='Greys')
+    #fig.show()
+    
     L1 = np.sqrt(np.sum((P1[0:n - 1, :] - P1[1:n, :]) ** 2, axis=1))
     L2 = np.sqrt(np.sum((P2[0:n - 1, :] - P2[1:n, :]) ** 2, axis=1))
     if Smoothning == 1:
@@ -67,7 +72,7 @@ def OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, 
     tmp[:,:,3] = overlap[1:n, 1:n]
     Oav = np.sum(tmp, axis=2)
 
-    a2, a1 = np.where(np.transpose(np.tril(Oav, -2) > MaxSum) + (np.tril(M, -2) > MaxL))
+    a2, a1 = np.where(np.transpose(np.tril(Oav, -2) > MaxSum) + (np.tril(M, -2) < MaxL))
     tjekliste = np.column_stack((a1, a2))
     PotSelfIntc = tjekliste.shape[0]
 
@@ -101,16 +106,21 @@ def OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, 
 
     ud = [Outs, rms1, rms1Aligned, rms2, rms2Aligned, GDT_TS, TM, sumoverlap, PotSelfIntc, sumselfintc, AlignmentMetaDataOut]
 
-P1 = np.loadtxt('Monomer/Test txt/TestEssential/P1.txt')
-P2 = np.loadtxt('Monomer/Test txt/TestEssential/P2.txt')
-RePar1 = np.loadtxt('Monomer/Test txt/TestEssential/RePar1.txt')
-RePar2 = np.loadtxt('Monomer/Test txt/TestEssential/RePar2.txt')
-IsAligned = np.loadtxt('Monomer/Test txt/TestEssential/IsAligned.txt')
-P1org = np.loadtxt('Monomer/Test txt/TestEssential/P1org.txt')
-P2org = np.loadtxt('Monomer/Test txt/TestEssential/P2org.txt')
-NresAverage = np.loadtxt('Monomer/Test txt/TestEssential/NresAverage.txt')
+#P1 = np.loadtxt('Monomer/Test txt/TestEssential/P1.txt')
+#P2 = np.loadtxt('Monomer/Test txt/TestEssential/P2.txt')
+#RePar1 = np.loadtxt('Monomer/Test txt/TestEssential/RePar1.txt')
+#RePar2 = np.loadtxt('Monomer/Test txt/TestEssential/RePar2.txt')
+#IsAligned = np.loadtxt('Monomer/Test txt/TestEssential/IsAligned.txt')
+P1org = 0#np.loadtxt('Monomer/Test txt/TestEssential/P1org.txt')
+P2org = 0#np.loadtxt('Monomer/Test txt/TestEssential/P2org.txt')
+#NresAverage = np.loadtxt('Monomer/Test txt/TestEssential/NresAverage.txt')
 
-
+P1 = np.loadtxt('/Users/agb/Downloads/P1_tot.txt')
+P2 = np.loadtxt('/Users/agb/Downloads/P2_tot.txt')
+RePar1 = np.loadtxt('/Users/agb/Downloads/RePar1_tot.txt')
+RePar2 = np.loadtxt('/Users/agb/Downloads/RePar2_tot.txt')
+IsAligned = np.loadtxt('/Users/agb/Downloads/IsAligned_tot.txt')
+NresAverage = 2856
 
 # P1 = np.loadtxt('Monomer/Test txt/Omega2a_b/P1.txt')
 # P2 = np.loadtxt('Monomer/Test txt/Omega2a_b/P2.txt')
@@ -153,5 +163,9 @@ options_fig = {
     'SequenceAlignmentExtension': 1,
     'InitialAlignmentExactPairs': 1
     }
-
+import plotly.graph_objects as go
+fig = go.Figure()
+fig.add_trace(go.Scatter3d(x=[i[0] for i in P1[2820:2860]], y=[i[1] for i in P1[2820:2860]], z=[i[2] for i in P1[2820:2860]], mode='lines', line=dict(width=9,color = 'blue'), name="Aligned "))
+fig.add_trace(go.Scatter3d(x=[i[0] for i in P2[2820:2860]], y=[i[1] for i in P2[2820:2860]], z=[i[2] for i in P2[2820:2860]], mode='lines', line=dict(width=9,color = 'red'), name="Aligned "))
+fig.show()
 OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, P2org, NresAverage, options_fig)

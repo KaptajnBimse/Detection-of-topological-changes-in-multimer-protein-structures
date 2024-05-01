@@ -8,7 +8,7 @@ def SelfintersectionTransversal(a0, a1, b0, b1):
     transversal = udplan[1] # derivative of planes at these t values
     cut = 10**-20
     i = 0
-    for s in slist:
+    for s in (x for x in slist if x > 0):
         # i+= 1
         a = (1 - s) * a0 + s * a1
         b = (1 - s) * b0 + s * b1
