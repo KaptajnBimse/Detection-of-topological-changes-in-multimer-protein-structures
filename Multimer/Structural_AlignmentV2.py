@@ -76,7 +76,6 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
     P1_org = P1.copy()
     P2_org = P2.copy()
 
-    
 
     chain_name1 = list(seq1.keys())
     chain_name2 = list(seq2.keys())
@@ -85,7 +84,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
     distance_matrix1 = np.zeros((len(chain_name1), len(chain_name1)))
     distance_matrix2 = np.zeros((len(chain_name2), len(chain_name2)))
     nr_chains = len(chain_name1)
-    
+
     for i in range(nr_chains):
         for j in range(nr_chains):
             if chain_name1[i] == chain_name1[j]:
@@ -197,29 +196,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
     aligment_points1 = aligment_points1[1:,:]
     aligment_points2 = aligment_points2[1:,:]
 
-    #________________________________
-    ind = []
-    fig = plt.figure()
-    ii = 1
-    for chain in P2_Reorder.keys():
-        P1_temp = np.array(P1[chain])
-        P2_temp = np.array(P2_Reorder[chain])
-        n = len(P1[chain])
-        L1 = np.sqrt(np.sum((P1_temp[0:n - 1, :] - P1_temp[1:n, :]) ** 2, axis=1))
-        L2 = np.sqrt(np.sum((P2_temp[0:n - 1, :] - P2_temp[1:n, :]) ** 2, axis=1))
-        
-        ax = fig.add_subplot(2,3,ii)
-        ax.scatter(range(len(L1)),L1,label='L1')
-        ax.axhline(y=3.9,color='r',linestyle='--',label='3.9')
-        ax.legend()
-        
-        ind.append(np.array(np.where(np.maximum(L1,L2)>4)))
-        print((np.maximum(L1,L2)>4).sum())
-        ii+=1
-    print(ind)
-    plt.show()
 
-    #________________________________
     Transformed_points, R, rmsd = Align_3D(aligment_points1, aligment_points2)
 
     P = {}
@@ -228,22 +205,14 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         P[chain1] = Transformed_points[start:start+len(atoms_to_be_aligned2[chain1])-1]
         start += len(atoms_to_be_aligned2[chain1])
         # atoms_not_aligned = find_missing_numbers(atoms_to_be_aligned2[chain1], len(P[chain1]))
-<<<<<<< HEAD
-=======
         #atoms_not_aligned = [i for i, x in enumerate(align[chain1][0]) if x == "-"]
->>>>>>> b9e01889d27543315889b039dfb24aa6a2fa81b6
         
         # Find the difference between the two sets
         atoms_not_aligned = set(range(0,len(P1[chain1]))) - set(atoms_to_be_aligned2[chain1])
 
         # Convert the set to a list
         atoms_not_aligned = sorted(list(atoms_not_aligned))
-<<<<<<< HEAD
-        
-        #atoms_not_aligned = [i for i, x in enumerate(align[chain1][0]) if x == "-"]
-=======
 
->>>>>>> b9e01889d27543315889b039dfb24aa6a2fa81b6
         for i,j in enumerate(reversed(atoms_not_aligned)):
             P[chain1] = np.insert(P[chain1], j-(5-i), R@P2_Reorder[chain2][j-1], axis=0)
 
@@ -309,12 +278,12 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         # print("2: " + str(Long_lines2))
         for i in reversed(Long_lines[0]):
             #print(np.sqrt(np.sum((np.array(P1[chain1])[i,:]-np.array(P1[chain1])[i+1,:])**2)))
-            P1[chain1].insert(i, ((np.array(P1[chain1])[i,:]+np.array(P1[chain1])[i+1,:])/2).tolist())
-            repar1[chain1].insert(i+1, (repar1[chain1][i-1]+repar1[chain1][i])/2)
+            P1[chain1].insert(i+1, ((np.array(P1[chain1])[i,:]+np.array(P1[chain1])[i+1,:])/2).tolist())
+            repar1[chain1].insert(i, (repar[chain1][i-1]+repar1[chain1][i])/2)
 
-            print(np.sqrt(np.sum((P_tmp[i,:]-P_tmp[i+1,:])**2)))
-            P[chain2].insert(i, ((np.array(P[chain2])[i,:]+np.array(P[chain2])[i+1,:])/2).tolist())
-            repar[chain2].insert(i+1, (repar[chain2][i-1]+repar[chain2][i])/2)
+            print(max(np.sqrt(np.sum((P_tmp[i,:]-P_tmp[i+1,:])**2)),np.sqrt(np.sum((P1_tmp[i,:]-P1_tmp[i+1,:])**2))))
+            P[chain2].insert(i+1, ((np.array(P[chain2])[i,:]+np.array(P[chain2])[i+1,:])/2).tolist())
+            repar[chain2].insert(i, (repar[chain2][i-1]+repar[chain2][i])/2)
 
 
 
@@ -322,9 +291,6 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
 
     # Lav repar
     if makefigure == 1:
-        #P1 = P1_org
-        #P = P2_org
-        
         # #Plot P1, P2 and P in 3d using plotly
         import plotly.graph_objects as go
 
@@ -342,12 +308,15 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         #add plot title
         fig.update_layout(title_text="Structural alignment of protein structures")
         fig.show()
-        pv1 = 98
-        pv2 = 110
+
+        pv1 = 270
+        pv2 = 285
+
+        
         #Create a plot for each pair of chains
         for i in range(len(P1.keys())):
             fig = go.Figure()
-            #fig.add_trace(go.Scatter3d(x=[i[0] for i in P1[chain_name1[i]][pv1:pv2]], y=[i[1] for i in P1[chain_name1[i]][pv1:pv2]], z=[i[2] for i in P1[chain_name1[i]][pv1:pv2]], mode='lines', line=dict(width=9), name='P1'))
+            fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name1[i]][pv1:pv2]], y=[i[1] for i in P[chain_name1[i]][pv1:pv2]], z=[i[2] for i in P[chain_name1[i]][pv1:pv2]], mode='lines', line=dict(width=9), name='P'))
             fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name1[i]][pv1:pv2]], y=[i[1] for i in P[chain_name1[i]][pv1:pv2]], z=[i[2] for i in P[chain_name1[i]][pv1:pv2]], mode='lines', line=dict(width=9), name='P'))
             fig.update_layout(title_text="Structural alignment of protein structures for chain " + chain_name1[i])
             fig.show()
@@ -380,5 +349,5 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
 #pdb_file2 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
 
 
-#P1, P, repar1, repar, is_aligned, NresAverage = structural_alignment(pdb_file1, pdb_file2, makefigure = 0)
+#P1, P, repar1, repar, is_aligned, NresAverage = structural_alignment(pdb_file1, pdb_file2, makefigure = 1)
 
