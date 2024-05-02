@@ -278,12 +278,12 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         # print("2: " + str(Long_lines2))
         for i in reversed(Long_lines[0]):
             #print(np.sqrt(np.sum((np.array(P1[chain1])[i,:]-np.array(P1[chain1])[i+1,:])**2)))
-            P1[chain1].insert(i, ((np.array(P1[chain1])[i,:]+np.array(P1[chain1])[i+1,:])/2).tolist())
-            repar1[chain1].insert(i+1, (repar1[chain1][i-1]+repar1[chain1][i])/2)
+            P1[chain1].insert(i+1, ((np.array(P1[chain1])[i,:]+np.array(P1[chain1])[i+1,:])/2).tolist())
+            repar1[chain1].insert(i, (repar[chain1][i-1]+repar1[chain1][i])/2)
 
-            print(np.sqrt(np.sum((P_tmp[i,:]-P_tmp[i+1,:])**2)))
-            P[chain2].insert(i, ((np.array(P[chain2])[i,:]+np.array(P[chain2])[i+1,:])/2).tolist())
-            repar[chain2].insert(i+1, (repar[chain2][i-1]+repar[chain2][i])/2)
+            print(max(np.sqrt(np.sum((P_tmp[i,:]-P_tmp[i+1,:])**2)),np.sqrt(np.sum((P1_tmp[i,:]-P1_tmp[i+1,:])**2))))
+            P[chain2].insert(i+1, ((np.array(P[chain2])[i,:]+np.array(P[chain2])[i+1,:])/2).tolist())
+            repar[chain2].insert(i, (repar[chain2][i-1]+repar[chain2][i])/2)
 
 
 
@@ -309,11 +309,15 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         fig.update_layout(title_text="Structural alignment of protein structures")
         fig.show()
 
+        pv1 = 270
+        pv2 = 285
+
+        
         #Create a plot for each pair of chains
         for i in range(len(P1.keys())):
             fig = go.Figure()
-            fig.add_trace(go.Scatter3d(x=[i[0] for i in P1[chain_name1[i]]], y=[i[1] for i in P1[chain_name1[i]]], z=[i[2] for i in P1[chain_name1[i]]], mode='lines', line=dict(width=9), name='P1'))
-            fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name1[i]]], y=[i[1] for i in P[chain_name1[i]]], z=[i[2] for i in P[chain_name1[i]]], mode='lines', line=dict(width=9), name='P'))
+            fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name1[i]][pv1:pv2]], y=[i[1] for i in P[chain_name1[i]][pv1:pv2]], z=[i[2] for i in P[chain_name1[i]][pv1:pv2]], mode='lines', line=dict(width=9), name='P'))
+            fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name1[i]][pv1:pv2]], y=[i[1] for i in P[chain_name1[i]][pv1:pv2]], z=[i[2] for i in P[chain_name1[i]][pv1:pv2]], mode='lines', line=dict(width=9), name='P'))
             fig.update_layout(title_text="Structural alignment of protein structures for chain " + chain_name1[i])
             fig.show()
 
@@ -345,5 +349,5 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
 #pdb_file2 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
 
 
-#P1, P, repar1, repar, is_aligned, NresAverage = structural_alignment(pdb_file1, pdb_file2, makefigure = 0)
+#P1, P, repar1, repar, is_aligned, NresAverage = structural_alignment(pdb_file1, pdb_file2, makefigure = 1)
 

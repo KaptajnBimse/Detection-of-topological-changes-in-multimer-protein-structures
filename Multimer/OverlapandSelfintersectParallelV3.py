@@ -46,6 +46,7 @@ def OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, 
     plt.hist(L1, bins=300)
     plt.hist(L2, bins=300)
     plt.show()
+
     if Smoothning == 1:
         MaxL = 3.5
         MaxSum = 2.1
@@ -73,8 +74,8 @@ def OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, 
     tmp[:,:,3] = overlap[1:n, 1:n]
     Oav = np.sum(tmp, axis=2)
 
-    # a2, a1 = np.where(np.transpose(np.tril(Oav, -2) > MaxSum) + (np.tril(M, -2) > MaxL))
-    a2, a1 = np.where(np.transpose((np.tril(M, -2) > MaxL)))
+    a2, a1 = np.where(np.transpose(np.tril(Oav, -2) > MaxSum) + (np.tril(M, -2) > MaxL))
+    #a2, a1 = np.where(np.transpose((np.tril(M, -2) > MaxL)))
 
     tjekliste = np.column_stack((a1, a2))
     
