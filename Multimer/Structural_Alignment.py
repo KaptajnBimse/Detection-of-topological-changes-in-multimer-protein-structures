@@ -228,22 +228,13 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         P[chain1] = Transformed_points[start:start+len(atoms_to_be_aligned2[chain1])-1]
         start += len(atoms_to_be_aligned2[chain1])
         # atoms_not_aligned = find_missing_numbers(atoms_to_be_aligned2[chain1], len(P[chain1]))
-<<<<<<< HEAD
-=======
         #atoms_not_aligned = [i for i, x in enumerate(align[chain1][0]) if x == "-"]
->>>>>>> b9e01889d27543315889b039dfb24aa6a2fa81b6
         
         # Find the difference between the two sets
         atoms_not_aligned = set(range(0,len(P1[chain1]))) - set(atoms_to_be_aligned2[chain1])
 
         # Convert the set to a list
         atoms_not_aligned = sorted(list(atoms_not_aligned))
-<<<<<<< HEAD
-        
-        #atoms_not_aligned = [i for i, x in enumerate(align[chain1][0]) if x == "-"]
-=======
-
->>>>>>> b9e01889d27543315889b039dfb24aa6a2fa81b6
         for i,j in enumerate(reversed(atoms_not_aligned)):
             P[chain1] = np.insert(P[chain1], j-(5-i), R@P2_Reorder[chain2][j-1], axis=0)
 
