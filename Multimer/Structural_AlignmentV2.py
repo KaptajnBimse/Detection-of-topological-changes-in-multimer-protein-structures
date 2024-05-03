@@ -9,6 +9,7 @@ from Bio import Align
 from PDBP_to_seq import two_PDB_to_seq, one_PDB_to_seq
 from Align_3D import Align_3D
 import itertools
+import copy
 
 def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
     
@@ -73,8 +74,8 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         return best_perms
 
     P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_com1, chain_com2 = two_PDB_to_seq(pdb_file1, pdb_file2)
-    P1_org = P1.copy()
-    P2_org = P2.copy()
+    P1_org = copy.deepcopy(P1)
+    P2_org = copy.deepcopy(P2)
 
 
     chain_name1 = list(seq1.keys())
@@ -260,7 +261,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
             P1[key].insert(index+1,new_point)
             repar1[key].insert(index+1-(Factor_hole_query[i]-1),index+alpha-(Factor_hole_query[i]-1))
 
-    import copy
+    
     L1 = {}
     L2 = {}
     PLess4 = copy.deepcopy(P)
@@ -346,6 +347,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
     P2org_tot = np.concatenate(list(P2_org.values()), axis = 0)
     # print(P2_org)
     NresAverage = (len(P1org_tot)+len(P2org_tot))/2
+
 
 
     return P1, P, repar1, repar, is_aligned, NresAverage, P1Less4, PLess4, RePar1Less4, ReParLess4
