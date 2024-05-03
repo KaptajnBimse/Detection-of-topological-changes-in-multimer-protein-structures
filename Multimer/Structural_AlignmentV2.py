@@ -261,9 +261,11 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
             P1[key].insert(index+1,new_point)
             repar1[key].insert(index+1-(Factor_hole_query[i]-1),index+alpha-(Factor_hole_query[i]-1))
 
-    
+    import copy
     L1 = {}
     L2 = {}
+    Insert_points_P1 = {}
+    Insert_points_P = {}
     PLess4 = copy.deepcopy(P)
     P1Less4 = copy.deepcopy(P1)
 
@@ -282,17 +284,21 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         L2[chain2] = np.sqrt(np.sum((P_tmp[0:m - 1, :] - P_tmp[1:m, :]) ** 2, axis=1))
         Lmax = np.maximum((L1[chain1]), (L2[chain2]))
         Long_lines = np.where(Lmax > 4)
+        Insert_points_P1[chain1] = np.zeros((n)).tolist()
+        Insert_points_P[chain2] = np.zeros((m)).tolist()
         
         # print("1: " + str(Long_lines1))
         # print("2: " + str(Long_lines2))
         for i in reversed(Long_lines[0]):
             #print(np.sqrt(np.sum((np.array(P1[chain1])[i,:]-np.array(P1[chain1])[i+1,:])**2)))
             P1Less4[chain1].insert(i+1, ((np.array(P1Less4[chain1])[i,:]+np.array(P1Less4[chain1])[i+1,:])/2).tolist())
-            RePar1Less4[chain1].insert(i, (RePar1Less4[chain1][i-1]+RePar1Less4[chain1][i])/2)
+            Insert_points_P1[chain1].insert(i+1, 1)
+            RePar1Less4[chain1].insert(i+1, (RePar1Less4[chain1][i]+RePar1Less4[chain1][i+1])/2)
 
             # print(max(np.sqrt(np.sum((P_tmp[i,:]-P_tmp[i+1,:])**2)),np.sqrt(np.sum((P1_tmp[i,:]-P1_tmp[i+1,:])**2))))
             PLess4[chain2].insert(i+1, ((np.array(PLess4[chain2])[i,:]+np.array(PLess4[chain2])[i+1,:])/2).tolist())
-            ReParLess4[chain2].insert(i, (ReParLess4[chain2][i-1]+ReParLess4[chain2][i])/2)
+            Insert_points_P[chain2].insert(i+1, 1)
+            ReParLess4[chain2].insert(i+1, (ReParLess4[chain2][i]+ReParLess4[chain2][i+1])/2)
 
     print("Length of repar[Chain_A]: ", len(repar["Chain_A"]))
     print("Length of repar1[Chain_A]: ", len(repar1["Chain_A"]))
@@ -350,7 +356,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
 
 
 
-    return P1, P, repar1, repar, is_aligned, NresAverage, P1Less4, PLess4, RePar1Less4, ReParLess4
+    return P1, P, repar1, repar, is_aligned, NresAverage, P1Less4, PLess4, RePar1Less4, ReParLess4, Insert_points_P1, Insert_points_P
 
 
 #pdb_file1 = "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
