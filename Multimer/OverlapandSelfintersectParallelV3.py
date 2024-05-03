@@ -5,7 +5,7 @@ from AlignmentMetaData import AlignmentMetaData
 from SelfintersectionTransversal import SelfintersectionTransversal
 from MakeSelfIntcFigureV3 import MakeSelfIntcFigureV3
 
-def OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, P2org, NresAverage, options, False_lines):
+def OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, P2org, NresAverage, options, False_lines, P1Less4, P2Less4, RePar1Less4, ReParLess4):
     Smoothning = options['Smoothning']
     AllowEndContractions = options['AllowEndContractions']
     AllMaxLengths = options['MaxLength']
@@ -117,6 +117,7 @@ def OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, 
 
     Maxs = AllMaxLengths
     Outs = []
+    
     for i in range(Maxs):
         if AllowEndContractions == 1:
             maxendcontraction = Maxs[i] / 2

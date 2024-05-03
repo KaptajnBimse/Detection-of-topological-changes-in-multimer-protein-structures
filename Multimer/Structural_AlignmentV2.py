@@ -260,15 +260,23 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
             P1[key].insert(index+1,new_point)
             repar1[key].insert(index+1-(Factor_hole_query[i]-1),index+alpha-(Factor_hole_query[i]-1))
 
-
+    import copy
     L1 = {}
     L2 = {}
+    PLess4 = copy.deepcopy(P)
+    P1Less4 = copy.deepcopy(P1)
+
+    
+    ReParLess4 = copy.deepcopy(repar)
+    RePar1Less4 = copy.deepcopy(repar1)
+    print("Length of repar[Chain_A]: ", len(repar["Chain_A"]))
+    print("Length of repar1[Chain_A]: ", len(repar1["Chain_A"]))
     # Insert points in linesegments  > 4
-    for chain1, chain2 in zip(P1, P):
-        n = len(P1[chain1])
-        m =  len(P[chain2])
-        P1_tmp = np.array(P1[chain1])
-        P_tmp = np.array(P[chain2])
+    for chain1, chain2 in zip(P1Less4, PLess4):
+        n = len(P1Less4[chain1])
+        m =  len(PLess4[chain2])
+        P1_tmp = np.array(P1Less4[chain1])
+        P_tmp = np.array(PLess4[chain2])
         L1[chain1] = np.sqrt(np.sum((P1_tmp[0:n - 1, :] - P1_tmp[1:n, :]) ** 2, axis=1))
         L2[chain2] = np.sqrt(np.sum((P_tmp[0:m - 1, :] - P_tmp[1:m, :]) ** 2, axis=1))
         Lmax = np.maximum((L1[chain1]), (L2[chain2]))
@@ -278,14 +286,15 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         # print("2: " + str(Long_lines2))
         for i in reversed(Long_lines[0]):
             #print(np.sqrt(np.sum((np.array(P1[chain1])[i,:]-np.array(P1[chain1])[i+1,:])**2)))
-            P1[chain1].insert(i+1, ((np.array(P1[chain1])[i,:]+np.array(P1[chain1])[i+1,:])/2).tolist())
-            repar1[chain1].insert(i, (repar[chain1][i-1]+repar1[chain1][i])/2)
+            P1Less4[chain1].insert(i+1, ((np.array(P1Less4[chain1])[i,:]+np.array(P1Less4[chain1])[i+1,:])/2).tolist())
+            RePar1Less4[chain1].insert(i, (RePar1Less4[chain1][i-1]+RePar1Less4[chain1][i])/2)
 
-            print(max(np.sqrt(np.sum((P_tmp[i,:]-P_tmp[i+1,:])**2)),np.sqrt(np.sum((P1_tmp[i,:]-P1_tmp[i+1,:])**2))))
-            P[chain2].insert(i+1, ((np.array(P[chain2])[i,:]+np.array(P[chain2])[i+1,:])/2).tolist())
-            repar[chain2].insert(i, (repar[chain2][i-1]+repar[chain2][i])/2)
+            # print(max(np.sqrt(np.sum((P_tmp[i,:]-P_tmp[i+1,:])**2)),np.sqrt(np.sum((P1_tmp[i,:]-P1_tmp[i+1,:])**2))))
+            PLess4[chain2].insert(i+1, ((np.array(PLess4[chain2])[i,:]+np.array(PLess4[chain2])[i+1,:])/2).tolist())
+            ReParLess4[chain2].insert(i, (ReParLess4[chain2][i-1]+ReParLess4[chain2][i])/2)
 
-
+    print("Length of repar[Chain_A]: ", len(repar["Chain_A"]))
+    print("Length of repar1[Chain_A]: ", len(repar1["Chain_A"]))
 
 
 
@@ -339,7 +348,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
     NresAverage = (len(P1org_tot)+len(P2org_tot))/2
 
 
-    return P1, P, repar1, repar, is_aligned, NresAverage
+    return P1, P, repar1, repar, is_aligned, NresAverage, P1Less4, PLess4, RePar1Less4, ReParLess4
 
 
 #pdb_file1 = "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
