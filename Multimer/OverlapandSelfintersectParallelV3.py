@@ -129,8 +129,11 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
             maxendcontraction = Maxs[i] / 2
         else:
             maxendcontraction = 0
-        tmp, Essensials, Mselfintc = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, n, P1, P2, RePar1, RePar2, IsAligned, P1org, P2org, maxendcontraction, Maxs)
-        Outs.append(tmp)
+            for chain1, chain2 in zip(P1, P2):
+                P1chain = P1[chain1]
+                P2chain = P2[chain2]
+                tmp, Essensials, Mselfintc = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, n, P1chain, P2chain, RePar1, RePar2, IsAligned, P1org, P2org, maxendcontraction, Maxs)
+                Outs.append(tmp)
 
     if makefigure == 1:
         MakeSelfIntcFigureV3(P1, P2, selfintc, overlap, Essensials, RePar1, RePar2, options)
