@@ -5,16 +5,16 @@ from AlignmentMetaData import AlignmentMetaData
 from SelfintersectionTransversal import SelfintersectionTransversal
 from MakeSelfIntcFigureV3 import MakeSelfIntcFigureV3
 
-def OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, P2org, NresAverage, options, False_lines, P1Less4, P2Less4, RePar1Less4, ReParLess4):
+def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4, IsAligned, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1, RePar2, IsAligned_org, Insert_points_P1, Insert_points_P):
     Smoothning = options['Smoothning']
     AllowEndContractions = options['AllowEndContractions']
     AllMaxLengths = options['MaxLength']
     makefigure = options['MakeFigures']
 
-    AlignmentMetaDataOut = AlignmentMetaData(RePar1, RePar2, IsAligned)
+    AlignmentMetaDataOut = AlignmentMetaData(RePar1Less4, RePar2Less4, IsAligned)
 
-    n = len(P1)
-    m = len(P2)
+    n = len(P1Less4)
+    m = len(P2Less4)
     if abs(n - m) > 0:
         print('Unequal sized protein structures intented superimposed')
         return
@@ -23,7 +23,7 @@ def OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, 
     sumselfintc = np.zeros(len(bands))
     sumoverlap = np.zeros(len(bands))
 
-    dPsq = (P1 - P2) ** 2  # working zone
+    dPsq = (P1Less4 - P2Less4) ** 2  # working zone
 
     Dsqr = np.sum(dPsq, axis=1)
     Ds = np.sqrt(Dsqr)
@@ -37,15 +37,15 @@ def OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, 
     rms1Aligned = np.sum(Ds[IsAligned == 1])
     rms2Aligned = np.sqrt(np.sum(Dsqr[IsAligned == 1]) / np.sum(IsAligned))
 
-    overlap, _, _, _ = NEAMReparametrizationParallel(P1, P2, RePar1, RePar2, IsAligned, Smoothning)
+    overlap, _, _, _ = NEAMReparametrizationParallel(P1Less4, P2Less4, RePar1Less4, RePar2Less4, IsAligned, Smoothning)
 
-    L1 = np.sqrt(np.sum((P1[0:n - 1, :] - P1[1:n, :]) ** 2, axis=1))
-    L2 = np.sqrt(np.sum((P2[0:n - 1, :] - P2[1:n, :]) ** 2, axis=1))
+    L1 = np.sqrt(np.sum((P1Less4[0:n - 1, :] - P1Less4[1:n, :]) ** 2, axis=1))
+    L2 = np.sqrt(np.sum((P2Less4[0:n - 1, :] - P2Less4[1:n, :]) ** 2, axis=1))
     # histogram of L1 and L2
-    import matplotlib.pyplot as plt
-    plt.hist(L1, bins=300)
-    plt.hist(L2, bins=300)
-    plt.show()
+    #import matplotlib.pyplot as plt
+    #plt.hist(L1, bins=300)
+    #plt.hist(L2, bins=300)
+    #plt.show()
 
     if Smoothning == 1:
         MaxL = 3.5
@@ -58,7 +58,7 @@ def OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, 
         # not are changed by the smoothing operation 
         LmaxOK[0:2] = LmaxOK[0:2] - [0.5, 0.35]
         LmaxOK[-2:] = LmaxOK[-2:] - [0.35, 0.5]
-        
+    
     M = np.tile(LmaxOK, (n - 1, 1))
     M = np.maximum(M, M.T)
 
@@ -96,13 +96,18 @@ def OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, 
     print("Number to check: ", PotSelfIntc)
     print("Remove because false lines ", tmp_num_check - PotSelfIntc)
 
-
+    Insert_points_P1_tot = np.concatenate(list(Insert_points_P1.values()), axis = 0)
+    Insert_points_P_tot = np.concatenate(list(Insert_points_P.values()), axis = 0)
+    IPP1_tjek = Insert_points_P1_tot[tjekliste[:, 0]]
+    IPP_tjek = Insert_points_P_tot[tjekliste[:, 0]]
+    
+    tjekliste[:, 0] = tjekliste[:, 0]-IPP1_tjek
 
 
     for k in range(tjekliste.shape[0]):
         i = tjekliste[k, 0]
         j = tjekliste[k, 1]
-        UdSelf = SelfintersectionTransversal(P1[i:(i+2), :].T, P2[i:(i+2), :].T, P1[j:(j+2), :].T, P2[j:(j+2), :].T)
+        UdSelf = SelfintersectionTransversal(P1Less4[i:(i+2), :].T, P2Less4[i:(i+2), :].T, P1Less4[j:(j+2), :].T, P2Less4[j:(j+2), :].T)
         UdSelf = np.atleast_2d(UdSelf)
         selfintc[i, j] = UdSelf[0, 0]
         print(f"{k/PotSelfIntc*100:.2f}%")
@@ -110,7 +115,8 @@ def OverlapandSelfintersectParallelV3(P1, P2, RePar1, RePar2, IsAligned, P1org, 
             selfintcu[i, j] = UdSelf[0, 1]
             selfintcv[i, j] = UdSelf[0, 2]
             selfintcs[i, j] = UdSelf[0, 3]
-
+    print(len(np.where(selfintc)[0]))
+    
     for j in range(len(bands)):
         sumoverlap[j] = np.sum(np.tril(overlap, -bands[j]))
         sumselfintc[j] = np.sum(np.tril(np.abs(selfintc), -bands[j]))
