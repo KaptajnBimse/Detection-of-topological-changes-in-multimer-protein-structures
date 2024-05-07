@@ -96,27 +96,22 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
     print("Number to check: ", PotSelfIntc)
     print("Remove because false lines ", tmp_num_check - PotSelfIntc)
 
-        # Find the i,j in tjekliste where selfintersection is present (not intersection between chains)
+    Insert_points_P1_tot = np.concatenate(list(Insert_points_P1.values()), axis = 0)
+    Insert_points_P_tot = np.concatenate(list(Insert_points_P.values()), axis = 0)
+    IPP1_tjek = Insert_points_P1_tot[tjekliste[:, 0]]
+    IPP_tjek = Insert_points_P_tot[tjekliste[:, 0]]
+    
+    tjekliste[:, 0] = tjekliste[:, 0]-IPP1_tjek
+
+    # Find the i,j in tjekliste where selfintersection is present (not intersection between chains)
     # Remember to include end contractions
 
     
     # First for loop for chain A only
-
-    Insert_points_P_tot = np.concatenate(list(Insert_points_P.values()), axis = 0)
-    Insert_cumsum = np.cumsum(Insert_points_P_tot)
-    IPP0_tjek = Insert_cumsum[tjekliste[:, 0]]
-    IPP1_tjek = Insert_cumsum[tjekliste[:, 1]]
-    
-    P1_tot = np.concatenate(list(P1.values()), axis = 0)
-    P2_tot = np.concatenate(list(P2.values()), axis = 0)
-
-    selfintcI =[]
-    selfintcJ =[]
     for k in range(tjekliste.shape[0]):
-        i = int(tjekliste[k, 0] - IPP0_tjek[k])
-        j = int(tjekliste[k, 1] - IPP1_tjek[k])
-        # print(i,j)
-        UdSelf = SelfintersectionTransversal(P1_tot[i:(i+2), :].T, P2_tot[i:(i+2), :].T, P1_tot[j:(j+2), :].T, P2_tot[j:(j+2), :].T)
+        i = tjekliste[k, 0]
+        j = tjekliste[k, 1]
+        UdSelf = SelfintersectionTransversal(P1Less4[i:(i+2), :].T, P2Less4[i:(i+2), :].T, P1Less4[j:(j+2), :].T, P2Less4[j:(j+2), :].T)
         UdSelf = np.atleast_2d(UdSelf)
         selfintc[i, j] = UdSelf[0, 0]
         print(f"{k/PotSelfIntc*100:.2f}%")
@@ -124,54 +119,11 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
             selfintcu[i, j] = UdSelf[0, 1]
             selfintcv[i, j] = UdSelf[0, 2]
             selfintcs[i, j] = UdSelf[0, 3]
-            selfintcI = np.append(selfintcI, i)
-            selfintcJ = np.append(selfintcJ, j)
     print(len(np.where(selfintc)[0]))
     
-    # plot 10 random lines that should intersect -----------------------------------
-
-    # #generate 10 random numbers in the range 0-len(np.where(selfintc)[0])
-    # random_numbers = np.random.randint(0, len(np.where(selfintc)[0]), 10)
-    # import plotly.graph_objects as go
-
-    # for i in random_numbers:
-    #     line1 = np.where(selfintc)[0][i]
-    #     line2 = np.where(selfintc)[1][i]
-    #     fig = go.Figure()
-    #     fig.add_trace(go.Scatter3d(x=((1-selfintcs[line1, line2])*P1_tot[line1:line1+2]+selfintcs[line1, line2]*P2_tot[line1:line1+2])[:,0].tolist(), 
-    #                                y=((1-selfintcs[line1, line2])*P1_tot[line1:line1+2]+selfintcs[line1, line2]*P2_tot[line1:line1+2])[:,1].tolist(), 
-    #                                z=((1-selfintcs[line1, line2])*P1_tot[line1:line1+2]+selfintcs[line1, line2]*P2_tot[line1:line1+2])[:,2].tolist(),
-    #                                mode='lines', line=dict(width=9,color = 'yellow'), name='line 1'))
-        
-    #     fig.add_trace(go.Scatter3d(x=((1-(selfintcs[line1, line2]+0.1))*P1_tot[line1:line1+2]+(selfintcs[line1, line2]+0.1)*P2_tot[line1:line1+2])[:,0].tolist(), 
-    #                                y=((1-(selfintcs[line1, line2]+0.1))*P1_tot[line1:line1+2]+(selfintcs[line1, line2]+0.1)*P2_tot[line1:line1+2])[:,1].tolist(), 
-    #                                z=((1-(selfintcs[line1, line2]+0.1))*P1_tot[line1:line1+2]+(selfintcs[line1, line2]+0.1)*P2_tot[line1:line1+2])[:,2].tolist(), 
-    #                                mode='lines', line=dict(width=9,color = 'blue'), name='line 1'))
-
-    #     fig.add_trace(go.Scatter3d(x=((1-(selfintcs[line1, line2]-0.1))*P1_tot[line1:line1+2]+(selfintcs[line1, line2]-0.1)*P2_tot[line1:line1+2])[:,0].tolist(), 
-    #                                y=((1-(selfintcs[line1, line2]-0.1))*P1_tot[line1:line1+2]+(selfintcs[line1, line2]-0.1)*P2_tot[line1:line1+2])[:,1].tolist(), 
-    #                                z=((1-(selfintcs[line1, line2]-0.1))*P1_tot[line1:line1+2]+(selfintcs[line1, line2]-0.1)*P2_tot[line1:line1+2])[:,2].tolist(), 
-    #                                mode='lines', line=dict(width=9,color = 'blue'), name='line 1'))
-
-    #     fig.add_trace(go.Scatter3d(x=((1-selfintcs[line1, line2])*P1_tot[line2:line2+2]+selfintcs[line1, line2]*P2_tot[line2:line2+2])[:,0].tolist(), 
-    #                                y=((1-selfintcs[line1, line2])*P1_tot[line2:line2+2]+selfintcs[line1, line2]*P2_tot[line2:line2+2])[:,1].tolist(), 
-    #                                z=((1-selfintcs[line1, line2])*P1_tot[line2:line2+2]+selfintcs[line1, line2]*P2_tot[line2:line2+2])[:,2].tolist(), 
-    #                                mode='lines', line=dict(width=9,color = 'yellow'), name='line 1'))
-        
-    #     fig.add_trace(go.Scatter3d(x=((1-(selfintcs[line1, line2]+0.1))*P1_tot[line2:line2+2]+(selfintcs[line1, line2]+0.1)*P2_tot[line2:line2+2])[:,0].tolist(), 
-    #                                y=((1-(selfintcs[line1, line2]+0.1))*P1_tot[line2:line2+2]+(selfintcs[line1, line2]+0.1)*P2_tot[line2:line2+2])[:,1].tolist(), 
-    #                                z=((1-(selfintcs[line1, line2]+0.1))*P1_tot[line2:line2+2]+(selfintcs[line1, line2]+0.1)*P2_tot[line2:line2+2])[:,2].tolist(), 
-    #                                mode='lines', line=dict(width=9,color = 'red'), name='line 1'))
-
-    #     fig.add_trace(go.Scatter3d(x=((1-(selfintcs[line1, line2]-0.1))*P1_tot[line2:line2+2]+(selfintcs[line1, line2]-0.1)*P2_tot[line2:line2+2])[:,0].tolist(), 
-    #                                y=((1-(selfintcs[line1, line2]-0.1))*P1_tot[line2:line2+2]+(selfintcs[line1, line2]-0.1)*P2_tot[line2:line2+2])[:,1].tolist(), 
-    #                                z=((1-(selfintcs[line1, line2]-0.1))*P1_tot[line2:line2+2]+(selfintcs[line1, line2]-0.1)*P2_tot[line2:line2+2])[:,2].tolist(), 
-    #                                mode='lines', line=dict(width=9,color = 'red'), name='line 1'))
-
-    #     fig.show()
-
-    # --------------------------------------------------------------------------------
-
+    # Second for loop for chains collected, looking at type 1 only as end contraction and type 2 as before
+    
+    
     for j in range(len(bands)):
         sumoverlap[j] = np.sum(np.tril(overlap, -bands[j]))
         sumselfintc[j] = np.sum(np.tril(np.abs(selfintc), -bands[j]))
