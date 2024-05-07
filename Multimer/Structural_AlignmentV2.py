@@ -74,6 +74,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         return best_perms
 
     P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_com1, chain_com2 = two_PDB_to_seq(pdb_file1, pdb_file2)
+    
     P1_org = copy.deepcopy(P1)
     P2_org = copy.deepcopy(P2)
 
@@ -331,7 +332,10 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         #Create a plot for each pair of chains
         for i in range(len(P1.keys())):
             fig = go.Figure()
-            fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name1[i]][pv1:pv2]], y=[i[1] for i in P[chain_name1[i]][pv1:pv2]], z=[i[2] for i in P[chain_name1[i]][pv1:pv2]], mode='lines', line=dict(width=9), name='P'))
+            fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name1[i]][pv1:pv2]], 
+                                       y=[i[1] for i in P[chain_name1[i]][pv1:pv2]], 
+                                       z=[i[2] for i in P[chain_name1[i]][pv1:pv2]], mode='lines', line=dict(width=9), name='P'))
+            
             fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name1[i]][pv1:pv2]], y=[i[1] for i in P[chain_name1[i]][pv1:pv2]], z=[i[2] for i in P[chain_name1[i]][pv1:pv2]], mode='lines', line=dict(width=9), name='P'))
             fig.update_layout(title_text="Structural alignment of protein structures for chain " + chain_name1[i])
             fig.show()
