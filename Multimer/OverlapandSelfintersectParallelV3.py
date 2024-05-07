@@ -96,12 +96,6 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
     print("Number to check: ", PotSelfIntc)
     print("Remove because false lines ", tmp_num_check - PotSelfIntc)
 
-        # Find the i,j in tjekliste where selfintersection is present (not intersection between chains)
-    # Remember to include end contractions
-
-    
-    # First for loop for chain A only
-
     Insert_points_P_tot = np.concatenate(list(Insert_points_P.values()), axis = 0)
     Insert_cumsum = np.cumsum(Insert_points_P_tot)
     IPP0_tjek = Insert_cumsum[tjekliste[:, 0]]
@@ -128,7 +122,6 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
             selfintcJ = np.append(selfintcJ, j)
     print(len(np.where(selfintc)[0]))
     
-    # Second for loop for chains collected, looking at type 1 only as end contraction and type 2 as before
     
     #generate 10 random numbers in the range 0-len(np.where(selfintc)[0])
     random_numbers = np.random.randint(0, len(np.where(selfintc)[0]), 10)
@@ -158,6 +151,11 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
     Maxs = AllMaxLengths
     Outs = []
     
+    # Find the i,j in tjekliste where selfintersection is present (not intersection between chains)
+    # Remember to include end contractions
+
+    # First for loop for chain A only
+    
     for i in range(Maxs):
         if AllowEndContractions == 1:
             maxendcontraction = Maxs[i] / 2
@@ -169,6 +167,9 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
                 tmp, Essensials, Mselfintc = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, n, P1chain, P2chain, RePar1, RePar2, IsAligned, P1org, P2org, maxendcontraction, Maxs, chain1, chain2)
                 Outs.append(tmp)
 
+        # Second for loop for chains collected, looking at type 1 only as end contraction and type 2 as before
+    
+    
     if makefigure == 1:
         MakeSelfIntcFigureV3(P1, P2, selfintc, overlap, Essensials, RePar1, RePar2, options)
 
