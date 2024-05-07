@@ -122,27 +122,49 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
             selfintcJ = np.append(selfintcJ, j)
     print(len(np.where(selfintc)[0]))
     
-    
-    #generate 10 random numbers in the range 0-len(np.where(selfintc)[0])
-    random_numbers = np.random.randint(0, len(np.where(selfintc)[0]), 10)
-    import plotly.graph_objects as go
+    # plot 10 random lines that should intersect -----------------------------------
 
-    for i in random_numbers:
-        line1 = np.where(selfintc)[0][i]
-        line2 = np.where(selfintc)[1][i]
-        fig = go.Figure()
-        fig.add_trace(go.Scatter3d(x=(selfintcs[line1, line2]*P1_tot[line1-5:line1+5]+(1-selfintcs[line1, line2])*P2_tot[line1-5:line1+5])[:,0].tolist(), 
-                                   y=(selfintcs[line1, line2]*P1_tot[line1-5:line1+5]+(1-selfintcs[line1, line2])*P2_tot[line1-5:line1+5])[:,1].tolist(), 
-                                   z=(selfintcs[line1, line2]*P1_tot[line1-5:line1+5]+(1-selfintcs[line1, line2])*P2_tot[line1-5:line1+5])[:,2].tolist(), 
-                                   mode='lines', line=dict(width=9,color = 'blue'), name='line 1'))
+    # #generate 10 random numbers in the range 0-len(np.where(selfintc)[0])
+    # random_numbers = np.random.randint(0, len(np.where(selfintc)[0]), 10)
+    # import plotly.graph_objects as go
 
-        fig.add_trace(go.Scatter3d(x=(selfintcs[line1, line2]*P1_tot[line2-5:line2+5]+(1-selfintcs[line1, line2])*P2_tot[line2-5:line2+5])[:,0].tolist(), 
-                                   y=(selfintcs[line1, line2]*P1_tot[line2-5:line2+5]+(1-selfintcs[line1, line2])*P2_tot[line2-5:line2+5])[:,1].tolist(), 
-                                   z=(selfintcs[line1, line2]*P1_tot[line2-5:line2+5]+(1-selfintcs[line1, line2])*P2_tot[line2-5:line2+5])[:,2].tolist(), 
-                                   mode='lines', line=dict(width=9,color = 'red'), name='line 2'))
+    # for i in random_numbers:
+    #     line1 = np.where(selfintc)[0][i]
+    #     line2 = np.where(selfintc)[1][i]
+    #     fig = go.Figure()
+    #     fig.add_trace(go.Scatter3d(x=((1-selfintcs[line1, line2])*P1_tot[line1:line1+2]+selfintcs[line1, line2]*P2_tot[line1:line1+2])[:,0].tolist(), 
+    #                                y=((1-selfintcs[line1, line2])*P1_tot[line1:line1+2]+selfintcs[line1, line2]*P2_tot[line1:line1+2])[:,1].tolist(), 
+    #                                z=((1-selfintcs[line1, line2])*P1_tot[line1:line1+2]+selfintcs[line1, line2]*P2_tot[line1:line1+2])[:,2].tolist(),
+    #                                mode='lines', line=dict(width=9,color = 'yellow'), name='line 1'))
+        
+    #     fig.add_trace(go.Scatter3d(x=((1-(selfintcs[line1, line2]+0.1))*P1_tot[line1:line1+2]+(selfintcs[line1, line2]+0.1)*P2_tot[line1:line1+2])[:,0].tolist(), 
+    #                                y=((1-(selfintcs[line1, line2]+0.1))*P1_tot[line1:line1+2]+(selfintcs[line1, line2]+0.1)*P2_tot[line1:line1+2])[:,1].tolist(), 
+    #                                z=((1-(selfintcs[line1, line2]+0.1))*P1_tot[line1:line1+2]+(selfintcs[line1, line2]+0.1)*P2_tot[line1:line1+2])[:,2].tolist(), 
+    #                                mode='lines', line=dict(width=9,color = 'blue'), name='line 1'))
 
-        fig.show()
+    #     fig.add_trace(go.Scatter3d(x=((1-(selfintcs[line1, line2]-0.1))*P1_tot[line1:line1+2]+(selfintcs[line1, line2]-0.1)*P2_tot[line1:line1+2])[:,0].tolist(), 
+    #                                y=((1-(selfintcs[line1, line2]-0.1))*P1_tot[line1:line1+2]+(selfintcs[line1, line2]-0.1)*P2_tot[line1:line1+2])[:,1].tolist(), 
+    #                                z=((1-(selfintcs[line1, line2]-0.1))*P1_tot[line1:line1+2]+(selfintcs[line1, line2]-0.1)*P2_tot[line1:line1+2])[:,2].tolist(), 
+    #                                mode='lines', line=dict(width=9,color = 'blue'), name='line 1'))
 
+    #     fig.add_trace(go.Scatter3d(x=((1-selfintcs[line1, line2])*P1_tot[line2:line2+2]+selfintcs[line1, line2]*P2_tot[line2:line2+2])[:,0].tolist(), 
+    #                                y=((1-selfintcs[line1, line2])*P1_tot[line2:line2+2]+selfintcs[line1, line2]*P2_tot[line2:line2+2])[:,1].tolist(), 
+    #                                z=((1-selfintcs[line1, line2])*P1_tot[line2:line2+2]+selfintcs[line1, line2]*P2_tot[line2:line2+2])[:,2].tolist(), 
+    #                                mode='lines', line=dict(width=9,color = 'yellow'), name='line 1'))
+        
+    #     fig.add_trace(go.Scatter3d(x=((1-(selfintcs[line1, line2]+0.1))*P1_tot[line2:line2+2]+(selfintcs[line1, line2]+0.1)*P2_tot[line2:line2+2])[:,0].tolist(), 
+    #                                y=((1-(selfintcs[line1, line2]+0.1))*P1_tot[line2:line2+2]+(selfintcs[line1, line2]+0.1)*P2_tot[line2:line2+2])[:,1].tolist(), 
+    #                                z=((1-(selfintcs[line1, line2]+0.1))*P1_tot[line2:line2+2]+(selfintcs[line1, line2]+0.1)*P2_tot[line2:line2+2])[:,2].tolist(), 
+    #                                mode='lines', line=dict(width=9,color = 'red'), name='line 1'))
+
+    #     fig.add_trace(go.Scatter3d(x=((1-(selfintcs[line1, line2]-0.1))*P1_tot[line2:line2+2]+(selfintcs[line1, line2]-0.1)*P2_tot[line2:line2+2])[:,0].tolist(), 
+    #                                y=((1-(selfintcs[line1, line2]-0.1))*P1_tot[line2:line2+2]+(selfintcs[line1, line2]-0.1)*P2_tot[line2:line2+2])[:,1].tolist(), 
+    #                                z=((1-(selfintcs[line1, line2]-0.1))*P1_tot[line2:line2+2]+(selfintcs[line1, line2]-0.1)*P2_tot[line2:line2+2])[:,2].tolist(), 
+    #                                mode='lines', line=dict(width=9,color = 'red'), name='line 1'))
+
+    #     fig.show()
+
+    # --------------------------------------------------------------------------------
 
     for j in range(len(bands)):
         sumoverlap[j] = np.sum(np.tril(overlap, -bands[j]))

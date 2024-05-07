@@ -1,5 +1,6 @@
 import numpy as np
 import PlanarityTransversal as PT
+import plotly.graph_objects as go
 
 def SelfintersectionTransversal(a0, a1, b0, b1):
     ud = 0
@@ -33,6 +34,19 @@ def SelfintersectionTransversal(a0, a1, b0, b1):
         if np.sum((0 <= uv) & (uv <= 1)) == 2:
             if np.sum((M @ uv - k)**2) < cut:
                 ud = [np.sign(transversal[i]), uv[0],uv[1], s] # ændret fra transversal[i,0] fordi andet index var ulovligt, men skal måske bruges
+
+                # fig = go.Figure()
+                # fig.add_trace(go.Scatter3d(x=((1-s)*a0+s*a1)[0,:].tolist(), 
+                #                         y=((1-s)*a0+s*a1)[1,:].tolist(), 
+                #                         z=((1-s)*a0+s*a1)[2,:].tolist(), 
+                #                         mode='lines', line=dict(width=9,color = 'red'), name='line 1'))
+                
+                # fig.add_trace(go.Scatter3d(x=((1-s)*b0+s*b1)[0,:].tolist(), 
+                #                         y=((1-s)*b0+s*b1)[1,:].tolist(), 
+                #                         z=((1-s)*b0+s*b1)[2,:].tolist(), 
+                #                         mode='lines', line=dict(width=9,color = 'blue'), name='line 2'))
+                
+                # fig.show()
             return ud
         i += 1
     return ud
