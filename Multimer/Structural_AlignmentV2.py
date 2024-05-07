@@ -261,7 +261,6 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
             P1[key].insert(index+1,new_point)
             repar1[key].insert(index+1-(Factor_hole_query[i]-1),index+alpha-(Factor_hole_query[i]-1))
 
-    import copy
     L1 = {}
     L2 = {}
     Insert_points_P1 = {}
