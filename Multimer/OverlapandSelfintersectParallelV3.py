@@ -160,7 +160,7 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
             for chain1, chain2 in zip(P1, P2):
                 P1chain = P1[chain1]
                 P2chain = P2[chain2]
-                tmp, Essensials, Mselfintc = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, n, P1chain, P2chain, RePar1, RePar2, IsAligned, P1org, P2org, maxendcontraction, Maxs)
+                tmp, Essensials, Mselfintc = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, n, P1chain, P2chain, RePar1, RePar2, IsAligned, P1org, P2org, maxendcontraction, Maxs, chain1, chain2)
                 Outs.append(tmp)
 
     if makefigure == 1:

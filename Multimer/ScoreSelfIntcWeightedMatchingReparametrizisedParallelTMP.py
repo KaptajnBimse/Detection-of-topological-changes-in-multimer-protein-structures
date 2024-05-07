@@ -46,7 +46,11 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
 
     #C = sparse.find(sparse.tril(selfintc, 0))[2]
     
-
+    if P1 == P:
+        sim_chain = 1
+    else:
+        sim_chain = 0
+    
     row, col, data = sparse.find(sparse.tril(selfintc, 0))
     sorted_indices = np.lexsort((row, col))
     C = data[sorted_indices]
