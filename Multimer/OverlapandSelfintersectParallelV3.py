@@ -4,6 +4,7 @@ from ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP import ScoreSelfIn
 from AlignmentMetaData import AlignmentMetaData
 from SelfintersectionTransversal import SelfintersectionTransversal
 from MakeSelfIntcFigureV3 import MakeSelfIntcFigureV3
+import copy
 
 def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4, IsAligned, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1, RePar2, IsAligned_org, Insert_points_P1, Insert_points_P):
     Smoothning = options['Smoothning']
@@ -110,16 +111,19 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
         i = int(tjekliste[k, 0] - IPP0_tjek[k])
         j = int(tjekliste[k, 1] - IPP1_tjek[k])
         # print(i,j)
-        UdSelf = SelfintersectionTransversal(P1_tot[i:(i+2), :].T, P2_tot[i:(i+2), :].T, P1_tot[j:(j+2), :].T, P2_tot[j:(j+2), :].T)
-        UdSelf = np.atleast_2d(UdSelf)
-        selfintc[i, j] = UdSelf[0, 0]
-        print(f"{k/PotSelfIntc*100:.2f}%")
-        if UdSelf[0, 0] ** 2 == 1:
-            selfintcu[i, j] = UdSelf[0, 1]
-            selfintcv[i, j] = UdSelf[0, 2]
-            selfintcs[i, j] = UdSelf[0, 3]
-            selfintcI = np.append(selfintcI, i)
-            selfintcJ = np.append(selfintcJ, j)
+        if (j == i+1) or (j == i-1):
+            print("Removed because of adjacent chains")
+        else:
+            UdSelf = SelfintersectionTransversal(P1_tot[i:(i+2), :].T, P2_tot[i:(i+2), :].T, P1_tot[j:(j+2), :].T, P2_tot[j:(j+2), :].T)
+            UdSelf = np.atleast_2d(UdSelf)
+            selfintc[i, j] = UdSelf[0, 0]
+            print(f"{k/PotSelfIntc*100:.2f}%")
+            if UdSelf[0, 0] ** 2 == 1:
+                selfintcu[i, j] = UdSelf[0, 1]
+                selfintcv[i, j] = UdSelf[0, 2]
+                selfintcs[i, j] = UdSelf[0, 3]
+                selfintcI = np.append(selfintcI, i)
+                selfintcJ = np.append(selfintcJ, j)
     print(len(np.where(selfintc)[0]))
     
     # plot 10 random lines that should intersect -----------------------------------
@@ -174,23 +178,85 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
     Outs = []
     
     # Find the i,j in tjekliste where selfintersection is present (not intersection between chains)
-    # Remember to include end contractions
-
-    # First for loop for chain A only
+    intersect_index_i = np.where(selfintc)[0]
+    intersect_index_j = np.where(selfintc)[1]
     
+    chain_change = np.zeros(len(P1)+1)
+    start = -1
+    for i,chain in zip(range(len(P1)), P1.keys()):
+        chain_change[i+1] = len(P1[chain])+start
+        start = chain_change[i+1]
+    chain_change2 = copy.deepcopy(chain_change)
+    chain_change = np.delete(chain_change, -1) # Remove the last element because for loop should not include it
+    
+    selfintersect = {}
+    non_selfintersect = {}
+    for c in reversed(chain_change):
+        cc = int(np.where(chain_change == c)[0])
+        chain = list(P1.keys())[cc]
+        selfintersect[chain] = []
+        non_selfintersect[chain] = []
+        for i, k in enumerate(reversed(range(intersect_index_i.shape[0]))):
+            if intersect_index_i[k] > c and intersect_index_j[k] > c:
+                #selfintersect[chain][i] = ([intersect_index_i[k], intersect_index_j[k]]) # If you want to know indices
+                selfintersect[chain].append(([intersect_index_i[k], intersect_index_j[k]]))
+                intersect_index_i = np.delete(intersect_index_i, k)
+                intersect_index_j = np.delete(intersect_index_j, k)
+                continue
+            if (intersect_index_i[k] < c) ^ (intersect_index_j[k] < c):
+                #non_selfintersect[chain][i] = ([intersect_index_i[k], intersect_index_j[k]])
+                non_selfintersect[chain].append(([intersect_index_i[k], intersect_index_j[k]]))
+                intersect_index_i = np.delete(intersect_index_i, k)
+                intersect_index_j = np.delete(intersect_index_j, k)
+    
+    selfintersect_tot = []
+    non_selfintersect_tot = []
+    
+    
+    
+    
+    for i in list(selfintersect.keys()):
+        selfintersect_tot.extend(selfintersect[i])
+        non_selfintersect_tot.extend(non_selfintersect[i])
+
+
+    # Assuming selfintc and selfintersect[chain] are defined
+    # Reset all elements in selfintc to 0
+    for i in range(np.array([Maxs]).shape[0]):
+        if AllowEndContractions == 1:
+            maxendcontraction = Maxs[i] / 2
+        else:
+            maxendcontraction = 0
+        
+        for i in range(len(P1.keys())):
+            for j in range(i,len(P1.keys())):
+                new_selfintc = np.zeros((selfintc.shape[0], selfintc.shape[1]))
+                new_selfintcu = np.zeros((selfintc.shape[0], selfintc.shape[1]))
+                new_selfintcv = np.zeros((selfintc.shape[0], selfintc.shape[1]))
+                new_selfintcs = np.zeros((selfintc.shape[0], selfintc.shape[1]))
+                startj = int(chain_change2[i])
+                starti = int(chain_change2[j])
+                slutj = int(chain_change2[i+1])
+                sluti = int(chain_change2[j+1])
+                new_selfintc[starti:sluti, startj:slutj] = selfintc[starti:sluti, startj:slutj]
+                new_selfintcu[starti:sluti, startj:slutj] = selfintcu[starti:sluti, startj:slutj]
+                new_selfintcv[starti:sluti, startj:slutj] = selfintcv[starti:sluti, startj:slutj]
+                new_selfintcs[starti:sluti, startj:slutj] = selfintcs[starti:sluti, startj:slutj]
+                if np.where(new_selfintc)[0].shape[0] != 0:
+                    print(i,j)
+                    tmp, Essensials, Mselfintc = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(new_selfintc, new_selfintcu, new_selfintcv, new_selfintcs, n, P1_tot, P2_tot, RePar1, RePar2, IsAligned, i, j, maxendcontraction, Maxs)
+                    Outs.append(tmp)
+    
+    """"
     for i in range(Maxs):
         if AllowEndContractions == 1:
             maxendcontraction = Maxs[i] / 2
         else:
             maxendcontraction = 0
-            for chain1, chain2 in zip(P1, P2):
-                P1chain = P1[chain1]
-                P2chain = P2[chain2]
-                tmp, Essensials, Mselfintc = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, n, P1chain, P2chain, RePar1, RePar2, IsAligned, P1org, P2org, maxendcontraction, Maxs, chain1, chain2)
-                Outs.append(tmp)
-
-        # Second for loop for chains collected, looking at type 1 only as end contraction and type 2 as before
-    
+        
+        tmp, Essensials, Mselfintc = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, n, P1_tot, P2_tot, RePar1, RePar2, IsAligned, P1org, P2org, maxendcontraction, Maxs)
+        Outs.append(tmp)
+    """
     
     if makefigure == 1:
         MakeSelfIntcFigureV3(P1, P2, selfintc, overlap, Essensials, RePar1, RePar2, options)

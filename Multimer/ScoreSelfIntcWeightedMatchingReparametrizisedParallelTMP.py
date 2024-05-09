@@ -11,7 +11,7 @@ from maxWeightMatching import maxWeightMatching
 def print_matrix(matrix):
     for row in matrix:
         print(" ".join(map(str, row)))
-def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, len, P, P1, RePar1, RePar2, IsAligned, P1org, P2org, maxendcontraction, maxlen):
+def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, len, P, P1, RePar1, RePar2, IsAligned, chain1, chain2, maxendcontraction, maxlen):
     # Ouptut order:
     #  1 number of local reidemeister type one moves performed
     #  2 total cost of local reidemeister type one moves performed
@@ -46,10 +46,6 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
 
     #C = sparse.find(sparse.tril(selfintc, 0))[2]
     
-    if P1 == P:
-        sim_chain = 1
-    else:
-        sim_chain = 0
     
     row, col, data = sparse.find(sparse.tril(selfintc, 0))
     sorted_indices = np.lexsort((row, col))
@@ -112,17 +108,18 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     sumsignraw = np.sum(M[:,5]) # sum of crossing changes
     NbrSelfIntc = M.shape[0]
     
-    
     O1 = np.zeros((NbrSelfIntc, 2))
-    for j in range(NbrSelfIntc): # +1
-        tmp = IsContractableType1ReparametrizationParallel(M, M0, M1, j, P, P1, maxlen)
-        if tmp[0]:
-            tmp[0] = np.min([tmp[0], PriceEstEndContraction(M[j,4]-1), PriceEstEndContraction(len-M[j,3]-1)])
-        else:
-            enddist = np.min([M[j,4]-1, len-M[j,3]])
-            if enddist < maxendcontraction:
-                tmp = [PriceEstEndContraction(enddist), enddist*2]
-        O1[j,:] = tmp
+    
+    if chain1 == chain2:
+        for j in range(NbrSelfIntc): # +1
+            tmp = IsContractableType1ReparametrizationParallel(M, M0, M1, j, P, P1, maxlen)
+            if tmp[0]:
+                tmp[0] = np.min([tmp[0], PriceEstEndContraction(M[j,4]-1), PriceEstEndContraction(len-M[j,3]-1)])
+            else:
+                enddist = np.min([M[j,4]-1, len-M[j,3]])
+                if enddist < maxendcontraction:
+                    tmp = [PriceEstEndContraction(enddist), enddist*2]
+            O1[j,:] = tmp
     paircount = 0
 
     O2 = np.zeros((Nbr*(Nbr-1)//2, 4))
@@ -137,13 +134,18 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     
     O2 = O2[:paircount,:]
 
+    
     epsilon = 0.5*(np.sum(O1[:,0]) + np.sum(O2[:,2]))**(-1)
     WVertex = epsilon*O1[:,0] + (O1[:,0] == 0)
     int_O2 = O2[:,0:2].astype(int)
     Wedge = -epsilon*O2[:,2] + WVertex[int_O2[:,0]] + WVertex[int_O2[:,1]]
 
     edgeData = np.column_stack((O2[:,0:2], Wedge))
-    result = np.array(maxWeightMatching(edgeData)[0:])
+    if edgeData.shape[0] == 0:
+        print("edgeData is empty!")
+        result = np.array([-1])
+    else:
+        result = np.array(maxWeightMatching(edgeData)[0:])
     NbrEssential = 0
     Essentials = []
     Nbr2 = result.shape[0]
