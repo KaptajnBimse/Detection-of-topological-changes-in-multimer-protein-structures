@@ -117,7 +117,7 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
             UdSelf = SelfintersectionTransversal(P1_tot[i:(i+2), :].T, P2_tot[i:(i+2), :].T, P1_tot[j:(j+2), :].T, P2_tot[j:(j+2), :].T)
             UdSelf = np.atleast_2d(UdSelf)
             selfintc[i, j] = UdSelf[0, 0]
-            print(f"{k/PotSelfIntc*100:.2f}%")
+            print(f"{k/(PotSelfIntc-1)*100:.2f}%")
             if UdSelf[0, 0] ** 2 == 1:
                 selfintcu[i, j] = UdSelf[0, 1]
                 selfintcv[i, j] = UdSelf[0, 2]
@@ -176,6 +176,9 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
 
     Maxs = AllMaxLengths
     Outs = []
+    Udessentials = np.zeros((1,2))
+    Intersecting_chain_number_i = np.zeros((1))
+    Intersecting_chain_number_j = np.zeros((1))
     
     # Find the i,j in tjekliste where selfintersection is present (not intersection between chains)
     intersect_index_i = np.where(selfintc)[0]
@@ -245,6 +248,11 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
                 if np.where(new_selfintc)[0].shape[0] != 0:
                     print(i,j)
                     tmp, Essensials, Mselfintc = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(new_selfintc, new_selfintcu, new_selfintcv, new_selfintcs, n, P1_tot, P2_tot, RePar1, RePar2, IsAligned, i, j, maxendcontraction, Maxs)
+                    if len(Essensials) != 0:
+                        Udessentials = np.vstack((Udessentials, Essensials))
+                        Intersecting_chain_number_i = np.hstack((Intersecting_chain_number_i, np.ones(Essensials.shape[0])*i))
+                        Intersecting_chain_number_j = np.hstack((Intersecting_chain_number_j, np.ones(Essensials.shape[0])*j))
+
                     Outs.append(tmp)
     
     """"
@@ -257,9 +265,9 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
         tmp, Essensials, Mselfintc = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, n, P1_tot, P2_tot, RePar1, RePar2, IsAligned, P1org, P2org, maxendcontraction, Maxs)
         Outs.append(tmp)
     """
-    
+    Udessentials = Udessentials[1:,:]
     if makefigure == 1:
-        MakeSelfIntcFigureV3(P1, P2, selfintc, overlap, Essensials, RePar1, RePar2, options)
+        MakeSelfIntcFigureV3(P1_tot, P2_tot, selfintc, overlap, Udessentials, RePar1, RePar2, options, chain_change,Intersecting_chain_number_i ,Intersecting_chain_number_j)
 
     ud = [Outs, rms1, rms1Aligned, rms2, rms2Aligned, GDT_TS, TM, sumoverlap, PotSelfIntc, sumselfintc, AlignmentMetaDataOut]
 

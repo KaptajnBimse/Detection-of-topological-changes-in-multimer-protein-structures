@@ -2,14 +2,45 @@ import numpy as np
 from Structural_AlignmentV2 import structural_alignment
 from OverlapandSelfintersectParallelV3 import OverlapandSelfintersectParallelV3
 
-#pdb_file1 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB//CRUA_hexamer_positive.pdb"
-#pdb_file2 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
+pdb_file1 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
+pdb_file2 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
 
-pdb_file1 = "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
-pdb_file2 = "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
+# pdb_file1 = "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
+# pdb_file2 = "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
 
 P1, P2, RePar1, RePar2, IsAligned, NresAverage, P1Less4, P2Less4, RePar1Less4, RePar2Less4, Insert_points_P1, Insert_points_P =  structural_alignment(pdb_file1, pdb_file2, makefigure = 0)
-options = {'Smoothning': 0, 'AllowEndContractions': 0, 'MaxLength': 15, 'MakeFigures': 1}
+# options = {'Smoothning': 0, 'AllowEndContractions': 0, 'MaxLength': 5, 'MakeFigures': 1}
+options = {
+    'MaxLength': 15,
+    'dmax': 10,
+    'Smoothning': 0,
+    'AllowEndContractions': 0,
+    'MakeFigures': 1,
+    'MakeAlignmentSeedFigure': 0,
+    'MakeFiguresInLastItteration': 1,
+    'MakeLocalPlotsOfEssensials': 1,
+    'SelfIntcFigCutSize': 10,
+    'PrintOut': 0,
+    'additionalRMSD': 0,
+    'alignmentsmoothing': 0,
+    'alignmentsmoothingwidth': 3,
+    'AdaptiveSubset': 1,
+    'MaxNbrAlignmentSeeds': 7,
+    'MaxSeedOverlap': 0.5000,
+    'MinSeedLength': 40,
+    'OverlapWeight': 4,
+    'MaxIter': 20,
+    'MaxWindowMisalignment': 1,
+    'MaxMisAlignment': 0.0150,
+    'MinimalAlignmentLength': 30,
+    'FileName1': 'CRUA_hexamer_positive.pdb',
+    'FileName2': 'CRUA_hexamer_negative.pdb',
+    'StructureSequenceWeight': 1.5608,
+    'SeqenceMisAlignmentPenalty': [7.2200  ,  2.1660], 
+    'TrimSeqenceAlignment': 0,
+    'SequenceAlignmentExtension': 1,
+    'InitialAlignmentExactPairs': 1
+}
 P1org = 0
 P2org = 0
 
