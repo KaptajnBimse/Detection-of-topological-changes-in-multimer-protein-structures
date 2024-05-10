@@ -255,7 +255,7 @@ def maxWeightMatching(edges, maxcardinality=False):
                 v = -1
             else:
                 v = endpoint[labelend[b]]
-                b = inblossom[v]
+                b = inblossom[int(v)]
                 assert label[b] == 2
                 # b is a T-blossom; trace one more step back.
                 assert labelend[b] >= 0
@@ -523,7 +523,7 @@ def maxWeightMatching(edges, maxcardinality=False):
                     # Reached single vertex; stop.
                     break
                 t = endpoint[labelend[bs]]
-                bt = inblossom[t]
+                bt = inblossom[int(t)]
                 assert label[bt] == 2
                 # Trace one step back.
                 assert labelend[bt] >= 0
@@ -534,7 +534,7 @@ def maxWeightMatching(edges, maxcardinality=False):
                 if bt >= nvertex:
                     augmentBlossom(bt, j)
                 # Update mate[j]
-                mate[j] = labelend[bt]
+                mate[int(j)] = labelend[int(bt)]
                 # Keep the opposite endpoint;
                 # it will be assigned to mate[s] in the next step.
                 p = labelend[bt] ^ 1

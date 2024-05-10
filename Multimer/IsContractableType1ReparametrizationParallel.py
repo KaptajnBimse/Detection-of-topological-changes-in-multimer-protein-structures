@@ -2,7 +2,7 @@ import numpy as np
 from intersection_origo_triangle_line_segment import intersection_origo_triangle_line_segment
 import d_points2line as dpl
 
-def IsContractableType1ReparametrizationParallel(M, M0, M1, i, P, P1, maxlen):
+def IsContractableType1ReparametrizationParallel(M, M0, M1, i, P, P1, maxlen, chain_change):
     FindNumberOfOmega1_2Obstructions = 0
     #i = int(i)-1 # i is 1-indexed in the original code 
     sav = M0[i, 7]
@@ -47,6 +47,21 @@ def IsContractableType1ReparametrizationParallel(M, M0, M1, i, P, P1, maxlen):
 
     LineSegmentLength = np.sum((Lstart - Lend) ** 2, axis=0) ** 0.5
     ex = np.where(Lmidt <= rdisk + LineSegmentLength / 2)[0]
+
+    # Remove false lines -------------------
+
+    # Specify the numbers you want to remove
+    nums_to_remove1 = chain_change[chain_change < n1]
+    nums_to_remove2 = chain_change[chain_change > n2] - (n2 - n1) - 1
+
+    # Create a new array that doesn't include the specified numbers
+    ex = ex[~np.isin(ex, nums_to_remove1.astype(int))]
+    ex = ex[~np.isin(ex, nums_to_remove2.astype(int))]
+
+    if len(ex) != 0:
+        print("here")
+
+    # --------------------------------------
 
     Lstart = Lstart[:, ex]
     Lend = Lend[:, ex]

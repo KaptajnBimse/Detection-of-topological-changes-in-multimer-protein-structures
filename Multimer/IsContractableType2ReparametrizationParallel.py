@@ -6,7 +6,7 @@ import d_points2line as dp2l
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, maxlen):
+def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, maxlen, chain_change):
     casea = "Error"
     FindNumberOfOmega1_2Obstructions = 0
     printout = 0
@@ -172,6 +172,28 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
     exb = np.where(distb <= radiusb + radiushomotopy)[0]
     exa2 = np.where(dista2 <= radiusa2 + radiushomotopy)[0]
     exb2 = np.where(distb2 <= radiusb2 + radiushomotopy)[0]
+
+
+    # Remove false lines -------------------
+
+    # Specify the numbers you want to remove
+    nums_to_remove1 = chain_change[chain_change < n1]
+    nums_to_remove2 = chain_change[chain_change > n2] - (n2 - n1) - 1
+
+    # Create a new array that doesn't include the specified numbers
+    exa = exa[~np.isin(exa, nums_to_remove1.astype(int))]
+    exa = exa[~np.isin(exa, nums_to_remove2.astype(int))]
+
+    exb = exb[~np.isin(exb, nums_to_remove1.astype(int))]
+    exb = exb[~np.isin(exb, nums_to_remove2.astype(int))]
+
+    exa2 = exa2[~np.isin(exa2, nums_to_remove1.astype(int))]
+    exa2 = exa2[~np.isin(exa2, nums_to_remove2.astype(int))]
+
+    exb2 = exb2[~np.isin(exb2, nums_to_remove1.astype(int))]
+    exb2 = exb2[~np.isin(exb2, nums_to_remove2.astype(int))]
+
+    # --------------------------------------
 
     for ii in exa:
         tmp = itls.intersection_triangle_line_segment(Lstart1[:, ii], Lend1[:, ii], Lstart2[:, ii], La1, La2)[0] + itls.intersection_triangle_line_segment(Lend1[:, ii], Lstart2[:, ii], Lend2[:, ii], La1, La2)[0]

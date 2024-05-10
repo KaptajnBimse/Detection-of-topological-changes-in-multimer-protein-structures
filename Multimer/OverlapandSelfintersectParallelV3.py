@@ -247,7 +247,7 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
                 new_selfintcs[starti:sluti, startj:slutj] = selfintcs[starti:sluti, startj:slutj]
                 if np.where(new_selfintc)[0].shape[0] != 0:
                     print(i,j)
-                    tmp, Essensials, Mselfintc = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(new_selfintc, new_selfintcu, new_selfintcv, new_selfintcs, n, P1_tot, P2_tot, RePar1, RePar2, IsAligned, i, j, maxendcontraction, Maxs)
+                    tmp, Essensials, Mselfintc = ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(new_selfintc, new_selfintcu, new_selfintcv, new_selfintcs, n, P1_tot, P2_tot, RePar1, RePar2, IsAligned, i, j, maxendcontraction, Maxs, chain_change[1:])
                     if len(Essensials) != 0:
                         Udessentials = np.vstack((Udessentials, Essensials))
                         Intersecting_chain_number_i = np.hstack((Intersecting_chain_number_i, np.ones(Essensials.shape[0])*i))
@@ -267,8 +267,9 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
     """
     Udessentials = Udessentials[1:,:]
     if makefigure == 1:
-        MakeSelfIntcFigureV3(P1_tot, P2_tot, selfintc, overlap, Udessentials, RePar1, RePar2, options, chain_change,Intersecting_chain_number_i ,Intersecting_chain_number_j)
-
+        MakeSelfIntcFigureV3(P1_tot, P2_tot, selfintc, overlap, Udessentials, RePar1, RePar2, options, chain_change, Intersecting_chain_number_i, Intersecting_chain_number_j)
+    
+    print("Number of essential self-intersections: ", Udessentials.shape[0])
     ud = [Outs, rms1, rms1Aligned, rms2, rms2Aligned, GDT_TS, TM, sumoverlap, PotSelfIntc, sumselfintc, AlignmentMetaDataOut]
 
 # P1 = np.loadtxt('Monomer/Test txt/TestEssential/P1.txt')

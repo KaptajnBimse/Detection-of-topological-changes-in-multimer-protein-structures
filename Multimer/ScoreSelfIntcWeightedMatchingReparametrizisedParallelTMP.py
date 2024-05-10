@@ -11,7 +11,7 @@ from maxWeightMatching import maxWeightMatching
 def print_matrix(matrix):
     for row in matrix:
         print(" ".join(map(str, row)))
-def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, len, P, P1, RePar1, RePar2, IsAligned, chain1, chain2, maxendcontraction, maxlen):
+def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu, selfintcv, selfintcs, len, P, P1, RePar1, RePar2, IsAligned, chain1, chain2, maxendcontraction, maxlen, chain_change):
     # Ouptut order:
     #  1 number of local reidemeister type one moves performed
     #  2 total cost of local reidemeister type one moves performed
@@ -112,7 +112,7 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     
     if chain1 == chain2:
         for j in range(NbrSelfIntc): # +1
-            tmp = IsContractableType1ReparametrizationParallel(M, M0, M1, j, P, P1, maxlen)
+            tmp = IsContractableType1ReparametrizationParallel(M, M0, M1, j, P, P1, maxlen, chain_change)
             if tmp[0]:
                 tmp[0] = np.min([tmp[0], PriceEstEndContraction(M[j,4]-1), PriceEstEndContraction(len-M[j,3]-1)])
             else:
@@ -121,17 +121,22 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
                     tmp = [PriceEstEndContraction(enddist), enddist*2]
             O1[j,:] = tmp
     paircount = 0
-
+    PotentialType2 = 0
+    ActualType2 = 0
     O2 = np.zeros((Nbr*(Nbr-1)//2, 4))
     for i in range(Nbr-1):
         for j in range(i+1, Nbr):
             if M[i,5]+M[j,5] == 0: # have opposite signs
                 if not (M[j,3] < M[i,4] or M[j,4] > M[i,3]):
-                    tmp = IsContractableType2ReparametrizationParallel(M, M0, M1, i, j, P, P1, maxlen)
+                    tmp = IsContractableType2ReparametrizationParallel(M, M0, M1, i, j, P, P1, maxlen, chain_change)
+                    PotentialType2 += 1
+                    if tmp[0] == 0:
+                        ActualType2 += 1
                     if tmp[0]:
                         paircount += 1
                         O2[paircount-1,:] = [i, j] + tmp # Indices of self-intersections saved in python format (0-indexing)
-    
+    if PotentialType2 > 0:
+        print("Procent Type 2: " + str(ActualType2/PotentialType2*100) + "%")
     O2 = O2[:paircount,:]
 
     
