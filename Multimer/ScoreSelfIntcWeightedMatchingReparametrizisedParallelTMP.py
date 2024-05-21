@@ -122,7 +122,8 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
             O1[j,:] = tmp
     paircount = 0
     PotentialType2 = 0
-    ActualType2 = 0
+    Obstructed = 0
+
     O2 = np.zeros((Nbr*(Nbr-1)//2, 4))
     for i in range(Nbr-1):
         for j in range(i+1, Nbr):
@@ -131,12 +132,13 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
                     tmp = IsContractableType2ReparametrizationParallel(M, M0, M1, i, j, P, P1, maxlen, chain_change)
                     PotentialType2 += 1
                     if tmp[0] == 0:
-                        ActualType2 += 1
+                        Obstructed += 1
+                        
                     if tmp[0]:
                         paircount += 1
                         O2[paircount-1,:] = [i, j] + tmp # Indices of self-intersections saved in python format (0-indexing)
     if PotentialType2 > 0:
-        print("Procent Type 2: " + str(ActualType2/PotentialType2*100) + "%")
+        print("Procent not solved Type 2: " + str(Obstructed/PotentialType2*100) + "%")
     O2 = O2[:paircount,:]
 
     

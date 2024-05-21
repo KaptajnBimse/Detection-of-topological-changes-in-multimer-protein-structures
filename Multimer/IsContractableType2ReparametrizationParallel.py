@@ -17,6 +17,7 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
 
     if lengRep > maxlen:
         ud = [0, 0]
+        print("Too Long")
         return ud
 
     if printout:
@@ -207,13 +208,27 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
     for ii in exb2:
         tmp = itls.intersection_triangle_line_segment(Lstart1[:, ii], Lend1[:, ii], Lstart2[:, ii], Lb12, Lb22)[0] + itls.intersection_triangle_line_segment(Lend1[:, ii], Lstart2[:, ii], Lend2[:, ii], Lb12, Lb22)[0]
         NbrIntc += tmp
+    
+    import plotly.graph_objects as go
 
     if NbrIntc > 0:
         ud = [0, 0]
+        print("Obstruction")
+        fig = go.Figure()
+        fig.add_trace(go.Scatter3d(x=[i[0] for i in P[:,int(n1-5):int(n2+5)].T], 
+                                    y=[i[1] for i in P[:,int(n1-5):int(n2+5)].T], 
+                                    z=[i[2] for i in P[:,int(n1-5):int(n2+5)].T], mode='lines', line=dict(width=9), name='P'))
+        
+        fig.add_trace(go.Scatter3d(x=[i[0] for i in P[:,int(n3-5):int(n4+5)].T], 
+                                    y=[i[1] for i in P[:,int(n3-5):int(n4+5)].T], 
+                                    z=[i[2] for i in P[:,int(n3-5):int(n4+5)].T], mode='lines', line=dict(width=9), name='P'))
+        fig.update_layout(title_text="Structural alignment of protein structures for chain" + str(i) + " and chain" + str(makker))
+        fig.show()
         return ud
 
     dists = dp2l.d_points2line(pts, pts[:, 0], pts[:, pts1.shape[1]-1])
     ud = [np.sum(dists) * 2, lengRep]
+
 
     return ud
 
