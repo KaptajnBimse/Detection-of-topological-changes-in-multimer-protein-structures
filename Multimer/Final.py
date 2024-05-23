@@ -2,10 +2,10 @@ import numpy as np
 from Structural_AlignmentV2 import structural_alignment
 from OverlapandSelfintersectParallelV3 import OverlapandSelfintersectParallelV3
 
-Adam = 0
+Adam = 1
 if Adam == 1:
-    pdb_file1 = "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
-    pdb_file2 = "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
+    pdb_file1 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
+    pdb_file2 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
 else:
     pdb_file1 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
     pdb_file2 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
@@ -87,3 +87,63 @@ for i,chain in zip(range(len(P1Less4)), P1Less4.keys()):
 False_lines = False_lines[:-1]
 
 OverlapandSelfintersectParallelV3(P1Less4_tot, P2Less4_tot, RePar1Less4_tot, RePar2Less4_tot, IsAlignedLess4_tot, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1_tot, RePar2_tot, IsAligned,Insert_points_P1, Insert_points_P)
+
+"""
+import cProfile
+import pstats
+import io
+
+def profile_and_print_stats(func, *args, **kwargs):
+    profiler = cProfile.Profile()
+    profiler.enable()
+    func(*args, **kwargs)
+    profiler.disable()
+    
+    stats_io = io.StringIO()
+    stats = pstats.Stats(profiler, stream=stats_io).sort_stats('time') # 'cumulative', 'time', 'calls', 'filename', 'stdname'
+    stats.print_stats()
+    
+    print(stats_io.getvalue())
+
+def my_function(P1Less4_tot, P2Less4_tot, RePar1Less4_tot, RePar2Less4_tot, IsAlignedLess4_tot, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1_tot, RePar2_tot, IsAligned,Insert_points_P1, Insert_points_P):
+    OverlapandSelfintersectParallelV3(P1Less4_tot, P2Less4_tot, RePar1Less4_tot, RePar2Less4_tot, IsAlignedLess4_tot, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1_tot, RePar2_tot, IsAligned,Insert_points_P1, Insert_points_P)
+
+profile_and_print_stats(my_function,P1Less4_tot, P2Less4_tot, RePar1Less4_tot, RePar2Less4_tot, IsAlignedLess4_tot, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1_tot, RePar2_tot, IsAligned,Insert_points_P1, Insert_points_P)
+"""
+
+import cProfile
+import pstats
+import io
+import pandas as pd
+import matplotlib.pyplot as plt
+
+def profile_and_print_stats(func, *args, **kwargs):
+    profiler = cProfile.Profile()
+    profiler.enable()
+    func(*args, **kwargs)
+    profiler.disable()
+    
+    stats = pstats.Stats(profiler).sort_stats('time')
+    
+    func_names = []
+    tottimes = []
+    for func_name, info in stats.stats.items():
+        func_names.append('.'.join(map(str, func_name)))  # convert func_name to a string
+        tottimes.append(info[2])  # total time
+    
+    plt.barh(func_names, tottimes, color='blue')
+    plt.xlabel('Total Time')
+    plt.ylabel('Function')
+    plt.title('Function Execution Time')
+    plt.show()
+
+def my_function(P1Less4_tot, P2Less4_tot, RePar1Less4_tot, RePar2Less4_tot, IsAlignedLess4_tot, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1_tot, RePar2_tot, IsAligned,Insert_points_P1, Insert_points_P):
+    OverlapandSelfintersectParallelV3(P1Less4_tot, P2Less4_tot, RePar1Less4_tot, RePar2Less4_tot, IsAlignedLess4_tot, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1_tot, RePar2_tot, IsAligned,Insert_points_P1, Insert_points_P)
+
+profile_and_print_stats(my_function,P1Less4_tot, P2Less4_tot, RePar1Less4_tot, RePar2Less4_tot, IsAlignedLess4_tot, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1_tot, RePar2_tot, IsAligned,Insert_points_P1, Insert_points_P)
+
+
+
+
+
+

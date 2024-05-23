@@ -79,16 +79,16 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
     pp2 = PPoly.from_spline(tck)
     
     M0[:,1:5] = pp(M[:,1:5])
-    M0[:,1] -= 1
-    M1[:,2] -= 1
-    M0[:,3] -= 1
-    M0[:,4] -= 1
+    #M0[:,1] -= 1
+    #M0[:,2] -= 1
+    #M0[:,3] -= 1
+    #M0[:,4] -= 1
     
     M1[:,1:5] = pp2(M[:,1:5])
-    M1[:,1] -= 1
-    M1[:,2] -= 1
-    M1[:,3] -= 1
-    M1[:,4] -= 1
+    #M1[:,1] -= 1
+    #M1[:,2] -= 1
+    #M1[:,3] -= 1
+    #M1[:,4] -= 1
     
     n3 = np.atleast_2d(IsAligned).shape[1]
     tck = splrep(np.arange(n3), IsAligned, k = 3)
@@ -152,11 +152,11 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
         print("edgeData is empty!")
         result = np.array([-1])
     else:
-        result = np.array(maxWeightMatching(edgeData)[0:])
+        result = np.array(maxWeightMatching(edgeData)[0:]) # maybe remove for inter-chain?
     NbrEssential = 0
     Essentials = []
     Nbr2 = result.shape[0]
-
+    
     for i in range(Nbr2):
         if result[i] > 0:
             if result[i] < i:
