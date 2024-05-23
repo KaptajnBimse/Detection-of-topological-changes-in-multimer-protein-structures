@@ -152,11 +152,11 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
         print("edgeData is empty!")
         result = np.array([-1])
     else:
-        result = np.array(maxWeightMatching(edgeData)[0:])
+        result = np.array(maxWeightMatching(edgeData)[0:]) # maybe remove for inter-chain?
     NbrEssential = 0
     Essentials = []
     Nbr2 = result.shape[0]
-
+    
     for i in range(Nbr2):
         if result[i] > 0:
             if result[i] < i:
