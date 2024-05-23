@@ -143,6 +143,8 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
     Lend = Lend[:, ex]
     NbrL = Lstart.shape[1]
     NbrIntc = 0
+    import plotly.graph_objects as go
+
 
     if NbrL > 0:
         # if FindNumberOfOmega1_2Obstructions:
@@ -152,10 +154,28 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
         # else:
         slet = np.column_stack((ex.T, distdiff[ex]))
         index = np.argsort(slet[:, 1])
-        
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter3d( x=[i[0] for i in pts.T], 
+                                    y=[i[1] for i in pts.T], 
+                                    z=[i[2] for i in pts.T], mode='lines', line=dict(width=9, color = "blue"), name = "P"))
+        fig.update_layout(title_text="Obstruction")
+        fig.show()
+
         for j in index:
             for k in range(NbrTriangles):
                 if intersection_origo_triangle_line_segment(pts[:, [k, k+1]], Lstart[:, j], Lend[:, j]):
+                    fig = go.Figure()
+
+                    fig.add_trace(go.Scatter3d(x=[i[0] for i in np.hstack((np.zeros((3,1)),pts[:, [k, k+1]],np.zeros((3,1)))).T], 
+                                               y=[i[1] for i in np.hstack((np.zeros((3,1)),pts[:, [k, k+1]],np.zeros((3,1)))).T], 
+                                               z=[i[2] for i in np.hstack((np.zeros((3,1)),pts[:, [k, k+1]],np.zeros((3,1)))).T], mode='lines', line=dict(width=9, color = "blue"), name = "P"))
+                    fig.add_trace(go.Scatter3d(x=[i[0] for i in np.hstack((Lstart[:, j:j+1],Lend[:, j:j+1])).T],
+                                               y=[i[1] for i in np.hstack((Lstart[:, j:j+1],Lend[:, j:j+1])).T],
+                                               z=[i[2] for i in np.hstack((Lstart[:, j:j+1],Lend[:, j:j+1])).T],mode='lines', line=dict(width=9, color = "black"), name='Obstruction'))
+                    fig.update_layout(title_text="Obstruction")
+                    fig.show()
+                    
                     ud = [0, 0]
                     # if printoutobstruction:
                     #     print(casea, n1, n2, n3, n4, a, b, Lindex[ex[j]], k, istart, makker, islut, i)
