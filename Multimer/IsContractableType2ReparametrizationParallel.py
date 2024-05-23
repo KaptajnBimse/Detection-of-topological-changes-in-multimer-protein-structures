@@ -2,7 +2,7 @@ import numpy as np
 import intersection_origo_triangle_line_segment as iotls
 import IntersectionTriangle_LineSegment as itls
 import d_points2line as dp2l
-
+import bisect
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from intersection_origo_triangle_line_segment import intersection_origo_triangle_line_segment
@@ -139,11 +139,26 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
     distdiff = Lmidt - LineSegmentLength / 2
     ex = np.where(distdiff <= rdisk)[0]
 
+    #----------------------------------
+    # Specify the numbers you want to remove
+    nums_to_remove1 = chain_change[chain_change < n1]
+    nums_to_remove2 = chain_change[chain_change > n2] - (n2 - n1) - 1
+
+    # Create a new array that doesn't include the specified numbers
+    ex = ex[~np.isin(ex, nums_to_remove1.astype(int))]
+    ex = ex[~np.isin(ex, nums_to_remove2.astype(int))]
+    # ----------------------------------
+
+
+
+   
+
     Lstart = Lstart[:, ex]
     Lend = Lend[:, ex]
     NbrL = Lstart.shape[1]
     NbrIntc = 0
     import plotly.graph_objects as go
+
 
 
     if NbrL > 0:
@@ -155,27 +170,81 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
         slet = np.column_stack((ex.T, distdiff[ex]))
         index = np.argsort(slet[:, 1])
 
-        fig = go.Figure()
-        fig.add_trace(go.Scatter3d( x=[i[0] for i in pts.T], 
-                                    y=[i[1] for i in pts.T], 
-                                    z=[i[2] for i in pts.T], mode='lines', line=dict(width=9, color = "blue"), name = "P"))
-        fig.update_layout(title_text="Obstruction")
-        fig.show()
+        # fig = go.Figure()
+        # fig.add_trace(go.Scatter3d( x=[i[0] for i in P[:,int(na-5):int(nb+5)].T], 
+        #                             y=[i[1] for i in P[:,int(na-5):int(nb+5)].T], 
+        #                             z=[i[2] for i in P[:,int(na-5):int(nb+5)].T], mode='lines', line=dict(width=9, color = "blue"), name = "Part one"))
+        
+        # fig.add_trace(go.Scatter3d( x=[i[0] for i in P[:,int(na2-5):int(nb2+5)].T], 
+        #                             y=[i[1] for i in P[:,int(na2-5):int(nb2+5)].T], 
+        #                             z=[i[2] for i in P[:,int(na2-5):int(nb2+5)].T], mode='lines', line=dict(width=9, color = "red"), name = "Part two"))
+        # fig.update_layout(title_text="Chain with intersections")
+        # fig.show()
 
-        for j in index:
+        for j in (index):
             for k in range(NbrTriangles):
-                if intersection_origo_triangle_line_segment(pts[:, [k, k+1]], Lstart[:, j], Lend[:, j]):
-                    fig = go.Figure()
+                if (intersection_origo_triangle_line_segment(pts[:, [k, k+1]], Lstart[:, j], Lend[:, j])):
+                    # fig = go.Figure()
 
-                    fig.add_trace(go.Scatter3d(x=[i[0] for i in np.hstack((np.zeros((3,1)),pts[:, [k, k+1]],np.zeros((3,1)))).T], 
-                                               y=[i[1] for i in np.hstack((np.zeros((3,1)),pts[:, [k, k+1]],np.zeros((3,1)))).T], 
-                                               z=[i[2] for i in np.hstack((np.zeros((3,1)),pts[:, [k, k+1]],np.zeros((3,1)))).T], mode='lines', line=dict(width=9, color = "blue"), name = "P"))
-                    fig.add_trace(go.Scatter3d(x=[i[0] for i in np.hstack((Lstart[:, j:j+1],Lend[:, j:j+1])).T],
-                                               y=[i[1] for i in np.hstack((Lstart[:, j:j+1],Lend[:, j:j+1])).T],
-                                               z=[i[2] for i in np.hstack((Lstart[:, j:j+1],Lend[:, j:j+1])).T],mode='lines', line=dict(width=9, color = "black"), name='Obstruction'))
-                    fig.update_layout(title_text="Obstruction")
-                    fig.show()
+                    # fig.add_trace(go.Scatter3d(x=[i[0] for i in np.hstack((np.zeros((3,1)),pts[:, [k, k+1]],np.zeros((3,1)))).T], 
+                    #                            y=[i[1] for i in np.hstack((np.zeros((3,1)),pts[:, [k, k+1]],np.zeros((3,1)))).T], 
+                    #                            z=[i[2] for i in np.hstack((np.zeros((3,1)),pts[:, [k, k+1]],np.zeros((3,1)))).T], mode='lines', line=dict(width=9, color = "blue"), name = "P"))
+                    # fig.add_trace(go.Scatter3d(x=[i[0] for i in np.hstack((Lstart[:, j:j+1],Lend[:, j:j+1])).T],
+                    #                            y=[i[1] for i in np.hstack((Lstart[:, j:j+1],Lend[:, j:j+1])).T],
+                    #                            z=[i[2] for i in np.hstack((Lstart[:, j:j+1],Lend[:, j:j+1])).T],mode='lines', line=dict(width=9, color = "black"), name='Obstruction'))
+                    # fig.update_layout(title_text="Obstruction")
+                    # fig.show()
+                    chain1 = bisect.bisect_left(chain_change, na)
+                    chain2 = bisect.bisect_left(chain_change, na2)
+                    chain3 = bisect.bisect_left(chain_change, ex[j])
                     
+
+                    fig = go.Figure()
+                    fig.add_trace(go.Scatter3d( x=[i[0] for i in P[:,int(min(na,nb)-5):int(max(na,nb)+5)].T], 
+                                                y=[i[1] for i in P[:,int(min(na,nb)-5):int(max(na,nb)+5)].T], 
+                                                z=[i[2] for i in P[:,int(min(na,nb)-5):int(max(na,nb)+5)].T], mode='lines', line=dict(width=9, color = "blue"), name = "Chain" + str(chain1)))
+                    
+                    fig.add_trace(go.Scatter3d( x=[i[0] for i in P[:,int(min(na2,nb2)-5):int(max(na2,nb2)+5)].T], 
+                                                y=[i[1] for i in P[:,int(min(na2,nb2)-5):int(max(na2,nb2)+5)].T], 
+                                                z=[i[2] for i in P[:,int(min(na2,nb2)-5):int(max(na2,nb2)+5)].T], mode='lines', line=dict(width=9, color = "red"), name = "Chain" + str(chain2)))
+                    
+                    fig.add_trace(go.Scatter3d(x=[i[0] for i in (P[:, Lindex][:, ex[j]-5:ex[j]+5]).T],
+                                              y=[i[1] for i in (P[:, Lindex][:, ex[j]-5:ex[j]+5]).T],
+                                              z=[i[2] for i in (P[:, Lindex][:, ex[j]-5:ex[j]+5]).T],mode='lines', line=dict(width=9, color = "black"), name= "Obstruction from chain" + str(chain3)))
+
+                
+                    for b in range(NbrTriangles):
+                        x = list(pts[0, [b, b+1]])+[0]
+                        y = list(pts[1, [b, b+1]])+[0]
+                        z = list(pts[2, [b, b+1]])+[0]
+
+                        fig.add_trace(go.Mesh3d(x=x, y=y, z=z, opacity=0.4, color='cyan'))
+                    
+
+                    x = list(pts[0, [b-1, b]])+[0]
+                    y = list(pts[1, [b-1, b]])+[0]
+                    z = list(pts[2, [b-1, b]])+[0]
+
+                    fig.add_trace(go.Mesh3d(x=x, y=y, z=z, opacity=0.4, color='cyan'))
+
+                    # x = list(pts[0,:])+[0]
+                    # y = list(pts[1,:])+[0]
+                    # z = list(pts[2,:])+[0]
+
+                    # fig.add_trace(go.Mesh3d(x=x, y=y, z=z, opacity=0.4, color='cyan'))
+
+                    fig.update_layout(title_text="Chain with intersections")
+                    # #Download as html
+                    # if (j == 365 and k == 13):
+                    #     fig.write_html("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/Obstruction1.html")
+                    # if (j == 27 and k == 5):
+                    #     fig.write_html("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/Obstruction2.html")
+                    # if (j == 115 and k == 23):
+                    #     fig.write_html("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/Obstruction3.html")
+                    
+                    
+                    # fig.show()
+
                     ud = [0, 0]
                     # if printoutobstruction:
                     #     print(casea, n1, n2, n3, n4, a, b, Lindex[ex[j]], k, istart, makker, islut, i)
@@ -190,7 +259,7 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
                     #     plt.show()
                     
                     return ud
-        # -------------------------------------------
+                
 
 
     Lmidt = np.sum(((Lstart + Lend) / 2) ** 2,axis=0) ** 0.5

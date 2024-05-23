@@ -271,7 +271,7 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
     
     print("Number of essential self-intersections: ", Udessentials.shape[0])
     ud = [Outs, rms1, rms1Aligned, rms2, rms2Aligned, GDT_TS, TM, sumoverlap, PotSelfIntc, sumselfintc, AlignmentMetaDataOut]
-
+    return
 # P1 = np.loadtxt('Monomer/Test txt/TestEssential/P1.txt')
 # P2 = np.loadtxt('Monomer/Test txt/TestEssential/P2.txt')
 # RePar1 = np.loadtxt('Monomer/Test txt/TestEssential/RePar1.txt')

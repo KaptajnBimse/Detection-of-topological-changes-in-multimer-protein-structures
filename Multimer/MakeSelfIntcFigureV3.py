@@ -67,6 +67,8 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
     plt.plot([0, overlap.shape[0]+10], [0, overlap.shape[1]+10], color='black', linestyle='--')
     plt.draw()
     print('continue computation')
+    #save as html
+    # plt.savefig('C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/EssPlot.png')
 
 
     
@@ -294,10 +296,12 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
                 ),
             )
             # Show plot
+            # fig.write_html("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/Essential.html")
             fig.show()
+            print("")
 
-        Chain1 = 1
-        Chain2 = 2
+        Chain1 = 2
+        Chain2 = 1
 
         index1 = np.arange(chain_change[Chain1-1]+1, chain_change[Chain1], 1).astype(int)
         index2 = np.arange(chain_change[Chain2-1]+1, chain_change[Chain2], 1).astype(int)
@@ -415,6 +419,8 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
             ),
         )
         # Show plot
+        fig.write_html("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/AxB.html")
+
         fig.show()
         plt.show()
 
