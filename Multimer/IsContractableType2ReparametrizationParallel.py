@@ -5,6 +5,7 @@ import d_points2line as dp2l
 
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from intersection_origo_triangle_line_segment import intersection_origo_triangle_line_segment
 
 def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, maxlen, chain_change):
     casea = "Error"
@@ -17,7 +18,7 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
 
     if lengRep > maxlen:
         ud = [0, 0]
-        print("Too Long")
+        # print("Too Long")
         return ud
 
     if printout:
@@ -132,6 +133,46 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
     Lstart = P[:, Lindex]
     Lend = P[:, 1 + Lindex]
 
+    # -------------------------------------------
+    Lmidt = np.sqrt(np.sum(((Lstart + Lend) / 2) ** 2, axis=0))
+    LineSegmentLength = np.sqrt(np.sum((Lstart - Lend) ** 2, axis=0))
+    distdiff = Lmidt - LineSegmentLength / 2
+    ex = np.where(distdiff <= rdisk)[0]
+
+    Lstart = Lstart[:, ex]
+    Lend = Lend[:, ex]
+    NbrL = Lstart.shape[1]
+    NbrIntc = 0
+
+    if NbrL > 0:
+        # if FindNumberOfOmega1_2Obstructions:
+        #     for j in range(NbrL):
+        #         for k in range(NbrTriangles):
+        #             NbrIntc += IntercectionOrigoTriangle_LineSegment(pts[:, [k, k+1]], Lstart[:, j], Lend[:, j])
+        # else:
+        slet = np.column_stack((ex.T, distdiff[ex]))
+        index = np.argsort(slet[:, 1])
+        
+        for j in index:
+            for k in range(NbrTriangles):
+                if intersection_origo_triangle_line_segment(pts[:, [k, k+1]], Lstart[:, j], Lend[:, j]):
+                    ud = [0, 0]
+                    # if printoutobstruction:
+                    #     print(casea, n1, n2, n3, n4, a, b, Lindex[ex[j]], k, istart, makker, islut, i)
+                    #     print(i, makker)
+                    #     print(M[[i, makker], :])
+                    #     print(pts[:, [k, k+1]], Lstart[:, j], Lend[:, j])
+                        
+                    #     fig = plt.figure()
+                    #     ax = fig.add_subplot(111, projection='3d')
+                    #     ax.plot([0] + list(pts[0, [k, k+1]]) + [0], [0] + list(pts[1, [k, k+1]]) + [0], [0] + list(pts[2, [k, k+1]]) + [0])
+                    #     ax.plot([Lstart[0, j], Lend[0, j]], [Lstart[1, j], Lend[1, j]], [Lstart[2, j], Lend[2, j]])
+                    #     plt.show()
+                    
+                    return ud
+        # -------------------------------------------
+
+
     Lmidt = np.sum(((Lstart + Lend) / 2) ** 2,axis=0) ** 0.5
     LineSegmentLength = np.sum((Lstart - Lend) ** 2,axis=0) ** 0.5
     distdiff = Lmidt - LineSegmentLength / 2
@@ -213,17 +254,17 @@ def IsContractableType2ReparametrizationParallel(M, M0, M1, i, makker, P, P1, ma
 
     if NbrIntc > 0:
         ud = [0, 0]
-        print("Obstruction")
-        fig = go.Figure()
-        fig.add_trace(go.Scatter3d(x=[i[0] for i in P[:,int(n1-5):int(n2+5)].T], 
-                                    y=[i[1] for i in P[:,int(n1-5):int(n2+5)].T], 
-                                    z=[i[2] for i in P[:,int(n1-5):int(n2+5)].T], mode='lines', line=dict(width=9), name='P'))
+        # print("Obstruction")
+        # fig = go.Figure()
+        # fig.add_trace(go.Scatter3d(x=[i[0] for i in P[:,int(n1-5):int(n2+5)].T], 
+        #                             y=[i[1] for i in P[:,int(n1-5):int(n2+5)].T], 
+        #                             z=[i[2] for i in P[:,int(n1-5):int(n2+5)].T], mode='lines', line=dict(width=9), name='P'))
         
-        fig.add_trace(go.Scatter3d(x=[i[0] for i in P[:,int(n3-5):int(n4+5)].T], 
-                                    y=[i[1] for i in P[:,int(n3-5):int(n4+5)].T], 
-                                    z=[i[2] for i in P[:,int(n3-5):int(n4+5)].T], mode='lines', line=dict(width=9), name='P'))
-        fig.update_layout(title_text="Structural alignment of protein structures for chain" + str(i) + " and chain" + str(makker))
-        fig.show()
+        # fig.add_trace(go.Scatter3d(x=[i[0] for i in P[:,int(n3-5):int(n4+5)].T], 
+        #                             y=[i[1] for i in P[:,int(n3-5):int(n4+5)].T], 
+        #                             z=[i[2] for i in P[:,int(n3-5):int(n4+5)].T], mode='lines', line=dict(width=9), name='P'))
+        # fig.update_layout(title_text="Structural alignment of protein structures for chain" + str(i) + " and chain" + str(makker))
+        # fig.show()
         return ud
 
     dists = dp2l.d_points2line(pts, pts[:, 0], pts[:, pts1.shape[1]-1])

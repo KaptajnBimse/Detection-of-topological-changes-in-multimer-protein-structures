@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import MakeReParTicks as MRPT
 from scipy.interpolate import griddata
 import plotly.graph_objects as go
+def expand_array(arr):
+            return [i for num in arr for i in range(num, num + 5)]
 
 def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2, myoptions, chain_change, Intersecting_chain_number_i ,Intersecting_chain_number_j):
 
@@ -290,6 +292,128 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
             )
             # Show plot
             fig.show()
+
+        Chain1 = 1
+        Chain2 = 2
+
+        index1 = np.arange(chain_change[Chain1-1], chain_change[Chain1], 1).astype(int)
+        index2 = np.arange(chain_change[Chain2-1], chain_change[Chain2], 1).astype(int)
+        # print(index)
+
+        trace1 = go.Scatter3d(
+            x=P[:, 0],
+            y=P[:, 1],
+            z=P[:, 2],
+            mode='lines',
+            line=dict(color='blue', width=9),
+            name='Chain '+str(int(Chain1))+ " Config 1",
+        ) # Chain 1
+
+        trace2 = go.Scatter3d(
+            x=P1[:, 0],
+            y=P1[:, 1],
+            z=P1[:, 2],
+            mode='lines',
+            line=dict(color='red', width=9),
+            name='Chain ' + str(int(Chain2))+ " Config 2",
+        ) # Chain 2
+
+        trace1_copy = go.Scatter3d(
+            x=P[:, 0],
+            y=P[:, 1],
+            z=P[:, 2],
+            mode='lines',
+            line=dict(color='blue', width=9),
+            name='Chain ' + str(int(Chain2)) + " Config 1"
+        ) # Chain 2
+
+        trace2_copy = go.Scatter3d(
+            x=P1[:, 0],
+            y=P1[:, 1],
+            z=P1[:, 2],
+            mode='lines',
+            line=dict(color='red', width=9),
+            name='Chain ' + str(int(Chain1)) + " Config 2",
+        ) # Chain 1
+
+        traceInterPol = []
+        traceInterPol_copy = []
+        for i in range(5):
+            traceInterPol.append(go.Scatter3d(
+            x = (i+1)/(5+1)*P[:,0] + (1-(i+1)/(5+1))*P1[:, 0],
+            y = (i+1)/(5+1)*P[:,1] + (1-(i+1)/(5+1))*P1[:, 1],
+            z = (i+1)/(5+1)*P[:,2] + (1-(i+1)/(5+1))*P1[:, 2],
+            mode='lines',
+            showlegend = bool(np.floor(i/4)),
+            line=dict(color='grey', width=2),
+            opacity=0.5,
+            legendgroup = 'Interpolated line',
+            name = 'Interpolated lines'
+            ))
+
+            traceInterPol_copy.append(go.Scatter3d(
+            x = (i+1)/(5+1)*P[:,0] + (1-(i+1)/(5+1))*P1[:, 0],
+            y = (i+1)/(5+1)*P[:,1] + (1-(i+1)/(5+1))*P1[:, 1],
+            z = (i+1)/(5+1)*P[:,2] + (1-(i+1)/(5+1))*P1[:, 2],
+            mode='lines',
+            line=dict(color='grey', width=2),
+            opacity=0.5,
+            legendgroup = 'Interpolated line',
+            showlegend = False,
+            name = 'Interpolated lines'
+            ))
+        
+        trace1.x = trace1.x[index1]
+        trace1.y = trace1.y[index1]
+        trace1.z = trace1.z[index1] # Chain 1
+
+        trace1_copy.x = trace1_copy.x[index2]
+        trace1_copy.y = trace1_copy.y[index2]
+        trace1_copy.z = trace1_copy.z[index2] # Chain 2
+
+        trace2.x = trace2.x[index2]
+        trace2.y = trace2.y[index2]
+        trace2.z = trace2.z[index2] # Chain 2
+
+        trace2_copy.x = trace2_copy.x[index1]
+        trace2_copy.y = trace2_copy.y[index1]
+        trace2_copy.z = trace2_copy.z[index1] # Chain 1
+
+        for i in range(len(traceInterPol)):
+            traceInterPol[i].x = traceInterPol[i].x[index1]
+            traceInterPol[i].y = traceInterPol[i].y[index1]
+            traceInterPol[i].z = traceInterPol[i].z[index1]
+
+            traceInterPol_copy[i].x = traceInterPol_copy[i].x[index2]
+            traceInterPol_copy[i].y = traceInterPol_copy[i].y[index2]
+            traceInterPol_copy[i].z = traceInterPol_copy[i].z[index2]
+        
+        
+
+        Essential_residues_in_chains =  expand_array(np.where((((ud_essensials[:,0] <chain_change[Chain1] ) & (chain_change[Chain1-1] < ud_essensials[:,0])) | ((ud_essensials[:,0] < chain_change[Chain2]) & (chain_change[Chain2-1] < ud_essensials[:,0]))) &  (((ud_essensials[:,1] <chain_change[Chain1] ) & (chain_change[Chain1-1] < ud_essensials[:,1])) | ((ud_essensials[:,1] < chain_change[Chain2]) & (chain_change[Chain2-1] < ud_essensials[:,0]))))[0].astype(int)*5)
+        import operator
+        # Create figure
+        fig = go.Figure(data=[trace1, trace2, trace1_copy, trace2_copy] + traceInterPol+traceInterPol_copy + 
+                        list(operator.itemgetter(*Essential_residues_in_chains)(Essential_residues)))
+
+        # Set layout
+        fig.update_layout(
+            scene=dict(
+                xaxis=dict(title='X Label'),
+                yaxis=dict(title='Y Label'),
+                zaxis=dict(title='Z Label'),
+                bgcolor='white',
+                camera=dict(
+                    up=dict(x=0, y=0, z=1),
+                    center=dict(x=0, y=0, z=0),
+                    eye=dict(x=-1.25, y=-1.25, z=1)
+                )
+            ),
+        )
+        # Show plot
+        fig.show()
+            
+
 
 
 # RePar1 = np.loadtxt("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Python code/Oversæt/Test txt/MakeSelfIntcFigureV3/RePar1.txt")
