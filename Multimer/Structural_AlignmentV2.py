@@ -180,11 +180,12 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         P2_Reorder[chain] = P2_array
 
 
-
+    mean = np.mean(np.concatenate(list(P1.values()),axis=0),axis=0)
+    
     #Center the points
     for chain in P1:
-        P1[chain] = P1[chain] - np.mean(P1[chain], axis = 0)
-        P2_Reorder[chain] = P2_Reorder[chain] - np.mean(P2_Reorder[chain], axis = 0)
+        P1[chain] = P1[chain] - mean
+        P2_Reorder[chain] = P2_Reorder[chain] - mean
 
     aligment_points1 = np.zeros((0,3))
     aligment_points2 = np.zeros((0,3))
@@ -323,7 +324,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
 
         #add plot title
         fig.update_layout(title_text="Structural alignment of protein structures")
-        fig.write_html("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/CRUA.html")
+        #fig.write_html("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/CRUA.html")
         fig.show()
 
         pv1 = 270
