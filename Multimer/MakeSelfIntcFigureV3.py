@@ -21,8 +21,8 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
     plt.title('Overlap in Ångström, RMSD=' + str(np.round(np.sqrt(np.sum((P - P1)**2) / P.shape[0]), 2)) + 'Å')
     plt.xlim(0, overlap.shape[0]+10)
     plt.ylim(0, overlap.shape[1]+10)
-    plt.xticks(RPxticks, RPxtixlables.astype(int))
-    plt.yticks(RPyticks, RPytixlables.astype(int))
+    plt.xticks(chain_change, chain_change.astype(int))
+    plt.yticks(chain_change, chain_change.astype(int))
     # plt.colorbar()
 
     for c in range(ud_essensials.shape[0]):
@@ -42,31 +42,36 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
 
     #I want to create horizontal and vertical lines at the chain change residues
     if chain_change.shape[0] > 0:
-        for i in range(chain_change.shape[0]):
+        for i in range(chain_change.shape[0]-1):
             plt.axvline(x=chain_change[i], color='black', linestyle='-')
             plt.axhline(y=chain_change[i], color='black', linestyle='-')
 
     # create list of chian names as strings
     chain_names = []
-    for i in range(len(chain_change)):
+    for i in range(len(chain_change)-1):
         chain_names.append('Chain' + str(i+1))
     # Add second axis to show the chain change residues
     ax2 = plt.twiny()
     ax2.set_xlim(0, overlap.shape[0]+10)
-    ax2.set_xticks(chain_change+1/2*np.mean(np.diff(chain_change)))
+    ax2.set_xticks(chain_change[:-1]+1/2*np.mean(np.diff(chain_change[:-1])))
     ax2.set_xticklabels(chain_names)
     # ax2.set_xlabel('Chain change residues')
 
     ax3 = plt.twinx()
     ax3.set_ylim(0, overlap.shape[1]+10)
-    ax3.set_yticks(chain_change+1/2*np.mean(np.diff(chain_change)))
+    ax3.set_yticks(chain_change[:-1]+1/2*np.mean(np.diff(chain_change[:-1])))
     ax3.set_yticklabels(chain_names)
     # ax3.set_ylabel('Chain change residues')
 
     # make diagonal line
     plt.plot([0, overlap.shape[0]+10], [0, overlap.shape[1]+10], color='black', linestyle='--')
+    plt.draw()
+    print('continue computation')
+    #save as html
+    # plt.savefig('C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/EssPlot.png')
 
-    plt.show()
+
+    
     # Create traces for each protein chain
     trace1 = go.Scatter3d(
         x=P[:, 0],
@@ -186,7 +191,7 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
                 z=P[:, 2],
                 mode='lines',
                 line=dict(color='blue', width=9),
-                name='Chain '+str(int(Intersecting_chain_number_i[c])),
+                name='Chain '+str(int(Intersecting_chain_number_i[c]+1)),
                 legendgroup= 'Chain 1',
             )
 
@@ -196,7 +201,7 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
                 z=P1[:, 2],
                 mode='lines',
                 line=dict(color='red', width=9),
-                name='Chain ' + str(int(Intersecting_chain_number_j[c])),
+                name='Chain ' + str(int(Intersecting_chain_number_j[c]+1)),
                 legendgroup= 'Chain 2'
             )
 
@@ -291,13 +296,15 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
                 ),
             )
             # Show plot
+            # fig.write_html("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/Essential.html")
             fig.show()
+            print("")
 
-        Chain1 = 1
-        Chain2 = 2
+        Chain1 = 2
+        Chain2 = 1
 
-        index1 = np.arange(chain_change[Chain1-1], chain_change[Chain1], 1).astype(int)
-        index2 = np.arange(chain_change[Chain2-1], chain_change[Chain2], 1).astype(int)
+        index1 = np.arange(chain_change[Chain1-1]+1, chain_change[Chain1], 1).astype(int)
+        index2 = np.arange(chain_change[Chain2-1]+1, chain_change[Chain2], 1).astype(int)
         # print(index)
 
         trace1 = go.Scatter3d(
@@ -390,11 +397,12 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
         
         
 
-        Essential_residues_in_chains =  expand_array(np.where((((ud_essensials[:,0] <chain_change[Chain1] ) & (chain_change[Chain1-1] < ud_essensials[:,0])) | ((ud_essensials[:,0] < chain_change[Chain2]) & (chain_change[Chain2-1] < ud_essensials[:,0]))) &  (((ud_essensials[:,1] <chain_change[Chain1] ) & (chain_change[Chain1-1] < ud_essensials[:,1])) | ((ud_essensials[:,1] < chain_change[Chain2]) & (chain_change[Chain2-1] < ud_essensials[:,0]))))[0].astype(int)*5)
+        Essential_residues_in_chains =  expand_array(np.where((((ud_essensials[:,0] <chain_change[Chain1] ) & (chain_change[Chain1-1] < ud_essensials[:,0])) | ((ud_essensials[:,0] < chain_change[Chain2]) & (chain_change[Chain2-1] < ud_essensials[:,0]))) & (((ud_essensials[:,1] <chain_change[Chain1] ) & (chain_change[Chain1-1] < ud_essensials[:,1])) | ((ud_essensials[:,1] < chain_change[Chain2]) & (chain_change[Chain2-1] < ud_essensials[:,0]))))[0].astype(int)*5)
         import operator
         # Create figure
-        fig = go.Figure(data=[trace1, trace2, trace1_copy, trace2_copy] + traceInterPol+traceInterPol_copy + 
-                        list(operator.itemgetter(*Essential_residues_in_chains)(Essential_residues)))
+        if len(Essential_residues_in_chains) > 0:
+            fig = go.Figure(data=[trace1, trace2, trace1_copy, trace2_copy] + traceInterPol+traceInterPol_copy + 
+                            list(operator.itemgetter(*Essential_residues_in_chains)(Essential_residues)))
 
         # Set layout
         fig.update_layout(
@@ -411,8 +419,10 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
             ),
         )
         # Show plot
+        fig.write_html("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/AxB.html")
+
         fig.show()
-            
+        plt.show()
 
 
 

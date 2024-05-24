@@ -323,6 +323,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
 
         #add plot title
         fig.update_layout(title_text="Structural alignment of protein structures")
+        fig.write_html("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/CRUA.html")
         fig.show()
 
         pv1 = 270
