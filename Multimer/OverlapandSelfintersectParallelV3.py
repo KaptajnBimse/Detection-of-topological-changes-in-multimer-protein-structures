@@ -5,6 +5,7 @@ from AlignmentMetaData import AlignmentMetaData
 from SelfintersectionTransversal import SelfintersectionTransversal
 from MakeSelfIntcFigureV3 import MakeSelfIntcFigureV3
 import copy
+import time 
 
 def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4, IsAligned, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1, RePar2, IsAligned_org, Insert_points_P1, Insert_points_P):
     Smoothning = options['Smoothning']
@@ -37,9 +38,10 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
 
     rms1Aligned = np.sum(Ds[IsAligned == 1])
     rms2Aligned = np.sqrt(np.sum(Dsqr[IsAligned == 1]) / np.sum(IsAligned))
-
+    t = time.time()
     overlap, _, _, _ = NEAMReparametrizationParallel(P1Less4, P2Less4, RePar1Less4, RePar2Less4, IsAligned, Smoothning)
-
+    elapsed = time.time() - t
+    print("This is the time NEAM takes:", elapsed)
     L1 = np.sqrt(np.sum((P1Less4[0:n - 1, :] - P1Less4[1:n, :]) ** 2, axis=1))
     L2 = np.sqrt(np.sum((P2Less4[0:n - 1, :] - P2Less4[1:n, :]) ** 2, axis=1))
     # histogram of L1 and L2
@@ -117,7 +119,7 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
             UdSelf = SelfintersectionTransversal(P1_tot[i:(i+2), :].T, P2_tot[i:(i+2), :].T, P1_tot[j:(j+2), :].T, P2_tot[j:(j+2), :].T)
             UdSelf = np.atleast_2d(UdSelf)
             selfintc[i, j] = UdSelf[0, 0]
-            print(f"{k/(PotSelfIntc-1)*100:.2f}%")
+            #print(f"{k/(PotSelfIntc-1)*100:.2f}%")
             if UdSelf[0, 0] ** 2 == 1:
                 selfintcu[i, j] = UdSelf[0, 1]
                 selfintcv[i, j] = UdSelf[0, 2]
@@ -222,7 +224,7 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
         selfintersect_tot.extend(selfintersect[i])
         non_selfintersect_tot.extend(non_selfintersect[i])
 
-
+    t = time.time()
     # Assuming selfintc and selfintersect[chain] are defined
     # Reset all elements in selfintc to 0
     for i in range(np.array([Maxs]).shape[0]):
@@ -254,7 +256,8 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
                         Intersecting_chain_number_j = np.hstack((Intersecting_chain_number_j, np.ones(Essensials.shape[0])*j))
 
                     Outs.append(tmp)
-    
+    elapsed = time.time() - t
+    print("This is the time it takes:", elapsed)
     """"
     for i in range(Maxs):
         if AllowEndContractions == 1:

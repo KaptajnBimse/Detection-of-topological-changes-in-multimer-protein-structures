@@ -86,36 +86,26 @@ for i,chain in zip(range(len(P1Less4)), P1Less4.keys()):
 
 False_lines = False_lines[:-1]
 
-OverlapandSelfintersectParallelV3(P1Less4_tot, P2Less4_tot, RePar1Less4_tot, RePar2Less4_tot, IsAlignedLess4_tot, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1_tot, RePar2_tot, IsAligned,Insert_points_P1, Insert_points_P)
+#OverlapandSelfintersectParallelV3(P1Less4_tot, P2Less4_tot, RePar1Less4_tot, RePar2Less4_tot, IsAlignedLess4_tot, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1_tot, RePar2_tot, IsAligned,Insert_points_P1, Insert_points_P)
 
 """
-import cProfile
-import pstats
-import io
-
-def profile_and_print_stats(func, *args, **kwargs):
-    profiler = cProfile.Profile()
-    profiler.enable()
-    func(*args, **kwargs)
-    profiler.disable()
-    
-    stats_io = io.StringIO()
-    stats = pstats.Stats(profiler, stream=stats_io).sort_stats('time') # 'cumulative', 'time', 'calls', 'filename', 'stdname'
-    stats.print_stats()
-    
-    print(stats_io.getvalue())
-
-def my_function(P1Less4_tot, P2Less4_tot, RePar1Less4_tot, RePar2Less4_tot, IsAlignedLess4_tot, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1_tot, RePar2_tot, IsAligned,Insert_points_P1, Insert_points_P):
-    OverlapandSelfintersectParallelV3(P1Less4_tot, P2Less4_tot, RePar1Less4_tot, RePar2Less4_tot, IsAlignedLess4_tot, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1_tot, RePar2_tot, IsAligned,Insert_points_P1, Insert_points_P)
-
-profile_and_print_stats(my_function,P1Less4_tot, P2Less4_tot, RePar1Less4_tot, RePar2Less4_tot, IsAlignedLess4_tot, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1_tot, RePar2_tot, IsAligned,Insert_points_P1, Insert_points_P)
+'calls': Sort by call count.
+'cumulative': Sort by cumulative time.
+'filename': Sort by the name of the file in which the function was defined.
+'line': Sort by the line number in the file where the function was defined.
+'module': Sort by the name of the module in which the function was defined.
+'name': Sort by function name.
+'nfl': Sort by name, file, and line number.
+'pcalls': Sort by primitive call count.
+'stdname': Sort by standard name.
+'time': Sort by internal time.
 """
 
 import cProfile
 import pstats
-import io
-import pandas as pd
 import matplotlib.pyplot as plt
+import os
+from collections import defaultdict
 
 def profile_and_print_stats(func, *args, **kwargs):
     profiler = cProfile.Profile()
@@ -125,16 +115,17 @@ def profile_and_print_stats(func, *args, **kwargs):
     
     stats = pstats.Stats(profiler).sort_stats('time')
     
-    func_names = []
-    tottimes = []
+    script_times = defaultdict(float)
     for func_name, info in stats.stats.items():
-        func_names.append('.'.join(map(str, func_name)))  # convert func_name to a string
-        tottimes.append(info[2])  # total time
+        filename = func_name[0]
+        # replace 'your_script_names' with the names of your scripts
+        if any(script in filename for script in ['OverlapandSelfintersectParallelV3.py', 'AlignmentMetaData.py', 'NEAMReparametrizationParallel','SelfintersectionTransversal','ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP','MakeSelfIntcFigureV3' 'Final.py']):
+            script_times[os.path.basename(filename)] += info[2]  # total time
     
-    plt.barh(func_names, tottimes, color='blue')
+    plt.barh(list(script_times.keys()), list(script_times.values()), color='blue')
     plt.xlabel('Total Time')
-    plt.ylabel('Function')
-    plt.title('Function Execution Time')
+    plt.ylabel('Script')
+    plt.title('Script Execution Time')
     plt.show()
 
 def my_function(P1Less4_tot, P2Less4_tot, RePar1Less4_tot, RePar2Less4_tot, IsAlignedLess4_tot, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1_tot, RePar2_tot, IsAligned,Insert_points_P1, Insert_points_P):

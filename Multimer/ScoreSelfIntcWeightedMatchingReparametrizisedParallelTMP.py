@@ -8,6 +8,7 @@ from scipy.interpolate import splrep, PPoly
 from distPP import distPP
 from maxWeightMatching import maxWeightMatching
 
+
 def print_matrix(matrix):
     for row in matrix:
         print(" ".join(map(str, row)))
@@ -229,6 +230,7 @@ def ScoreSelfIntcWeightedMatchingReparametrizisedParallelTMP(selfintc, selfintcu
                   NbrGapGapTotal]
     
     return ud, ud_essentials, ud_M
+
 
 """ 
 IsAligned = np.loadtxt("Test txt/SSIWMRPTMP/IsAligned.txt")
