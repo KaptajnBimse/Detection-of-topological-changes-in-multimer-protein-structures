@@ -4,6 +4,8 @@ from Bio.Seq import Seq
 from Bio.PDB.Polypeptide import PPBuilder, CaPPBuilder
 import numpy as np
 
+
+
 def one_PDB_to_seq(PDB_filename):
 
     p = PDBParser(QUIET=True)
@@ -11,7 +13,9 @@ def one_PDB_to_seq(PDB_filename):
 
     ca1 = [(atom.full_id[2], atom.full_id[3][1], *atom.get_coord()) for atom in s1.get_atoms() if atom.full_id[4][0] == "CA"]
     df1 = pd.DataFrame(ca1, columns=["chain", "residue_number", "x", "y", "z"])
-    
+
+
+    b_factors = [atom.get_bfactor() for atom in s1.get_atoms()]
 
     # df1["x"] = df1["x"] - s1.center_of_mass()[0]
     # df1["y"] = df1["y"] - s1.center_of_mass()[1]
@@ -36,7 +40,8 @@ def one_PDB_to_seq(PDB_filename):
     ppb=PPBuilder()
     if len(ppb.build_peptides(s1)) != len(df1["chain"].unique()):
         ppb=CaPPBuilder()
-        
+        if len(ppb.build_peptides(s1)) != len(df1["chain"].unique()):
+            assert False, "The number of chains is different from the number of peptides"
 
     i = 0
     for pp in ppb.build_peptides(s1):
@@ -45,16 +50,16 @@ def one_PDB_to_seq(PDB_filename):
         #CaPP
         i += 1
     
-    return P1, seq1, s1, tot_seq1, chain_com
+    return P1, seq1, s1, tot_seq1, chain_com,b_factors
 
 
 def two_PDB_to_seq(PDB1_filename, PDB2_filename):
 
-    P1, seq1, s1, tot_seq1, chain_com1 = one_PDB_to_seq(PDB1_filename)
-    P2, seq2, s2, tot_seq2, chain_com2 = one_PDB_to_seq(PDB2_filename)
+    P1, seq1, s1, tot_seq1, chain_com1, b_factors1 = one_PDB_to_seq(PDB1_filename)
+    P2, seq2, s2, tot_seq2, chain_com2, b_factors2 = one_PDB_to_seq(PDB2_filename)
 
 
     if len(seq1) != len(seq2):
         print("The number of chains is different between the two structures")
 
-    return P1, P2, seq1, seq2, s1, s2, tot_seq1, tot_seq2, chain_com1, chain_com2
+    return P1, P2, seq1, seq2, s1, s2, tot_seq1, tot_seq2, chain_com1, chain_com2, b_factors1, b_factors2

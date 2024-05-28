@@ -73,7 +73,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         best_perms = best_perms[-1]
         return best_perms
 
-    P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_com1, chain_com2 = two_PDB_to_seq(pdb_file1, pdb_file2)
+    P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_com1, chain_com2, b_factors1, b_factors2 = two_PDB_to_seq(pdb_file1, pdb_file2)
     
     P1_org = copy.deepcopy(P1)
     P2_org = copy.deepcopy(P2)
@@ -81,6 +81,10 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
 
     chain_name1 = list(seq1.keys())
     chain_name2 = list(seq2.keys())
+
+    if len(chain_name1) != len(chain_name2):
+        raise ValueError("The number of chains in the two structures is not equal")
+    
 
 
     distance_matrix1 = np.zeros((len(chain_name1), len(chain_name1)))
@@ -155,6 +159,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         atoms_to_be_aligned2[chain2].extend(range((align[chain1].aligned[1][Num_holes-1][0]),(align[chain1].aligned[1][Num_holes-1][1])+1))
 
 
+    
 
     for chain in P1:
         P1[chain] = P1[chain].tolist()
@@ -361,7 +366,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
 
 
 
-    return P1, P, repar1, repar, is_aligned, NresAverage, P1Less4, PLess4, RePar1Less4, ReParLess4, Insert_points_P1, Insert_points_P
+    return P1, P, repar1, repar, is_aligned, NresAverage, P1Less4, PLess4, RePar1Less4, ReParLess4, Insert_points_P1, Insert_points_P, b_factors1, b_factors2
 
 
 #pdb_file1 = "/Users/agb/Desktop/Bachelor projekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"

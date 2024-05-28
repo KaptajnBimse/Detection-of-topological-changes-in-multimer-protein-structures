@@ -7,7 +7,7 @@ from MakeSelfIntcFigureV3 import MakeSelfIntcFigureV3
 import copy
 import time 
 
-def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4, IsAligned, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1, RePar2, IsAligned_org, Insert_points_P1, Insert_points_P):
+def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4, IsAligned, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1, RePar2, IsAligned_org, Insert_points_P1, Insert_points_P, b_factors1, b_factors2):
     Smoothning = options['Smoothning']
     AllowEndContractions = options['AllowEndContractions']
     AllMaxLengths = options['MaxLength']
@@ -256,6 +256,8 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
                         Intersecting_chain_number_j = np.hstack((Intersecting_chain_number_j, np.ones(Essensials.shape[0])*j))
 
                     Outs.append(tmp)
+    Intersecting_chain_number_i = Intersecting_chain_number_i[1:]
+    Intersecting_chain_number_j = Intersecting_chain_number_j[1:]
     elapsed = time.time() - t
     print("This is the time it takes:", elapsed)
     """"
@@ -270,7 +272,7 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
     """
     Udessentials = Udessentials[1:,:]
     if makefigure == 1:
-        MakeSelfIntcFigureV3(P1_tot, P2_tot, selfintc, overlap, Udessentials, RePar1, RePar2, options, chain_change2, Intersecting_chain_number_i, Intersecting_chain_number_j)
+        MakeSelfIntcFigureV3(P1_tot, P2_tot, selfintc, overlap, Udessentials, RePar1, RePar2, options, chain_change2, Intersecting_chain_number_i, Intersecting_chain_number_j, b_factors1, b_factors2)
     
     print("Number of essential self-intersections: ", Udessentials.shape[0])
     ud = [Outs, rms1, rms1Aligned, rms2, rms2Aligned, GDT_TS, TM, sumoverlap, PotSelfIntc, sumselfintc, AlignmentMetaDataOut]
