@@ -36,7 +36,6 @@ def one_PDB_to_seq(PDB_filename):
     ppb=PPBuilder()
     if len(ppb.build_peptides(s1)) != len(df1["chain"].unique()):
         ppb=CaPPBuilder()
-        
 
     i = 0
     for pp in ppb.build_peptides(s1):
