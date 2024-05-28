@@ -3,6 +3,8 @@ import pandas as pd
 from Bio.Seq import Seq
 from Bio.PDB.Polypeptide import PPBuilder, CaPPBuilder
 import numpy as np
+import os
+
 
 
 
@@ -13,6 +15,7 @@ def one_PDB_to_seq(PDB_filename):
 
     ca1 = [(atom.full_id[2], atom.full_id[3][1], *atom.get_coord()) for atom in s1.get_atoms() if atom.full_id[4][0] == "CA"]
     df1 = pd.DataFrame(ca1, columns=["chain", "residue_number", "x", "y", "z"])
+
 
 
     b_factors = [atom.get_bfactor() for atom in s1.get_atoms()]
@@ -41,7 +44,9 @@ def one_PDB_to_seq(PDB_filename):
     if len(ppb.build_peptides(s1)) != len(df1["chain"].unique()):
         ppb=CaPPBuilder()
         if len(ppb.build_peptides(s1)) != len(df1["chain"].unique()):
-            assert False, "The number of chains is different from the number of peptides"
+            # print("Bad")
+            return 
+            # assert False, "The number of chains is different from the number of peptides"
 
     i = 0
     for pp in ppb.build_peptides(s1):
@@ -49,7 +54,8 @@ def one_PDB_to_seq(PDB_filename):
         tot_seq1 += pp.get_sequence()
         #CaPP
         i += 1
-    
+
+    # print(os.path.basename(PDB_filename))
     return P1, seq1, s1, tot_seq1, chain_com,b_factors
 
 

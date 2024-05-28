@@ -1,4 +1,4 @@
-from numpy import array, linalg, linspace, transpose, zeros, mean, ndarray, sign, sqrt
+from numpy import array, linalg, linspace, transpose, zeros, mean, ndarray, sign, sqrt, sum
 from numpy.linalg import eig, svd, lstsq, det
 
 
@@ -35,7 +35,8 @@ def Align_3D(P1, P2):
     # print(t)
     transformed_pts = transpose(R@transpose(q))+meanp
 
-    RMSD = sqrt(1/n * linalg.norm(qt-transformed_pts,"fro")**2) #frobenius norm
+    #RMSD = sqrt(1/n * linalg.norm(qt-transformed_pts,"fro")**2) #frobenius norm
+    RMSD = sqrt(sum((P1 - transformed_pts)**2) / n)
 
     return transformed_pts, R, RMSD
 
