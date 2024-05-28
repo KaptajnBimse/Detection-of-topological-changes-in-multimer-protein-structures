@@ -28,6 +28,15 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
     plt.xticks(chain_change, chain_change.astype(int))
     plt.yticks(chain_change, chain_change.astype(int))
     # plt.colorbar()
+    # insert rectangles showing which rows has b values less than 50
+    for i in range(len(b_factors1)):
+        if b_factors1[i] < 50:
+            plt.axhline(y=i, color='r', linestyle='--')
+            plt.axvline(x=i, color='r', linestyle='--')
+    for i in range(len(b_factors2)):
+        if b_factors2[i] < 50:
+            plt.axhline(y=i, color='r', linestyle='--')
+            plt.axvline(x=i, color='r', linestyle='--')
 
     for c in range(ud_essensials.shape[0]):
         i = ud_essensials[c, 0]
@@ -278,28 +287,28 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
                 ))
             
             trace1.x = trace1.x[index[0][index[0]<P.shape[0]]]
-            trace1.y = trace1.y[index[0]]
-            trace1.z = trace1.z[index[0]]
+            trace1.y = trace1.y[index[0][index[0]<P.shape[0]]]
+            trace1.z = trace1.z[index[0][index[0]<P.shape[0]]]
 
-            trace1_copy.x = trace1_copy.x[index[1]]
-            trace1_copy.y = trace1_copy.y[index[1]]
-            trace1_copy.z = trace1_copy.z[index[1]]
+            trace1_copy.x = trace1_copy.x[index[1][index[1]<P.shape[0]]]
+            trace1_copy.y = trace1_copy.y[index[1][index[1]<P.shape[0]]]
+            trace1_copy.z = trace1_copy.z[index[1][index[1]<P.shape[0]]]
 
-            trace2.x = trace2.x[index[0]]
-            trace2.y = trace2.y[index[0]]
-            trace2.z = trace2.z[index[0]]
-            trace2_copy.x = trace2_copy.x[index[1]]
-            trace2_copy.y = trace2_copy.y[index[1]]
-            trace2_copy.z = trace2_copy.z[index[1]]
+            trace2.x = trace2.x[index[0][index[0]<P.shape[0]]]
+            trace2.y = trace2.y[index[0][index[0]<P.shape[0]]]
+            trace2.z = trace2.z[index[0][index[0]<P.shape[0]]]
+            trace2_copy.x = trace2_copy.x[index[1][index[1]<P.shape[0]]]
+            trace2_copy.y = trace2_copy.y[index[1][index[1]<P.shape[0]]]
+            trace2_copy.z = trace2_copy.z[index[1][index[1]<P.shape[0]]]
 
             for i in range(len(traceInterPol)):
-                traceInterPol[i].x = traceInterPol[i].x[index[0]]
-                traceInterPol[i].y = traceInterPol[i].y[index[0]]
-                traceInterPol[i].z = traceInterPol[i].z[index[0]]
+                traceInterPol[i].x = traceInterPol[i].x[index[0][index[0]<P.shape[0]]]
+                traceInterPol[i].y = traceInterPol[i].y[index[0][index[0]<P.shape[0]]]
+                traceInterPol[i].z = traceInterPol[i].z[index[0][index[0]<P.shape[0]]]
 
-                traceInterPol_copy[i].x = traceInterPol_copy[i].x[index[1]]
-                traceInterPol_copy[i].y = traceInterPol_copy[i].y[index[1]]
-                traceInterPol_copy[i].z = traceInterPol_copy[i].z[index[1]]
+                traceInterPol_copy[i].x = traceInterPol_copy[i].x[index[1][index[1]<P.shape[0]]]
+                traceInterPol_copy[i].y = traceInterPol_copy[i].y[index[1][index[1]<P.shape[0]]]
+                traceInterPol_copy[i].z = traceInterPol_copy[i].z[index[1][index[1]<P.shape[0]]]
             
             # Create figure
             fig = go.Figure(data=[trace1, trace2, trace1_copy, trace2_copy] + traceInterPol+traceInterPol_copy +Essential_residues1[c*5:(c+1)*5]+Essential_residues2[c*5:(c+1)*5])

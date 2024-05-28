@@ -8,6 +8,7 @@ from Bio.PDB.Polypeptide import PPBuilder, CaPPBuilder
 from Bio import Align
 from PDBP_to_seq import two_PDB_to_seq, one_PDB_to_seq
 from Align_3D import Align_3D
+import plotly.graph_objects as go
 import itertools
 import copy
 
@@ -118,10 +119,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 1):
 
     best_perm, best_perms = distance_matrix_for_permutation(permutations)
 
-
-
-    # Find optimal chain pairs
-    Best_chain_pairs = [best_perms[-1]]
+    Best_chain_pairs = [best_perms]
 
     #Index for best chain pair
     Best_chain_index = 0
@@ -143,8 +141,12 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 1):
         alignments = aligner.align(seq1[chain1], seq2[chain2])
         align[chain1] = alignments[0]
         # print("Score = %.1f:" % alignments[0].score)
+        # remove first and last not aligned part of the alignment
 
 
+
+
+    
     atoms_to_be_aligned1 = {}
     atoms_to_be_aligned2 = {}
     for chain1, chain2 in zip(chain_name1, chain_name2):
@@ -213,7 +215,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 1):
         P[chain1] = Transformed_points[start:start+len(atoms_to_be_aligned2[chain1])-1]
         start += len(atoms_to_be_aligned2[chain1])
         # atoms_not_aligned = find_missing_numbers(atoms_to_be_aligned2[chain1], len(P[chain1]))
-        #atoms_not_aligned = [i for i, x in enumerate(align[chain1][0]) if x == "-"]
+        # atoms_not_aligned = [i for i, x in enumerate(align[chain1][0]) if x == "-"]
         
         # Find the difference between the two sets
         atoms_not_aligned = set(range(0,len(P1[chain1]))) - set(atoms_to_be_aligned2[chain1])
@@ -314,7 +316,6 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 1):
     # Lav repar
     if makefigure == 1:
         # #Plot P1, P2 and P in 3d using plotly
-        import plotly.graph_objects as go
 
         fig = go.Figure()
 

@@ -2,6 +2,7 @@ from CifFile import ReadCif
 
 # Read the CIF file
 cif_file = ReadCif('/Users/agb/Downloads/fold_2024_05_28_10_37/fold_2024_05_28_10_37_model_0.cif')
+cif_file = ReadCif('C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/Alphafold/fold_2024_05_28_10_03_model_0.cif')
 
 # Extract the data block (replace 'sample' with your actual data block name if different)
 data_block = cif_file.first_block()
