@@ -1,7 +1,7 @@
 from CifFile import ReadCif
 
 # Read the CIF file
-cif_file = ReadCif('/Users/agb/Downloads/fold_2024_05_24_16_26/fold_2024_05_24_16_26_model_1.cif')
+cif_file = ReadCif('/Users/agb/Downloads/fold_2024_05_28_10_37/fold_2024_05_28_10_37_model_0.cif')
 
 # Extract the data block (replace 'sample' with your actual data block name if different)
 data_block = cif_file.first_block()
@@ -36,6 +36,7 @@ for i in range(len(group_pdb)):
         f"{label_comp_id[i]:>3} " +
         f"{label_asym_id[i]:1}" +
         f"{int(label_entity_id[i]):>4}" +
+        f"{int(label_seq_id[i]):>4}" +
         f"{pdbx_PDB_ins_code[i]:1}   " +
         f"{float(cartn_x[i]):>8.3f}" +
         f"{float(cartn_y[i]):>8.3f}" +
