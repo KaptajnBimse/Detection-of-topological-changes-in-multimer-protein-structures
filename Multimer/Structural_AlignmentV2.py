@@ -119,7 +119,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 1):
 
     best_perm, best_perms = distance_matrix_for_permutation(permutations)
 
-    Best_chain_pairs = [best_perms[-1]] #[('Chain_A', 'Chain_B', 'Chain_C', 'Chain_D')]
+    Best_chain_pairs = [best_perms[-2]] #[('Chain_A', 'Chain_B', 'Chain_C', 'Chain_D', 'Chain_E', 'Chain_F',)] [('Chain_A', 'Chain_B', 'Chain_C', 'Chain_D', 'Chain_E', 'Chain_F', 'Chain_G', 'Chain_H')] #
 
     #Index for best chain pair
     Best_chain_index = 0

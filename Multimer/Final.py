@@ -9,9 +9,9 @@ if Adam == 1:
     #pdb_file1 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/T1132TS462_1o.pdb"
     #pdb_file2 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/T1132TS462_3o.pdb"
     
-    #pdb_file1 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/T1123TS165_1o.pdb"
+    pdb_file1 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/T1123TS165_1o.pdb"
     #pdb_file1 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/fixed.pdb"
-    #pdb_file2 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/T1123TS054_1o.pdb"
+    pdb_file2 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/T1123TS054_1o.pdb"
     #pdb_file1 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/fold_2024_05_28_10_37_model_2.pdb"
     #pdb_file2 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/fold_2024_05_28_10_37_model_0.pdb"
     
@@ -24,8 +24,8 @@ if Adam == 1:
     #pdb_file2 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/fold_1y8h_model_0.pdb"
     
     # Ekstra alphafol vs pdb
-    pdb_file1 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/7cfy.pdb"
-    pdb_file2 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/fold_7cfy_model_0.pdb"
+    #pdb_file1 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/1ws4.pdb"
+    #pdb_file2 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/fold_1ws4_model_4.pdb"
     
 else:
     # pdb_file1 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
@@ -44,7 +44,7 @@ else:
 P1, P2, RePar1, RePar2, IsAligned, NresAverage, P1Less4, P2Less4, RePar1Less4, RePar2Less4, Insert_points_P1, Insert_points_P, b_factors1, b_factors2 =  structural_alignment(pdb_file1, pdb_file2, makefigure = 1)
 # options = {'Smoothning': 0, 'AllowEndContractions': 0, 'MaxLength': 5, 'MakeFigures': 1}
 options = {
-    'MaxLength': 3,
+    'MaxLength': 10,
     'dmax': 10,
     'Smoothning': 0,
     'AllowEndContractions': 0,
