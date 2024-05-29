@@ -12,7 +12,7 @@ import plotly.graph_objects as go
 import itertools
 import copy
 
-def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
+def structural_alignment(pdb_file1, pdb_file2, makefigure = 1):
     
     def find_missing_numbers(arr, n):
         # Calculate the sum of integers from 1 to n
@@ -71,8 +71,8 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
             if min_RMSD >= RMSD:
                 min_RMSD = RMSD
                 best_perms.append(letter)
-        best_perms = best_perms
-        return best_perms
+        best_perm = best_perms[-1]
+        return best_perm, best_perms
 
     P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_com1, chain_com2, b_factors1, b_factors2 = two_PDB_to_seq(pdb_file1, pdb_file2)
     
@@ -117,9 +117,9 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
             com_array[i,j] = chain_com1[chain][j]
         i += 1
 
-    best_perms = distance_matrix_for_permutation(permutations)
+    best_perm, best_perms = distance_matrix_for_permutation(permutations)
 
-    Best_chain_pairs = [best_perms[-1]]
+    Best_chain_pairs = [best_perms[-1]] #[('Chain_A', 'Chain_B', 'Chain_C', 'Chain_D')]
 
     #Index for best chain pair
     Best_chain_index = 0
@@ -187,13 +187,12 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         P2_Reorder[chain] = P2_array
 
 
-    mean = np.mean(np.concatenate(list(P1.values()),axis=0),axis=0)
+    mean1 = np.mean(np.concatenate(list(P1.values()),axis=0),axis=0)
     mean2 = np.mean(np.concatenate(list(P2_Reorder.values()),axis=0),axis=0)
-
     
     #Center the points
     for chain in P1:
-        P1[chain] = P1[chain] - mean
+        P1[chain] = P1[chain] - mean1
         P2_Reorder[chain] = P2_Reorder[chain] - mean2
 
     aligment_points1 = np.zeros((0,3))
