@@ -28,15 +28,33 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
     plt.xticks(chain_change, chain_change.astype(int))
     plt.yticks(chain_change, chain_change.astype(int))
     # plt.colorbar()
-    # insert rectangles showing which rows has b values less than 50
-    for i in range(len(b_factors1)):
+    # insert rectangles showing which rows has b values less than 50. 
+    r = 0
+    i = 0
+    while i < len(b_factors1)-1:
         if b_factors1[i] < 50:
-            plt.axhline(y=i, color='r', linestyle='--')
-            plt.axvline(x=i, color='r', linestyle='--')
-    for i in range(len(b_factors2)):
+            r = i
+            while b_factors1[r] < 50 and r < len(b_factors1)-1:
+                r += 1
+            #draw rectangle from row i to row r all the way across
+            plt.fill_between([0, overlap.shape[0]+10], i, r, color='orange', alpha=0.5)
+            i = r
+        else:
+            i += 1
+        print(i,r)
+
+    r = 0
+    i = 0
+    while i < len(b_factors2)-1:
         if b_factors2[i] < 50:
-            plt.axhline(y=i, color='r', linestyle='--')
-            plt.axvline(x=i, color='r', linestyle='--')
+            r = i
+            while b_factors2[r] < 50 and r < len(b_factors2)-1:
+                r += 1
+            #draw rectangle from column i to column r all the way down
+            plt.fill_between([i, r], 0, overlap.shape[1]+10, color='orange', alpha=0.5)
+            i = r
+        else:
+            i += 1
 
     for c in range(ud_essensials.shape[0]):
         i = ud_essensials[c, 0]
@@ -332,7 +350,7 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
             fig.show()
             print("")
 
-        Chain1 = 2
+        Chain1 = 1
         Chain2 = 2
 
         index1 = np.arange(chain_change[Chain1-1]+1, chain_change[Chain1], 1).astype(int)
@@ -451,7 +469,7 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
             ),
         )
         # Show plot
-        #fig.write_html("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/AxB.html")
+        fig.write_html("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/AxB.html")
 
         fig.show()
         plt.show()

@@ -71,7 +71,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
             if min_RMSD >= RMSD:
                 min_RMSD = RMSD
                 best_perms.append(letter)
-        best_perms = best_perms[-1]
+        best_perms = best_perms
         return best_perms
 
     P1, P2, seq1, seq2, ref_structure, sample_structure, tot_seq1, tot_seq2, chain_com1, chain_com2, b_factors1, b_factors2 = two_PDB_to_seq(pdb_file1, pdb_file2)
@@ -119,7 +119,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
 
     best_perms = distance_matrix_for_permutation(permutations)
 
-    Best_chain_pairs = [best_perms]
+    Best_chain_pairs = [best_perms[-1]]
 
     #Index for best chain pair
     Best_chain_index = 0
@@ -188,11 +188,13 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
 
 
     mean = np.mean(np.concatenate(list(P1.values()),axis=0),axis=0)
+    mean2 = np.mean(np.concatenate(list(P2_Reorder.values()),axis=0),axis=0)
+
     
     #Center the points
     for chain in P1:
         P1[chain] = P1[chain] - mean
-        P2_Reorder[chain] = P2_Reorder[chain] - mean
+        P2_Reorder[chain] = P2_Reorder[chain] - mean2
 
     aligment_points1 = np.zeros((0,3))
     aligment_points2 = np.zeros((0,3))
@@ -333,20 +335,20 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 0):
         #fig.write_html("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/CRUA.html")
         fig.show()
 
-        pv1 = 270
-        pv2 = 285
+        # pv1 = 270
+        # pv2 = 285
 
         
         #Create a plot for each pair of chains
-        for i in range(len(P1.keys())):
-            fig = go.Figure()
-            fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name1[i]][pv1:pv2]], 
-                                       y=[i[1] for i in P[chain_name1[i]][pv1:pv2]], 
-                                       z=[i[2] for i in P[chain_name1[i]][pv1:pv2]], mode='lines', line=dict(width=9), name='P'))
+        # for i in range(len(P1.keys())):
+        #     fig = go.Figure()
+        #     fig.add_trace(go.Scatter3d(x=[i[0] for i in P1[chain_name1[i]]], 
+        #                                y=[i[1] for i in P1[chain_name1[i]]], 
+        #                                z=[i[2] for i in P1[chain_name1[i]]], mode='lines', line=dict(width=9), name='P'))
             
-            fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name1[i]][pv1:pv2]], y=[i[1] for i in P[chain_name1[i]][pv1:pv2]], z=[i[2] for i in P[chain_name1[i]][pv1:pv2]], mode='lines', line=dict(width=9), name='P'))
-            fig.update_layout(title_text="Structural alignment of protein structures for chain " + chain_name1[i])
-            fig.show()
+        #     fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name1[i]]], y=[i[1] for i in P[chain_name1[i]]], z=[i[2] for i in P[chain_name1[i]]], mode='lines', line=dict(width=9), name='P'))
+        #     fig.update_layout(title_text="Structural alignment of protein structures for chain " + chain_name1[i])
+        #     fig.show()
 
     print("RMSD of structual alignment " + str(rmsd))
     # print(best_perms)

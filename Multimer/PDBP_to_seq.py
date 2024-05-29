@@ -18,7 +18,7 @@ def one_PDB_to_seq(PDB_filename):
 
 
 
-    b_factors = [atom.get_bfactor() for atom in s1.get_atoms()]
+    b_factors = [atom.get_bfactor() for atom in s1.get_atoms() if atom.full_id[4][0] == "CA"]
 
     # df1["x"] = df1["x"] - s1.center_of_mass()[0]
     # df1["y"] = df1["y"] - s1.center_of_mass()[1]

@@ -35,8 +35,8 @@ def Align_3D(P1, P2):
     # print(t)
     transformed_pts = transpose(R@transpose(q))+meanp
 
-    #RMSD = sqrt(1/n * linalg.norm(qt-transformed_pts,"fro")**2) #frobenius norm
-    RMSD = sqrt(sum((P1 - transformed_pts)**2) / n)
+    RMSD = sqrt(1/n * linalg.norm(qt-transformed_pts,"fro")**2) #frobenius norm
+    # RMSD = sqrt(sum((P1 - transformed_pts)**2) / n)
 
     return transformed_pts, R, RMSD
 
