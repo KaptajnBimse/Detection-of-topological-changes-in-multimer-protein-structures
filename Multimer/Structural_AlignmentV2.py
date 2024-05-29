@@ -334,20 +334,20 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 1):
         #fig.write_html("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/CRUA.html")
         fig.show()
 
-        pv1 = 270
-        pv2 = 285
+        # pv1 = 270
+        # pv2 = 285
 
         
         #Create a plot for each pair of chains
-        for i in range(len(P1.keys())):
-            fig = go.Figure()
-            fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name1[i]][pv1:pv2]], 
-                                       y=[i[1] for i in P[chain_name1[i]][pv1:pv2]], 
-                                       z=[i[2] for i in P[chain_name1[i]][pv1:pv2]], mode='lines', line=dict(width=9), name='P'))
+        # for i in range(len(P1.keys())):
+        #     fig = go.Figure()
+        #     fig.add_trace(go.Scatter3d(x=[i[0] for i in P1[chain_name1[i]]], 
+        #                                y=[i[1] for i in P1[chain_name1[i]]], 
+        #                                z=[i[2] for i in P1[chain_name1[i]]], mode='lines', line=dict(width=9), name='P'))
             
-            fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name1[i]][pv1:pv2]], y=[i[1] for i in P[chain_name1[i]][pv1:pv2]], z=[i[2] for i in P[chain_name1[i]][pv1:pv2]], mode='lines', line=dict(width=9), name='P'))
-            fig.update_layout(title_text="Structural alignment of protein structures for chain " + chain_name1[i])
-            fig.show()
+        #     fig.add_trace(go.Scatter3d(x=[i[0] for i in P[chain_name1[i]]], y=[i[1] for i in P[chain_name1[i]]], z=[i[2] for i in P[chain_name1[i]]], mode='lines', line=dict(width=9), name='P'))
+        #     fig.update_layout(title_text="Structural alignment of protein structures for chain " + chain_name1[i])
+        #     fig.show()
 
     print("RMSD of structual alignment " + str(rmsd))
     # print(best_perms)
