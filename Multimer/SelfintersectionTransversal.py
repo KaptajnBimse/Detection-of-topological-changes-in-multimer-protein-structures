@@ -19,7 +19,7 @@ def SelfintersectionTransversal(a0, a1, b0, b1):
         if np.linalg.matrix_rank(M) == 1:
             tmp = np.sum(np.cross(M[:, 0], k)**2) # The length of the vector between the parallel lines (orthogonal vector to first line)
             if tmp > 10**-20:
-                return
+                return ud
             else: # Scenario where the lines lay on top of each other
                 v = M[:, 0]
                 ta = np.dot(v, a)
@@ -27,9 +27,9 @@ def SelfintersectionTransversal(a0, a1, b0, b1):
                 intersectionlength = abs(ta[0] - tb[1]) + abs(ta[1] - tb[0]) - abs(ta[0] - tb[0]) - abs(ta[1] - tb[1])
                 if intersectionlength > 4 * 10**-14:
                     ud = [np.sign(transversal[i, 0]), [0.5, 0.5], s] # Fjern muligvis [] inde i []
-                    return
+                    return ud
                 else:
-                    return
+                    return ud
         uv, _, _, _ = np.linalg.lstsq(M, k, rcond=None)
         if np.sum((0 <= uv) & (uv <= 1)) == 2:
             if np.sum((M @ uv - k)**2) < cut:

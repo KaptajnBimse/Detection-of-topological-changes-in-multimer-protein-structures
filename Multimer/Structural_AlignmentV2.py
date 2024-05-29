@@ -119,7 +119,7 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 1):
 
     best_perm, best_perms = distance_matrix_for_permutation(permutations)
 
-    Best_chain_pairs = [best_perms]
+    Best_chain_pairs = [best_perms[-1]] #[('Chain_A', 'Chain_B', 'Chain_C', 'Chain_D')]
 
     #Index for best chain pair
     Best_chain_index = 0
@@ -187,12 +187,13 @@ def structural_alignment(pdb_file1, pdb_file2, makefigure = 1):
         P2_Reorder[chain] = P2_array
 
 
-    mean = np.mean(np.concatenate(list(P1.values()),axis=0),axis=0)
+    mean1 = np.mean(np.concatenate(list(P1.values()),axis=0),axis=0)
+    mean2 = np.mean(np.concatenate(list(P2_Reorder.values()),axis=0),axis=0)
     
     #Center the points
     for chain in P1:
-        P1[chain] = P1[chain] - mean
-        P2_Reorder[chain] = P2_Reorder[chain] - mean
+        P1[chain] = P1[chain] - mean1
+        P2_Reorder[chain] = P2_Reorder[chain] - mean2
 
     aligment_points1 = np.zeros((0,3))
     aligment_points2 = np.zeros((0,3))

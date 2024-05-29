@@ -4,6 +4,32 @@ from Bio.Seq import Seq
 from Bio.PDB.Polypeptide import PPBuilder, CaPPBuilder
 import numpy as np
 import os
+from Bio import PDB
+from Bio.SeqUtils import seq1
+
+class ChainSequence:
+    def __init__(self, chain_id, sequence):
+        self.chain_id = chain_id
+        self.sequence = sequence
+
+    def __repr__(self):
+        return f"Chain {self.chain_id}: {self.sequence}"
+
+# Function to extract sequences from all chains and store in ChainSequence objects
+def extract_sequences_from_pdb(pdb_file):
+    parser = PDB.PDBParser(QUIET=True)
+    structure = parser.get_structure('structure', pdb_file)
+    chain_sequences = []
+    
+    for model in structure:
+        for chain in model:
+            seq = ""
+            for residue in chain:
+                if PDB.is_aa(residue, standard=True):
+                    seq += seq1(residue.resname)
+            chain_sequences.append(ChainSequence(chain.id, seq))
+    
+    return chain_sequences
 
 
 
@@ -42,18 +68,27 @@ def one_PDB_to_seq(PDB_filename):
     ppb=PPBuilder()
     if len(ppb.build_peptides(s1)) != len(df1["chain"].unique()):
         ppb=CaPPBuilder()
-        if len(ppb.build_peptides(s1)) != len(df1["chain"].unique()):
+        #if len(ppb.build_peptides(s1)) != len(df1["chain"].unique()):
             # print("Bad")
-            return 
+            #return 
             # assert False, "The number of chains is different from the number of peptides"
 
-    i = 0
-    for pp in ppb.build_peptides(s1):
-        seq1["Chain_" + df1["chain"].unique()[i]] = pp.get_sequence()
-        tot_seq1 += pp.get_sequence()
-        #CaPP
-        i += 1
-
+    if PDB_filename == "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/T1123TS054_1o.pdb":
+        i = 0
+        for pp in ppb.build_peptides(s1):
+            seq1["Chain_" + df1["chain"].unique()[i]] = pp.get_sequence()
+            tot_seq1 += pp.get_sequence()
+            #CaPP
+            i += 1
+    else:
+        seq1 = {}
+        i = 0
+        for chain_seq in extract_sequences_from_pdb(PDB_filename):
+            seq1["Chain_" + df1["chain"].unique()[i]] = extract_sequences_from_pdb(PDB_filename)[i].sequence
+            tot_seq1 += chain_seq.sequence
+            i += 1
+    
+    
     # print(os.path.basename(PDB_filename))
     return P1, seq1, s1, tot_seq1, chain_com,b_factors
 
@@ -62,8 +97,24 @@ def two_PDB_to_seq(PDB1_filename, PDB2_filename):
 
     P1, seq1, s1, tot_seq1, chain_com1, b_factors1 = one_PDB_to_seq(PDB1_filename)
     P2, seq2, s2, tot_seq2, chain_com2, b_factors2 = one_PDB_to_seq(PDB2_filename)
-
-
+    
+    
+    
+    #P1_tot = []
+    #P2_tot = []
+    
+    #for chain in P1:
+        #P1_tot = np.append(P1_tot, np.array(P1[chain]))
+        #P2_tot = np.append(P2_tot, np.array(P2[chain]))
+    
+    # Convert arrays of lists into 2D numpy arrays
+    #P1_tot = np.vstack(P1_tot)
+    #P2_tot = np.vstack(P2_tot)
+    
+    # Write the arrays to text files
+    #np.savetxt("P1_tot.txt", P1_tot, delimiter=",")
+    #np.savetxt("P2_tot.txt", P2_tot, delimiter=",")
+    
     if len(seq1) != len(seq2):
         print("The number of chains is different between the two structures")
 
