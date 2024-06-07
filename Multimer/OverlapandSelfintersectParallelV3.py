@@ -271,12 +271,14 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
         Outs.append(tmp)
     """
     Udessentials = Udessentials[1:,:]
+    print("Number of essential self-intersections: ", Udessentials.shape[0])
     if makefigure == 1:
         MakeSelfIntcFigureV3(P1_tot, P2_tot, selfintc, overlap, Udessentials, RePar1, RePar2, options, chain_change2, Intersecting_chain_number_i, Intersecting_chain_number_j, b_factors1, b_factors2)
     
     print("Number of essential self-intersections: ", Udessentials.shape[0])
     ud = [Outs, rms1, rms1Aligned, rms2, rms2Aligned, GDT_TS, TM, sumoverlap, PotSelfIntc, sumselfintc, AlignmentMetaDataOut]
-    return
+    ud = [Udessentials, len(np.where(selfintc)[0])]
+    return ud
 # P1 = np.loadtxt('Monomer/Test txt/TestEssential/P1.txt')
 # P2 = np.loadtxt('Monomer/Test txt/TestEssential/P2.txt')
 # RePar1 = np.loadtxt('Monomer/Test txt/TestEssential/RePar1.txt')

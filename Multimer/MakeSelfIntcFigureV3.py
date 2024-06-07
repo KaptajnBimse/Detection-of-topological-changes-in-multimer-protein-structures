@@ -230,7 +230,7 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
         )
 
         random_indexes = np.random.choice(ud_essensials.shape[0], min(ud_essensials.shape[0], 5), replace=False)
-        # random_indexes = np.arange(ud_essensials.shape[0])
+        #random_indexes = np.arange(ud_essensials.shape[0])
         for c in random_indexes:
             index = ((np.arange(ud_essensials[c,0]-10,ud_essensials[c,0]+10).astype(int), np.arange(ud_essensials[c,1]-10,ud_essensials[c,1]+10).astype(int)))
             # print(index)
@@ -469,8 +469,8 @@ def MakeSelfIntcFigureV3(P, P1, selfintc, overlap, ud_essensials, RePar1, RePar2
             ),
         )
         # Show plot
-        fig.write_html("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/AxB.html")
-
+        #fig.write_html("C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/AxB.html")
+        
         fig.show()
         plt.show()
 
