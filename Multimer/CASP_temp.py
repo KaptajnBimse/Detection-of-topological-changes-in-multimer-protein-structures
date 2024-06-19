@@ -25,32 +25,34 @@ pdb_files = sorted([f for f in files if f != '.DS_Store'])
 print("")
 # Run the function on each .pdb file
 i = 0
-Num_ess = np.zeros(len(pdb_files)-1)
-Num_inter = np.zeros(len(pdb_files)-1)
-Num_ess2 = np.zeros(len(pdb_files)-1)
-Num_inter2 = np.zeros(len(pdb_files)-1)
+Num_ess = np.zeros(len(pdb_files))
+Num_inter = np.zeros(len(pdb_files))
+Num_ess2 = np.zeros(len(pdb_files))
+Num_inter2 = np.zeros(len(pdb_files))
 
-max_len = [18,50]
-for maxlen in max_len:
-    if maxlen == 18:
-        for pdb_file in pdb_files:
-            full_path = os.path.join(directory, pdb_file)
-            ud = FinalFunction(target, full_path,maxlen)
-            Num_ess[i] = ud[0].shape[0]
-            Num_inter[i] = ud[1]
-            print("Finished " + pdb_file + " Number of essential intersections "+ str(Num_ess[i]))
-            i += 1
-    else:
-        for pdb_file in pdb_files[:-1]:
-            full_path = os.path.join(directory, pdb_file)
-            ud2 = FinalFunction(target, full_path,maxlen)
-            Num_ess2[i] = ud[0].shape[0]
-            Num_inter2[i] = ud[1]
-            print("Finished " + pdb_file + " Number of essential intersections "+ str(Num_ess[i]))
-            i += 1
+maxlen = 18
+for pdb_file in pdb_files:
+    full_path = os.path.join(directory, pdb_file)
+    ud = FinalFunction(target, full_path,maxlen)
+    Num_ess[i] = ud[0].shape[0]
+    Num_inter[i] = ud[1]
+    print("Finished " + pdb_file + " Number of essential intersections "+ str(Num_ess[i]))
+    i += 1
+
+maxlen = 50
+j = 0
+for pdb_file in pdb_files:
+    full_path = os.path.join(directory, pdb_file)
+    ud2 = FinalFunction(target, full_path,maxlen)
+    Num_ess2[j] = ud2[0].shape[0]
+    Num_inter2[j] = ud2[1]
+    print("Finished " + pdb_file + " Number of essential intersections "+ str(Num_ess[j]))
+    j += 1
+
 
 
 #Load txt file
+
 TM_score = np.loadtxt( "/Users/agb/Downloads/TM_Score_true.txt", delimiter=",")
 
 #Create data frame with number of essential intersections and TM score
