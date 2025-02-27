@@ -6,8 +6,10 @@ from SelfintersectionTransversal import SelfintersectionTransversal
 from MakeSelfIntcFigureV3 import MakeSelfIntcFigureV3
 import copy
 import time 
+import timeit
 
 def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4, IsAligned, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1, RePar2, IsAligned_org, Insert_points_P1, Insert_points_P, b_factors1, b_factors2):
+    start = timeit.timeit() 
     Smoothning = options['Smoothning']
     AllowEndContractions = options['AllowEndContractions']
     AllMaxLengths = options['MaxLength']
@@ -38,10 +40,13 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
 
     rms1Aligned = np.sum(Ds[IsAligned == 1])
     rms2Aligned = np.sqrt(np.sum(Dsqr[IsAligned == 1]) / np.sum(IsAligned))
+    end = timeit.timeit()
+    print("Time3:", end - start)
     t = time.time()
     overlap, _, _, _ = NEAMReparametrizationParallel(P1Less4, P2Less4, RePar1Less4, RePar2Less4, IsAligned, Smoothning)
     elapsed = time.time() - t
     print("This is the time NEAM takes:", elapsed)
+    start = timeit.timeit() 
     L1 = np.sqrt(np.sum((P1Less4[0:n - 1, :] - P1Less4[1:n, :]) ** 2, axis=1))
     L2 = np.sqrt(np.sum((P2Less4[0:n - 1, :] - P2Less4[1:n, :]) ** 2, axis=1))
     # histogram of L1 and L2
@@ -109,6 +114,9 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
 
     selfintcI =[]
     selfintcJ =[]
+    end = timeit.timeit()
+    print("Time between NEAM and SelfIntersection:", end - start)
+    start = timeit.timeit() 
     for k in range(tjekliste.shape[0]):
         i = int(tjekliste[k, 0] - IPP0_tjek[k])
         j = int(tjekliste[k, 1] - IPP1_tjek[k])
@@ -127,9 +135,10 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
                 selfintcI = np.append(selfintcI, i)
                 selfintcJ = np.append(selfintcJ, j)
     print(len(np.where(selfintc)[0]))
-    
+    end = timeit.timeit()
+    print("Time Selfintersection:", end - start)
     # plot 10 random lines that should intersect -----------------------------------
-
+    start = timeit.timeit() 
     # #generate 10 random numbers in the range 0-len(np.where(selfintc)[0])
     # random_numbers = np.random.randint(0, len(np.where(selfintc)[0]), 10)
     # import plotly.graph_objects as go
@@ -171,11 +180,10 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
     #     fig.show()
 
     # --------------------------------------------------------------------------------
-
     for j in range(len(bands)):
         sumoverlap[j] = np.sum(np.tril(overlap, -bands[j]))
         sumselfintc[j] = np.sum(np.tril(np.abs(selfintc), -bands[j]))
-
+    
     Maxs = AllMaxLengths
     Outs = []
     Udessentials = np.zeros((1,2))
@@ -223,7 +231,7 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
     for i in list(selfintersect.keys()):
         selfintersect_tot.extend(selfintersect[i])
         non_selfintersect_tot.extend(non_selfintersect[i])
-
+    
     t = time.time()
     # Assuming selfintc and selfintersect[chain] are defined
     # Reset all elements in selfintc to 0
@@ -259,6 +267,7 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
     Intersecting_chain_number_i = Intersecting_chain_number_i[1:]
     Intersecting_chain_number_j = Intersecting_chain_number_j[1:]
     elapsed = time.time() - t
+    
     print("This is the time it takes:", elapsed)
     """"
     for i in range(Maxs):
@@ -274,7 +283,8 @@ def OverlapandSelfintersectParallelV3(P1Less4, P2Less4, RePar1Less4, RePar2Less4
     print("Number of essential self-intersections: ", Udessentials.shape[0])
     if makefigure == 1:
         MakeSelfIntcFigureV3(P1_tot, P2_tot, selfintc, overlap, Udessentials, RePar1, RePar2, options, chain_change2, Intersecting_chain_number_i, Intersecting_chain_number_j, b_factors1, b_factors2)
-    
+    end = timeit.timeit()
+    print("Time Other intersections:", end - start)
     print("Number of essential self-intersections: ", Udessentials.shape[0])
     ud = [Outs, rms1, rms1Aligned, rms2, rms2Aligned, GDT_TS, TM, sumoverlap, PotSelfIntc, sumselfintc, AlignmentMetaDataOut]
     ud = [Udessentials, len(np.where(selfintc)[0])]

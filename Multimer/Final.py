@@ -2,11 +2,13 @@ import numpy as np
 from Structural_AlignmentV2 import structural_alignment
 from OverlapandSelfintersectParallelV3 import OverlapandSelfintersectParallelV3
 from PDBP_to_seq import one_PDB_to_seq
+import timeit
+
 
 Adam = 1
 if Adam == 1:
-    #pdb_file1 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
-    #pdb_file2 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
+    pdb_file1 = "/Users/agb/Desktop/6. Semester/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
+    pdb_file2 = "/Users/agb/Desktop/6. Semester/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
     #pdb_file1 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/T1132TS462_1o.pdb"
     #pdb_file2 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/T1132TS462_5o.pdb"
     
@@ -32,8 +34,8 @@ if Adam == 1:
     #pdb_file1 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/T1187o.pdb"
     #pdb_file1 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/fixed.pdb"
     #pdb_file2 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/T1187TS098_4o.pdb"
-    pdb_file1 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/T1187o.pdb"
-    pdb_file2 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/T1187o/T1187TS098_4o"
+    #pdb_file1 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/T1187o.pdb"
+    #pdb_file2 = "/Users/agb/Desktop/Bachelorprojekt/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/T1187o/T1187TS098_4o"
 else:
     # pdb_file1 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRUA_hexamer_positive.pdb"
     # pdb_file2 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/CRU1_hexamer_negative.pdb"
@@ -56,11 +58,14 @@ else:
     pdb_file2 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/AlphaFold/1Y8H/fold_1y8h_model_0.pdb"
 
     pdb_file2 = "C:/Users/Kapta/Documents/Skole/DTU/6.semester/BP/Detection-of-topological-changes-in-multimer-protein-structures/Multimer/examples/Multimer PDB/PDB/8wwu.pdb"
-    
+start = timeit.timeit() 
 P1, seq1, s1, tot_seq1, chain_com,b_factors = one_PDB_to_seq(pdb_file2)
 
 P1, P2, RePar1, RePar2, IsAligned, NresAverage, P1Less4, P2Less4, RePar1Less4, RePar2Less4, Insert_points_P1, Insert_points_P, b_factors1, b_factors2 =  structural_alignment(pdb_file1, pdb_file2, makefigure = 1)
 # options = {'Smoothning': 0, 'AllowEndContractions': 0, 'MaxLength': 5, 'MakeFigures': 1}
+end = timeit.timeit()
+print("Time1:", end - start)
+start = timeit.timeit() 
 options = {
     'MaxLength': 50,
     'dmax': 10,
@@ -130,7 +135,8 @@ for i,chain in zip(range(len(P1Less4)), P1Less4.keys()):
     start = False_lines[i]
 
 False_lines = False_lines[:-1]
-
+end = timeit.timeit()
+print("Time2:", end - start)
 OverlapandSelfintersectParallelV3(P1Less4_tot, P2Less4_tot, RePar1Less4_tot, RePar2Less4_tot, IsAlignedLess4_tot, P1org, P2org, NresAverage, options, False_lines, P1, P2, RePar1_tot, RePar2_tot, IsAligned,Insert_points_P1, Insert_points_P, b_factors1, b_factors2)
 
 """
